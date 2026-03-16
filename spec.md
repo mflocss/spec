@@ -125,6 +125,19 @@ MUST: `@property` を使用する場合は `@layer` の外に配置しなけれ�
 
 (→ 書籍 ch2)
 
+### 外部 CSS の層配置
+
+`@layer` に属さない CSS（unlayered CSS）は全ての layered CSS より優先される。外部ライブラリの CSS を `<link>` タグ等で直接読み込むと、mFLOCSS の層構造を貫通し、意図しない上書きが発生する。
+
+MUST: 外部 CSS は `@import url() layer()` または npm + バンドラーを使用し、いずれかの層に取り込まなければならない。
+
+外部 CSS の層配置は、自作 CSS と同じ判断基準で決定する。出自（外部 / 自作）による特別扱いは行わない。
+
+| 外部 CSS の種類 | 配置先 |
+|---|---|
+| リセット系ライブラリ | `layer(foundation)` |
+| UI コンポーネント系ライブラリ | `layer(component)` |
+
 ---
 
 ## 5. Layer Definitions
