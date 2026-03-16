@@ -388,11 +388,14 @@ Layout の振る舞いをページやセクションに合わせて変えたい�
 @layer utility {
   .u-visually-hidden {
     position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
+    inline-size: 1px !important;
+    block-size: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
     overflow: hidden !important;
     clip-path: inset(50%) !important;
     white-space: nowrap !important;
+    border: 0 !important;
   }
 }
 ```
