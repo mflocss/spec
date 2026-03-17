@@ -263,6 +263,27 @@ SHOULD: `light-dark()` 関数を使用する。
 - SHOULD: `:where()` で詳細度をゼロに保つべきである。アタッチメント方式で取り込む外部リセット CSS は `:where()` を使用していない場合がある。`@layer` による層順序制御が詳細度の予測可能性を構造的に担保するため、`:where()` は推奨とする
 - MUST: ブランドトークンについては Theme のセマンティック変数を参照しなければならない（グローバルトークンの直接参照は許容 — Tokens 層のトークン分類を参照）
 
+SHOULD: Foundation 層はサブレイヤー `foundation.reset`（外部リセット CSS）と `foundation.base`（自作ベーススタイル）に分離すべきである。これにより、外部リセット CSS が `:where()` を使用していない場合でも、自作ベーススタイルがリセットを上書きできる。
+
+> **Example:**
+
+```css
+/* layer-order.css */
+@layer foundation.reset, foundation.base;
+
+/* foundation/reset.css — 外部リセット CSS */
+@layer foundation.reset {
+  @import url("modern-normalize.css");
+}
+
+/* foundation/base.css — 自作ベーススタイル */
+@layer foundation.base {
+  :where(body) {
+    line-height: 1.5;
+  }
+}
+```
+
 SHOULD: reset / base / form の 3 ファイルに分割する。form を独立させる理由は、フォーム要素（input, select, textarea, button）はブラウザ間のデフォルトスタイル差異が最も大きく、正規化のコード量が多くなるためである。
 
 > **注記（Informative）**: リセット CSS はアタッチメント方式とする。リファレンス実装が参考を提供するが、各プロジェクトに適したリセットを選定・適用すること。リセット CSS の内部実装は本仕様の準拠対象外とする。
@@ -735,6 +756,7 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 - §5.7 Animation: 2 ガード原則の MUST を達成条件ベースに書き直し
 - §5.8 Utility: MUST NOT の判定基準を「Block/Element への帰属可否」に明確化
 - §9 Container Queries を SHOULD で規定
+- §5.3 Foundation にサブレイヤー構成（foundation.reset / foundation.base）を SHOULD で追加
 
 #### 削除された内容
 
