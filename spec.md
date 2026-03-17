@@ -265,16 +265,16 @@ SHOULD: `light-dark()` 関数を使用する。
 
 SHOULD: Foundation 層はサブレイヤー `foundation.reset`（外部リセット CSS）と `foundation.base`（自作ベーススタイル）に分離すべきである。これにより、外部リセット CSS が `:where()` を使用していない場合でも、自作ベーススタイルがリセットを上書きできる。
 
+サブレイヤーを使用する場合（SHOULD）:
+
 > **Example:**
 
 ```css
-/* layer-order.css */
+/* foundation/index.css */
 @layer foundation.reset, foundation.base;
 
 /* foundation/reset.css — 外部リセット CSS */
-@layer foundation.reset {
-  @import url("modern-normalize.css");
-}
+@import url("modern-normalize.css") layer(foundation.reset);
 
 /* foundation/base.css — 自作ベーススタイル */
 @layer foundation.base {
@@ -287,6 +287,8 @@ SHOULD: Foundation 層はサブレイヤー `foundation.reset`（外部リセッ
 SHOULD: reset / base / form の 3 ファイルに分割する。form を独立させる理由は、フォーム要素（input, select, textarea, button）はブラウザ間のデフォルトスタイル差異が最も大きく、正規化のコード量が多くなるためである。
 
 > **注記（Informative）**: リセット CSS はアタッチメント方式とする。リファレンス実装が参考を提供するが、各プロジェクトに適したリセットを選定・適用すること。リセット CSS の内部実装は本仕様の準拠対象外とする。
+
+サブレイヤーを使用しない場合:
 
 > **Example:**
 
