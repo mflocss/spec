@@ -61,7 +61,7 @@ mFLOCSS は以下の 4 原則に基づく。層数が変わってもこれらは
 
 ### 準拠条件
 
-mFLOCSS v1.1 に準拠するとは、本仕様の全 MUST / MUST NOT ルールに違反しないことを意味する。
+mFLOCSS v1.1 に準拠するとは、本仕様の全 MUST / MUST NOT ルールに違反しないことを意味する。設計判断を伴うルール（Portability Test 等）の判定は、本仕様が提供するテスト（§3 Portability Test, Layout Test, Responsibility Test）に基づく。
 
 ### バージョニング
 
@@ -159,7 +159,7 @@ Step 6: 局所的な単一目的の微調整か？
 
 ### 先制宣言
 
-MUST: CSS Cascading and Inheritance Level 5 [CSS-CASCADE-5] に定義される `@layer` の優先順位宣言をエントリポイント CSS の先頭で行わなければならない。
+MUST: CSS Cascading and Inheritance Level 5 [CSS-CASCADE-5] に定義される `@layer` の優先順位宣言をエントリポイント CSS の先頭で、全ての `@import` に先行して行わなければならない。
 
 > **Example:**
 
@@ -167,8 +167,6 @@ MUST: CSS Cascading and Inheritance Level 5 [CSS-CASCADE-5] に定義される `
 /* layer-order.css */
 @layer tokens, theme, foundation, layout, component, project, animation, utility;
 ```
-
-この宣言が全ての `@import` に先行しなければならない。
 
 ### @layer と @property
 
@@ -261,13 +259,13 @@ SHOULD: `light-dark()` 関数を使用する。
 
 **責任**: ブラウザ環境の初期化と基本スタイル
 
-- MUST: 要素セレクタのみを使用しなければならない（クラスセレクタ禁止）
+- MUST: 要素型セレクタのみを使用しなければならない（クラスセレクタ・ID セレクタ禁止）。属性セレクタ（`[type="text"]` 等）および擬似クラス（`:hover` 等）・擬似要素（`::placeholder` 等）は要素型セレクタとの組み合わせで許容する
 - MUST: `:where()` で詳細度をゼロに保たなければならない
 - MUST: ブランドトークンについては Theme のセマンティック変数を参照しなければならない（グローバルトークンの直接参照は許容 — Tokens 層のトークン分類を参照）
 
 SHOULD: reset / base / form の 3 ファイルに分割する。form を独立させる理由は、フォーム要素（input, select, textarea, button）はブラウザ間のデフォルトスタイル差異が最も大きく、正規化のコード量が多くなるためである。
 
-> **注記**: リセット CSS はアタッチメント方式とする。リファレンス実装が参考を提供するが、各プロジェクトに適したリセットを選定・適用すること。リセット CSS の内部実装は本仕様の準拠対象外とする。
+> **注記（Informative）**: リセット CSS はアタッチメント方式とする。リファレンス実装が参考を提供するが、各プロジェクトに適したリセットを選定・適用すること。リセット CSS の内部実装は本仕様の準拠対象外とする。
 
 > **Example:**
 
@@ -329,9 +327,11 @@ MAY: `container-name` を併用し、名前付きコンテナを定義してよ�
 **プレフィックス**: `c-`
 
 - MUST: Portability Test に合格しなければならない（「別サイトにそのまま持っていけるか？」）
-- MUST: 特定のサイトでしか使えない見た目にしてはならない
+- MUST NOT: 特定のサイトでしか使えない見た目にしてはならない
 - MUST: ブランドトークンについては Theme のセマンティック変数のみを参照しなければならない（グローバルトークンの直接参照は許容 — Tokens 層のトークン分類を参照）
-- MUST NOT: 外部レイアウトに影響するプロパティ（ルート要素の `margin`, `position: fixed/sticky`, ルート要素の `overflow` 等）を Component のルート要素に含めてはならない — 配置は使う側の責任（Responsibility Test）である。ただし Component 内部の Element 間の余白や内部配置（`position: relative` / `absolute`）は許容する
+- MUST NOT: 外部レイアウトに影響するプロパティ（ルート要素の `margin`, `position: fixed/sticky`, ルート要素の `overflow` 等）を Component のルート要素に含めてはならない — 配置は使う側の責任（Responsibility Test）である
+
+**例外**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 MUST NOT の対象外である。これらは Component 自身の視覚的責任に該当する
 
 SHOULD: 1 コンポーネント 1 ファイルとする。
 
@@ -400,7 +400,7 @@ Layout の振る舞いをページやセクションに合わせて変えたい�
 
 **プレフィックス**: `a-`
 
-- MUST: `prefers-reduced-motion` と `scripting` の 2 条件を考慮しなければならない（モーション軽減時にアニメーションが無効になり、JS 無効時に要素が不可視にならないことを保証する）
+- MUST: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装としなければならない
 
 この 2 条件の考慮を **2 ガード原則** と呼ぶ。
 
@@ -429,7 +429,7 @@ SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)
 **プレフィックス**: `u-`
 
 - MUST: `!important` を付与しなければならない
-- MUST NOT: 層の設計で解決できるスタイルを Utility に書いてはならない — Utility の増殖は設計の不在を示す
+- MUST NOT: 特定の Block や Element に帰属できるスタイルを Utility に書いてはならない — Utility は特定の Block に帰属しない横断的かつ局所的な単一目的のスタイルに限る
 - MUST NOT: Utility 層以外の全層で `!important` を使用してはならない
 
 **適切な用途**: アクセシビリティ非表示（`u-visually-hidden`）、レスポンシブ表示制御
@@ -631,9 +631,11 @@ SP ファースト / PC ファーストはプロジェクトごとに判断す�
 
 | 手法 | 用途 | 適用例 |
 |---|---|---|
-| Container Queries | コンポーネント単位のレスポンシブ（主要手段） | カードの画像/コンテンツの縦横切替、テーブルのレイアウト変更 |
+| Container Queries | コンポーネント単位のレスポンシブ | カードの画像/コンテンツの縦横切替、テーブルのレイアウト変更 |
 | Media Queries | ビューポート全体の離散的変化 | ナビゲーション切替、カラム数変更 |
 | `clamp()` | 連続的な流体デザイン | フォントサイズ、余白の滑らかな変化 |
+
+SHOULD: コンポーネント単位のレスポンシブデザインには Container Queries を使用する。ビューポート全体の変化には Media Queries、連続的な流体デザインには `clamp()` を使い分ける。
 
 Container Queries の層責任（`container-type` / `container-name` / `@container` の配置先）は §5.4 Layout を参照。
 
@@ -723,6 +725,13 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 - References セクションの新設（Appendix B）
 - Glossary に各用語の初出セクション番号を付記
 - Glossary: Responsibility Test の定義文を更新（Portability Test との優先関係を明記）
+- §2 準拠条件: 設計判断を伴うルールの判定基準（テスト参照）を追記
+- §5.3 Foundation: 「要素セレクタのみ」を「要素型セレクタのみ」に厳密化し、属性セレクタ・擬似クラス・擬似要素の許容範囲を明記
+- §5.5 Component: MUST NOT の例外（内部 Element）を構造的に分離
+- §5.5 Component: サイト固有禁止ルールの MUST → MUST NOT 修正（RFC 2119 準拠）
+- §5.7 Animation: 2 ガード原則の MUST を達成条件ベースに書き直し
+- §5.8 Utility: MUST NOT の判定基準を「Block/Element への帰属可否」に明確化
+- §9 Container Queries を SHOULD で規定
 
 #### 削除された内容
 
@@ -741,7 +750,6 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 | — | §1.2 不変原則 [Normative] | 旧 §1 の不変原則部分 |
 | — | §1.3 設計制約 [Normative] | v1.1 で新設 |
 | §1 不変原則（小見出し） | §1.2 不変原則 | サブセクションに昇格 |
-| — | §1.3 設計制約 | 新設 |
 | §2 Conformance | §2 Conformance | 変更なし |
 | §3 Layer Architecture | §3 Layer Architecture | Responsibility Test, Flowchart, 誤りパターン追加 |
 | §4 Layer Order Declaration | §4 Layer Order Declaration | 外部 CSS の層配置追加 |
