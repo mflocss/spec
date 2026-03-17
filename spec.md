@@ -331,9 +331,7 @@ MAY: `container-name` を併用し、名前付きコンテナを定義してよ�
 - MUST: ブランドトークンについては Theme のセマンティック変数のみを参照しなければならない（グローバルトークンの直接参照は許容 — Tokens 層のトークン分類を参照）
 - MUST NOT: 外部レイアウトに影響するプロパティ（ルート要素の `margin`, `position: fixed/sticky`, ルート要素の `overflow` 等）を Component のルート要素に含めてはならない — 配置は使う側の責任（Responsibility Test）である
 
-> *This note is informative.*
-
-**例外**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 MUST NOT の対象外である。これらは Component 自身の視覚的責任に該当する
+> **注記（Informative）**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 MUST NOT の対象外である。これらは Component 自身の視覚的責任に該当する
 
 SHOULD: 1 コンポーネント 1 ファイルとする。
 
