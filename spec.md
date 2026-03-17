@@ -95,7 +95,7 @@ Component 層と Project 層の境界を判定する基準テスト。
 
 ### Responsibility Test
 
-Component と Project の境界を補助的に判定するテスト。Portability Test が優先する。Portability Test で判断がつかない場合に使用する。
+Component と Project の境界を補助的に判定するテスト。Portability Test が明確に Yes または No を返す場合、Responsibility Test の結果に関わらずその判定に従う。Portability Test で判断が曖昧な場合にのみ Responsibility Test を使用する。
 
 > 「このスタイルは、パーツ自身の視覚的責任か？それとも使う側のデザイン要件か？」
 
@@ -122,6 +122,7 @@ Step 3: 配置と空間だけか？（色・文字・装飾に触れないか？
 Step 4: 別のサイトにそのまま持っていけるか？（Portability Test）
   ├─ Yes → Component
   └─ No → Project
+  ※ Portability Test で判断が曖昧な場合は、Responsibility Test（§3）を補助的に使用する。
 
 Step 5: prefers-reduced-motion で無効化すべき動きか？
   └─ Yes → Animation
@@ -264,21 +265,19 @@ SHOULD: reset / base / form の 3 ファイルに分割する。form を独立�
 
 - MUST NOT: 見た目に関するプロパティ（`color`, `font-size`, `background-color`, `border`, `text-align` 等の視覚的プロパティ）を宣言してはならない
 
-SHOULD: `container-type: inline-size` を宣言し、Container Queries の基盤を提供する。
+SHOULD: `container-type: inline-size` を宣言し、Container Queries の基盤を提供する。Container Queries を使用しないプロジェクトではこの限りではない。
 
 MAY: `container-name` を併用し、名前付きコンテナを定義してよい。セクション単位で名前付きコンテナを定義すると、`@container` での参照先を明示できる。
 
 #### Container Queries の層責任
 
-> **注記（Informative）**: このテーブルは Layout 層から見た Container Queries 全体の層責任を示す。`@container` による参照は Component / Project 層で行われるが、コンテナの定義元である Layout 層でまとめて規定する。
+> **注記（Informative）**: Container Queries は複数層にまたがる仕組みであるため、層責任の全体像をここにまとめて示す。各層の個別ルールは該当セクション（§5.5, §5.6）に従う。
 
 | 責任 | 層 |
 |---|---|
 | `container-type` の宣言 | Layout |
 | `container-name` の定義 | Layout（MAY） |
 | `@container` によるスタイル切替 | Component / Project |
-
-SHOULD: Layout 層で `container-type: inline-size` を宣言し、Component / Project 層が `@container` で参照する構成とする。
 
 プライベートカスタムプロパティ（`--_xxx`）の使用については §7 Custom Properties を参照。
 
@@ -497,7 +496,7 @@ Tokens（値）→ Theme（意味）→ Foundation 以降（使用）
 
 ### プライベートカスタムプロパティパターン
 
-MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライベートカスタムプロパティ（`--_xxx`）を定義してよい。`--_` プレフィックスは内部変数であることを命名で明示する。外部 API ではないことを示す。
+MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライベートカスタムプロパティ（`--_xxx`）を定義してよい。`--_` プレフィックスは内部変数であることを命名で明示する。外部 API ではないことを示す。プライベートカスタムプロパティは外部 API ではないが、上位層（Project 等）から値を設定することは許容される。これは §5.6 の CSS 変数経由上書きパターンの基盤となる。
 
 ```css
 /* Layout 層で定義 */
@@ -623,7 +622,7 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 |---|---|
 | **Portability Test** | 「そのパーツを別のサイトにそのまま持っていけるか？」— Component と Project の境界を判定する基準テスト |
 | **Layout Test** | 「このスタイルを変えると、中身の見た目（色・文字・装飾）が変わるか？」— Layout 層の責任範囲を判定する検証問い |
-| **Responsibility Test** | 「このスタイルは、パーツ自身の視覚的責任か？それとも使う側のデザイン要件か？」— Component と Project の境界を補助的に判定するテスト。Portability Test が優先する（§3 参照） |
+| **Responsibility Test** | 「このスタイルは、パーツ自身の視覚的責任か？それとも使う側のデザイン要件か？」— Component と Project の境界を補助的に判定するテスト。Portability Test が明確な判定を返す場合はそちらに従う（§3 参照） |
 | **ブランドトークン** | プロジェクトごとに変わるデザイン値（color, typography, structure）。Foundation 以降の層では Theme 経由で参照しなければならない |
 | **グローバルトークン** | プロジェクト非依存の普遍値（ease, z-index, font-weight）。Foundation 以降の層から直接参照してよい |
 | **3 層参照チェーン** | Tokens（値）→ Theme（意味）→ Foundation 以降（使用）。カスタムプロパティの参照パスを規定する |
