@@ -259,7 +259,7 @@ SHOULD: `light-dark()` 関数を使用する。
 
 **責任**: ブラウザ環境の初期化と基本スタイル
 
-- MUST: 要素型セレクタのみを使用しなければならない（クラスセレクタ・ID セレクタ禁止）。属性セレクタ（`[type="text"]` 等）および擬似クラス（`:hover` 等）・擬似要素（`::placeholder` 等）は要素型セレクタとの組み合わせで許容する
+- MUST: 要素型セレクタのみを使用しなければならない（クラスセレクタ・ID セレクタ禁止）。属性セレクタ、擬似クラス、擬似要素は、`:where()` 内で要素型セレクタと組み合わせる場合に限り許容する（詳細度ゼロの MUST を維持するため）
 - MUST: `:where()` で詳細度をゼロに保たなければならない
 - MUST: ブランドトークンについては Theme のセマンティック変数を参照しなければならない（グローバルトークンの直接参照は許容 — Tokens 層のトークン分類を参照）
 
@@ -330,6 +330,8 @@ MAY: `container-name` を併用し、名前付きコンテナを定義してよ�
 - MUST NOT: 特定のサイトでしか使えない見た目にしてはならない
 - MUST: ブランドトークンについては Theme のセマンティック変数のみを参照しなければならない（グローバルトークンの直接参照は許容 — Tokens 層のトークン分類を参照）
 - MUST NOT: 外部レイアウトに影響するプロパティ（ルート要素の `margin`, `position: fixed/sticky`, ルート要素の `overflow` 等）を Component のルート要素に含めてはならない — 配置は使う側の責任（Responsibility Test）である
+
+> *This note is informative.*
 
 **例外**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 MUST NOT の対象外である。これらは Component 自身の視覚的責任に該当する
 
@@ -405,6 +407,8 @@ Layout の振る舞いをページやセクションに合わせて変えたい�
 この 2 条件の考慮を **2 ガード原則** と呼ぶ。
 
 SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用する。条件を満たさない場合にブロック全体が不適用になり、フォールバック安全性が高い。
+
+上記の統合ガードパターン（SHOULD）に従えば、この MUST は自動的に満たされる。統合ガードを使用しない場合は、`prefers-reduced-motion: reduce` でアニメーション関連プロパティが初期値に解決されること、`scripting: none` で要素の可視性が維持されることを個別に検証する。
 
 > **Example:**
 
