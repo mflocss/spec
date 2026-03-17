@@ -25,20 +25,7 @@ mFLOCSS は以下の 4 原則に基づく。層数が変わってもこれらは
 1. **関心の分離** — 異なる問いに答えるスタイルは異なる層に分離する
 2. **@layer による構造的制御** — 詳細度の問題を命名規則ではなくブラウザの仕組みで解決する
 3. **判断基準の明示** — 各層に「何を書くか」だけでなく「なぜその層か」の基準がある
-4. **CSS の進化への追従** — 層構成は CSS の進化に応じて適応させる設計余地を持つ (→ 書籍 ch1, appendix-d)
-
-### 本仕様と書籍の関係
-
-本仕様は「何を守るか」を規定する。「なぜそうするか」の詳細な解説は書籍『そのFLOCSS、なぜそこに書いた？』を参照されたい。
-
-### 将来の展望
-
-CSS の進化に応じて、以下の変更を検討する。
-
-- **`@scope`**: 構造的スコープが普及した段階で、プレフィックス（`c-`, `p-`）の代替手段として仕様に組み込む可能性がある。現時点では `@scope` とプレフィックスの併用を推奨する
-- **Animation 層の統合**: Scroll-driven Animations 等の進化により、Animation 層のスタイルが各層に統合される可能性がある
-
-(→ 書籍 appendix-d)
+4. **CSS の進化への追従** — 層構成は CSS の進化に応じて適応させる設計余地を持つ（具体的な検討事項は README を参照）
 
 ---
 
@@ -98,8 +85,6 @@ Component 層と Project 層の境界を判定する基準テスト。
 - Yes → Component
 - No → Project
 
-(→ 書籍 ch3)
-
 ---
 
 ## 4. Layer Order Declaration
@@ -122,8 +107,6 @@ MUST: `@property` を使用する場合は `@layer` の外に配置しなけれ�
 ### !important の優先度逆転
 
 `@layer` 内で `!important` を使用した場合、通常とは逆順で優先される（先に宣言された層が勝つ）。MUST NOT: Utility 層以外の全層で `!important` を使用してはならない。この制約により優先度逆転の複雑性を回避する。
-
-(→ 書籍 ch2)
 
 ### 外部 CSS の層配置
 
@@ -176,16 +159,6 @@ Tokens はブランドトークンとグローバルトークンに分類され�
 
 SHOULD: カテゴリ別にファイルを分割する（color / typography / structure / ease / z）。
 
-(→ 書籍 ch2)
-
-#### カラートークンの階層化参考
-
-カラートークン設計時は以下の4層構造を参考にする:
-1. **キーカラー** — ブランドアイデンティティ（プライマリー、セカンダリー等）
-2. **共通カラー** — グレースケール（白〜黒）
-3. **機能カラー** — リンク、UI ステート表現
-4. **セマンティックカラー** — サクセス=緑、エラー=赤、警告=黄
-
 ### 5.2 Theme
 
 **責任**: Tokens をセマンティック変数にマッピング
@@ -207,8 +180,6 @@ SHOULD: `light-dark()` 関数を使用する。
   }
 }
 ```
-
-(→ 書籍 ch2)
 
 ### 5.3 Foundation
 
@@ -232,8 +203,6 @@ SHOULD: reset / base / form の 3 ファイルに分割する。form を独立�
 }
 ```
 
-(→ 書籍 ch4)
-
 ### 5.4 Layout
 
 **責任**: 位置と空間の配置
@@ -249,23 +218,16 @@ SHOULD: `container-type: inline-size` を宣言し、Container Queries の基盤
 **検証問い（Layout Test）**: 「このスタイルを変えると、中身の見た目（色・文字・装飾）が変わるか？」 — Yes なら Layout ではない。
 
 ```css
-/* リファレンス実装の流体計算ヘルパー（--px, --vp-range, --vp-offset）を使用した例 */
 @layer layout {
   .l-section {
-    --_min: 60;
-    --_max: 100;
+    --_padding-min: 3.75rem;
+    --_padding-max: 6.25rem;
 
     container-type: inline-size;
-    padding-block: clamp(
-      calc(var(--_min) * var(--px)),
-      calc((var(--_max) - var(--_min)) / var(--vp-range) * var(--vp-offset) + var(--_min) * var(--px)),
-      calc(var(--_max) * var(--px))
-    );
+    padding-block: clamp(var(--_padding-min), 8vi, var(--_padding-max));
   }
 }
 ```
-
-(→ 書籍 ch3)
 
 ### 5.5 Component
 
@@ -282,9 +244,7 @@ SHOULD: 1 コンポーネント 1 ファイルとする。
 
 MAY: Component の中に他の Component を内包してよい（例: `.c-card` の中に `.c-button` を配置する）。内包しても Portability Test に合格するなら Component のままである。
 
-**判断に迷った場合**: Component にする。後から Project で上書き可能だが、逆（Project → Component への汎化）は困難である。
-
-(→ 書籍 ch3)
+SHOULD: Component と Project の判断に迷った場合は Component とする。Project で上書き可能だが、逆（Project → Component への汎化）は困難であるため。Portability Test で明確に No と判断できる場合はこの限りではない。
 
 ### 5.6 Project
 
@@ -314,8 +274,8 @@ Layout の振る舞いをページやセクションに合わせて変えたい�
 @layer project {
   /* Project の Block として Layout の配置先適応を担う */
   .p-about {
-    --_min: 40;
-    --_max: 60;
+    --_padding-min: 2.5rem;
+    --_padding-max: 3.75rem;
   }
 
   /* Project 固有のパーツ */
@@ -326,7 +286,7 @@ Layout の振る舞いをページやセクションに合わせて変えたい�
 
   /* Project の Element としてレイアウトの配置先適応を担う */
   .p-about__inner {
-    max-inline-size: calc(800 * var(--px));
+    max-inline-size: 50rem;
   }
 
   /* テーブルのスクロールラッパー（サイト固有の制約対応） */
@@ -335,8 +295,6 @@ Layout の振る舞いをページやセクションに合わせて変えたい�
   }
 }
 ```
-
-(→ 書籍 ch3)
 
 ### 5.7 Animation
 
@@ -348,9 +306,7 @@ Layout の振る舞いをページやセクションに合わせて変えたい�
 
 この 2 条件の考慮を **2 ガード原則** と呼ぶ。
 
-推奨実装パターンは `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードである。この方式では条件を満たさない場合にブロック全体が不適用になるため、`opacity: 0` 等の初期状態が設定されず、要素は通常どおり表示される。分離方式（`prefers-reduced-motion` ガード + `scripting: none` フォールバック）と比べ、フォールバック安全性が高く（`scripting` 非対応ブラウザでもメディアクエリ全体が不適用になる）、コード量も削減できる。
-
-**CSS と JS の疎結合**: CSS は「クラスがあればこう見せる」を定義し、JS は「条件を満たしたらクラスを付与する」のみを担う。
+SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用する。条件を満たさない場合にブロック全体が不適用になり、フォールバック安全性が高い。
 
 ```css
 @layer animation {
@@ -365,8 +321,6 @@ Layout の振る舞いをページやセクションに合わせて変えたい�
   }
 }
 ```
-
-(→ 書籍 ch4, ch5)
 
 ### 5.8 Utility
 
@@ -399,8 +353,6 @@ Layout の振る舞いをページやセクションに合わせて変えたい�
   }
 }
 ```
-
-(→ 書籍 ch5)
 
 ---
 
@@ -480,14 +432,10 @@ MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライ�
 /* Layout 層で定義 */
 @layer layout {
   .l-section {
-    --_min: 60;
-    --_max: 100;
+    --_padding-min: 3.75rem;
+    --_padding-max: 6.25rem;
 
-    padding-block: clamp(
-      calc(var(--_min) * var(--px)),
-      calc((var(--_max) - var(--_min)) / var(--vp-range) * var(--vp-offset) + var(--_min) * var(--px)),
-      calc(var(--_max) * var(--px))
-    );
+    padding-block: clamp(var(--_padding-min), 8vi, var(--_padding-max));
   }
 }
 ```
@@ -498,13 +446,13 @@ Layout の振る舞いをページやセクションに合わせて変えたい�
 @layer project {
   /* Project の Block として l-section のプライベートカスタムプロパティを上書き */
   .p-about {
-    --_min: 40;
-    --_max: 60;
+    --_padding-min: 2.5rem;
+    --_padding-max: 3.75rem;
   }
 
   /* Project の Element として l-inner の振る舞いを配置先適応 */
   .p-about__inner {
-    max-inline-size: calc(800 * var(--px));
+    max-inline-size: 50rem;
   }
 }
 ```
@@ -514,8 +462,6 @@ Layout の振る舞いをページやセクションに合わせて変えたい�
 MUST NOT: HTML マークアップに静的なインラインスタイルを記述してはならない。インラインスタイルはどの `@layer` にも属さず、mFLOCSS の「どこに何を書くか」を追跡可能にする設計思想と矛盾する。
 
 MAY: JS からプライベートカスタムプロパティの値を動的に注入してよい。CSS が「何をするか」を定義し、JS が「いつ・どの値で」を決める疎結合パターンとして許容する。
-
-(→ 書籍 ch4)
 
 ---
 
@@ -527,35 +473,16 @@ MUST: ディレクトリ名は層名と一致させなければならない。
 
 ```
 css/
-├── layer-order.css     # @layer 先制宣言のみ
-├── style.css           # エントリポイント
+├── layer-order.css
+├── style.css
 ├── tokens/
-│   ├── color.css
-│   ├── typography.css
-│   ├── structure.css
-│   ├── ease.css
-│   └── z.css
 ├── theme/
-│   ├── color.css
-│   └── typography.css
 ├── foundation/
-│   ├── reset.css
-│   ├── base.css
-│   └── form.css
 ├── layout/
-│   ├── l-section.css
-│   └── l-inner.css
 ├── component/
-│   ├── c-button.css
-│   ├── c-card.css
-│   └── c-table.css
 ├── project/
-│   ├── p-hero.css
-│   └── p-philosophy.css
 ├── animation/
-│   └── a-fade-in.css
 └── utility/
-    └── u-hidden.css
 ```
 
 ### layer-order.css
@@ -575,51 +502,6 @@ SHOULD: 各ファイルがどの層に属するかを明確にする。方法は
 | ビルドツール自動解決 | ビルドツールが glob import で自動的にファイルを収集する |
 
 いずれの方式でも、ディレクトリ名・ファイルプレフィックス・クラスプレフィックスによって層の帰属は識別できる。
-
-> **注記**: `@import layer()` による層指定はネストされた `@import` に伝播しない。index.css 方式を使う場合は、index.css 内で `@layer { }` ブロックを使用するか、個別の `@import` にも `layer()` を付与する必要がある。
-
-```css
-/* 例示（プロジェクトの全ファイルを列挙する） */
-@import "./layer-order.css";
-
-/* Tokens */
-@import "./tokens/color.css" layer(tokens);
-@import "./tokens/typography.css" layer(tokens);
-
-/* Theme */
-@import "./theme/color.css" layer(theme);
-
-/* Foundation */
-@import "./foundation/reset.css" layer(foundation);
-@import "./foundation/base.css" layer(foundation);
-
-/* Layout */
-@import "./layout/l-section.css" layer(layout);
-
-/* Component */
-@import "./component/c-button.css" layer(component);
-
-/* Project */
-@import "./project/p-hero.css" layer(project);
-
-/* Animation */
-@import "./animation/a-fade-in.css" layer(animation);
-
-/* Utility */
-@import "./utility/u-hidden.css" layer(utility);
-```
-
-### コンポーネント追加手順
-
-1. 該当層のディレクトリにファイルを作成する（例: `component/c-card.css`）
-2. `style.css` に `@import` を追加する
-3. `layer-order.css` の変更は不要
-
-### ファイル削除手順
-
-1. CSS ファイルを削除する
-2. `style.css` から `@import` を削除する
-3. HTML から該当クラスを削除する
 
 ---
 
@@ -669,8 +551,6 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 | `scripting` | JS 有効/無効の判定（2 ガード原則） |
 | `prefers-reduced-motion` | モーション軽減の判定（2 ガード原則） |
 
-(→ 書籍 appendix-c, appendix-d)
-
 ---
 
 ## 10. Appendix A: Layer Judgment Flowchart
@@ -706,8 +586,6 @@ Step 6: 局所的な単一目的の微調整か？
 **B. Layout への過干渉**: `l-section` に `text-align: center` を追加する誤り。テキスト整列は視覚的プロパティであり、Layout の責任（配置と空間）を超えている。正しくは Project。
 
 **C. ラッパーの帰属誤り**: `overflow-x: auto` を Component のラッパーとして定義する誤り。コンテナ幅の制約対応はサイト固有のデザイン要件に依存する。正しくは `p-xxx__table-wrap` として Project の Element に持たせる。
-
-(→ 書籍 ch3)
 
 ---
 
