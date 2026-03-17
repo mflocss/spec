@@ -271,13 +271,13 @@ SHOULD: Foundation 層はサブレイヤー `foundation.reset`（外部リセッ
 
 ```css
 /* foundation/index.css */
-@layer foundation.reset, foundation.base;
+@layer reset, base;
 
 /* foundation/reset.css — 外部リセット CSS */
-@import url("modern-normalize.css") layer(foundation.reset);
+@import url("modern-normalize.css") layer(reset);
 
 /* foundation/base.css — 自作ベーススタイル */
-@layer foundation.base {
+@layer base {
   :where(body) {
     line-height: 1.5;
   }
