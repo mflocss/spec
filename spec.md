@@ -736,7 +736,10 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 
 | v1.0 | v1.1 | 内容 |
 |---|---|---|
-| §1 Introduction | §1.1 Introduction | 対象範囲含む |
+| §1 Introduction | §1 Overview | 親セクション名を変更。§1.1/§1.2/§1.3 にサブセクション化 |
+| — | §1.1 Introduction [Informative] | 旧 §1 の導入部分 |
+| — | §1.2 不変原則 [Normative] | 旧 §1 の不変原則部分 |
+| — | §1.3 設計制約 [Normative] | v1.1 で新設 |
 | §1 不変原則（小見出し） | §1.2 不変原則 | サブセクションに昇格 |
 | — | §1.3 設計制約 | 新設 |
 | §2 Conformance | §2 Conformance | 変更なし |
