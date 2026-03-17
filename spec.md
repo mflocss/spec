@@ -6,7 +6,7 @@
 
 ---
 
-## 1. Introduction
+## 1. Overview
 
 ### 1.1 Introduction
 
@@ -710,7 +710,8 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 - §4 外部 CSS の層配置セクションの追加
 - §4 CSS Cascading and Inheritance Level 5 への明示的参照の追加
 - §5.1 トークン分類（ブランドトークン / グローバルトークン）の導入
-- §5.4 Container Queries の層責任テーブルの追加（container-name ガイダンス含む）
+- §5.4 Container Queries の層責任テーブルを §9 から移動・統合（container-name ガイダンスを追加）
+- §5.4 に container-name の MAY ルールを新設
 - §5.5 「迷ったら Component」の SHOULD 化と条件付き限定
 - §5.6 上書きパターンの拡充（CSS 変数経由パターンの追加）
 - §5.7 統合ガードの SHOULD 化と説明の簡潔化
@@ -721,6 +722,7 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 - Example マーキングの付与
 - References セクションの新設（Appendix B）
 - Glossary に各用語の初出セクション番号を付記
+- Glossary: Responsibility Test の定義文を更新（Portability Test との優先関係を明記）
 
 #### 削除された内容
 
