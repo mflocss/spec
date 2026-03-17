@@ -1,24 +1,30 @@
 # mFLOCSS 仕様 v1.1
 
 > **ステータス**: ドラフト
-> **最終更新**: 2026-03-11
+> **最終更新**: 2026-03-17
 > **著者**: shunei
 
 ---
 
-## 1. Introduction
+## 1. Overview
+
+### 1.1 Introduction
+
+*This section is informative.*
 
 mFLOCSS は、CSS の設計判断を体系化する思考フレームワークである。
 
 「どの層に、なぜ書くか」という問いに対し、明確な判断基準を提供する。`@layer` ベースの 8 層フラットアーキテクチャを採用する。
 
-### 対象範囲
+#### 対象範囲
 
 - フレームワーク非依存（素の CSS を対象とする）
 - プリプロセッサを前提としない（Sass 等との併用は妨げない）
 - JavaScript フレームワーク固有の CSS-in-JS は対象外
 
-### 不変原則
+### 1.2 不変原則
+
+*This section is normative.*
 
 mFLOCSS は以下の 4 原則に基づく。層数が変わってもこれらは変わらない。
 
@@ -27,7 +33,9 @@ mFLOCSS は以下の 4 原則に基づく。層数が変わってもこれらは
 3. **判断基準の明示** — 各層に「何を書くか」だけでなく「なぜその層か」の基準がある
 4. **CSS の進化への追従** — 層構成は CSS の進化に応じて適応させる設計余地を持つ（具体的な検討事項は README を参照）
 
-### 設計制約
+### 1.3 設計制約
+
+*This section is normative.*
 
 不変原則を支える構造的制約。層数が変わっても維持される。
 
@@ -37,9 +45,11 @@ mFLOCSS は以下の 4 原則に基づく。層数が変わってもこれらは
 
 ## 2. Conformance
 
+*This section is normative.*
+
 ### 要求レベル
 
-本仕様のキーワード MUST / MUST NOT / SHOULD / SHOULD NOT / MAY は RFC 2119（技術仕様における要求レベルの定義標準）に基づく。
+本仕様のキーワード MUST / MUST NOT / SHOULD / SHOULD NOT / MAY は RFC 2119 [RFC2119] に基づく。
 
 | キーワード | 意味 |
 |---|---|
@@ -61,6 +71,8 @@ mFLOCSS v1.1 に準拠するとは、本仕様の全 MUST / MUST NOT ルール�
 ---
 
 ## 3. Layer Architecture
+
+*This section is normative.*
 
 mFLOCSS は 8 つの層で構成される。
 
@@ -143,9 +155,13 @@ Step 6: 局所的な単一目的の微調整か？
 
 ## 4. Layer Order Declaration
 
+*This section is normative.*
+
 ### 先制宣言
 
-MUST: `@layer` の優先順位宣言をエントリポイント CSS の先頭で行わなければならない。
+MUST: CSS Cascading and Inheritance Level 5 [CSS-CASCADE-5] に定義される `@layer` の優先順位宣言をエントリポイント CSS の先頭で行わなければならない。
+
+> **Example:**
 
 ```css
 /* layer-order.css */
@@ -179,6 +195,8 @@ MUST: 外部 CSS は `@import url() layer()` または npm + バンドラーを�
 
 ## 5. Layer Definitions
 
+*This section is normative.*
+
 ### 5.1 Tokens
 
 **責任**: プリミティブなデザイン値の定義
@@ -199,6 +217,8 @@ Tokens はブランドトークンとグローバルトークンに分類され�
 判断基準: 「ブランドやプロジェクトが変わったとき、この値を変更するか？」— Yes ならブランドトークン、No ならグローバルトークン。
 
 **命名規則**: `--{カテゴリ}-{名前}`
+
+> **Example:**
 
 ```css
 @layer tokens {
@@ -224,6 +244,8 @@ SHOULD: `light-dark()` 関数を使用する。
 
 **命名規則**: `--color-{役割}`, `--font-{役割}`
 
+> **Example:**
+
 ```css
 @layer theme {
   :root {
@@ -246,6 +268,8 @@ SHOULD: `light-dark()` 関数を使用する。
 SHOULD: reset / base / form の 3 ファイルに分割する。form を独立させる理由は、フォーム要素（input, select, textarea, button）はブラウザ間のデフォルトスタイル差異が最も大きく、正規化のコード量が多くなるためである。
 
 > **注記**: リセット CSS はアタッチメント方式とする。リファレンス実装が参考を提供するが、各プロジェクトに適したリセットを選定・適用すること。リセット CSS の内部実装は本仕様の準拠対象外とする。
+
+> **Example:**
 
 ```css
 @layer foundation {
@@ -282,6 +306,8 @@ MAY: `container-name` を併用し、名前付きコンテナを定義してよ�
 プライベートカスタムプロパティ（`--_xxx`）の使用については §7 Custom Properties を参照。
 
 **検証問い（Layout Test）**: 「このスタイルを変えると、中身の見た目（色・文字・装飾）が変わるか？」 — Yes なら Layout ではない。
+
+> **Example:**
 
 ```css
 @layer layout {
@@ -340,6 +366,8 @@ Modifier は Component に内包される再利用可能なバリエーション
 
 Layout の振る舞いをページやセクションに合わせて変えたい場合は、Project の Block または Element として定義する（例: `class="l-section p-about"`, `class="l-inner p-about__inner"`）。
 
+> **Example:**
+
 ```css
 @layer project {
   /* Project の Block として Layout の配置先適応を担う */
@@ -378,6 +406,8 @@ Layout の振る舞いをページやセクションに合わせて変えたい�
 
 SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用する。条件を満たさない場合にブロック全体が不適用になり、フォールバック安全性が高い。
 
+> **Example:**
+
 ```css
 @layer animation {
   @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
@@ -408,6 +438,8 @@ SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)
 
 **ファイル構成**: SHOULD: セマンティックな意味でグループ化する。1 クラス 1 ファイルではなく、関連するユーティリティをまとめる（例: `u-hidden.css` に `u-visually-hidden` と `u-hidden-sp` をまとめる）。Utility は最小限に留まるため、ファイル数も最小で済む。
 
+> **Example:**
+
 ```css
 @layer utility {
   .u-visually-hidden {
@@ -427,6 +459,8 @@ SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)
 ---
 
 ## 6. Naming Conventions
+
+*This section is normative.*
 
 ### クラス名
 
@@ -480,6 +514,8 @@ MUST: ファイル名は主要クラス名と一致させなければならな�
 
 ## 7. Custom Properties
 
+*This section is normative.*
+
 ### 3 層参照チェーン
 
 カスタムプロパティは以下の 3 層を経由して使用する。
@@ -498,6 +534,8 @@ Tokens（値）→ Theme（意味）→ Foundation 以降（使用）
 
 MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライベートカスタムプロパティ（`--_xxx`）を定義してよい。`--_` プレフィックスは内部変数であることを命名で明示する。外部 API ではないことを示す。プライベートカスタムプロパティは外部 API ではないが、上位層（Project 等）から値を設定することは許容される。これは §5.6 の CSS 変数経由上書きパターンの基盤となる。
 
+> **Example:**
+
 ```css
 /* Layout 層で定義 */
 @layer layout {
@@ -511,6 +549,8 @@ MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライ�
 ```
 
 Layout の振る舞いをページやセクションに合わせて変えたい場合は、Project の Block または Element として定義する。
+
+> **Example:**
 
 ```css
 @layer project {
@@ -536,6 +576,8 @@ MAY: JS からプライベートカスタムプロパティの値を動的に注
 ---
 
 ## 8. File Architecture
+
+*This section is normative.*
 
 ### ディレクトリ構造
 
@@ -577,6 +619,8 @@ SHOULD: 各ファイルがどの層に属するかを明確にする。方法は
 
 ## 9. Responsive Strategy
 
+*This section is normative.*
+
 ### アプローチの選択
 
 SP ファースト / PC ファーストはプロジェクトごとに判断する。本仕様はどちらも許容する。
@@ -597,6 +641,8 @@ Container Queries の層責任（`container-type` / `container-name` / `@contain
 
 SHOULD: Container Queries 内のサイズ指定には `cqi`（container query inline-size）を使用する。`vw` はビューポート基準であり、コンテナ基準の設計と矛盾する。
 
+> **Example:**
+
 ```css
 @container (inline-size >= 40em) {
   .c-card {
@@ -616,16 +662,95 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 
 ---
 
-## 10. Glossary
+## Appendix A: Glossary
+
+*This section is normative.*
 
 | 用語 | 定義 |
 |---|---|
-| **Portability Test** | 「そのパーツを別のサイトにそのまま持っていけるか？」— Component と Project の境界を判定する基準テスト |
-| **Layout Test** | 「このスタイルを変えると、中身の見た目（色・文字・装飾）が変わるか？」— Layout 層の責任範囲を判定する検証問い |
-| **Responsibility Test** | 「このスタイルは、パーツ自身の視覚的責任か？それとも使う側のデザイン要件か？」— Component と Project の境界を補助的に判定するテスト。Portability Test が明確な判定を返す場合はそちらに従う（§3 参照） |
-| **ブランドトークン** | プロジェクトごとに変わるデザイン値（color, typography, structure）。Foundation 以降の層では Theme 経由で参照しなければならない |
-| **グローバルトークン** | プロジェクト非依存の普遍値（ease, z-index, font-weight）。Foundation 以降の層から直接参照してよい |
-| **3 層参照チェーン** | Tokens（値）→ Theme（意味）→ Foundation 以降（使用）。カスタムプロパティの参照パスを規定する |
-| **プライベートカスタムプロパティ** | `--_` プレフィックスを持つ変数。内部 API であり、外部からの直接依存を想定しない |
-| **先制宣言** | `layer-order.css` における `@layer` の優先順位宣言。全スタイル定義に先行して記述される |
-| **2 ガード原則** | Animation 層で `prefers-reduced-motion` と `scripting` の 2 条件を考慮すること。推奨は `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガード |
+| **Portability Test** | 「そのパーツを別のサイトにそのまま持っていけるか？」— Component と Project の境界を判定する基準テスト（初出: §3） |
+| **Layout Test** | 「このスタイルを変えると、中身の見た目（色・文字・装飾）が変わるか？」— Layout 層の責任範囲を判定する検証問い（初出: §5.4） |
+| **Responsibility Test** | 「このスタイルは、パーツ自身の視覚的責任か？それとも使う側のデザイン要件か？」— Component と Project の境界を補助的に判定するテスト。Portability Test が明確な判定を返す場合はそちらに従う（§3 参照）（初出: §3） |
+| **ブランドトークン** | プロジェクトごとに変わるデザイン値（color, typography, structure）。Foundation 以降の層では Theme 経由で参照しなければならない（初出: §5.1） |
+| **グローバルトークン** | プロジェクト非依存の普遍値（ease, z-index, font-weight）。Foundation 以降の層から直接参照してよい（初出: §5.1） |
+| **3 層参照チェーン** | Tokens（値）→ Theme（意味）→ Foundation 以降（使用）。カスタムプロパティの参照パスを規定する（初出: §7） |
+| **プライベートカスタムプロパティ** | `--_` プレフィックスを持つ変数。内部 API であり、外部からの直接依存を想定しない（初出: §5.4） |
+| **先制宣言** | `layer-order.css` における `@layer` の優先順位宣言。全スタイル定義に先行して記述される（初出: §4） |
+| **2 ガード原則** | Animation 層で `prefers-reduced-motion` と `scripting` の 2 条件を考慮すること。推奨は `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガード（初出: §5.7） |
+
+---
+
+## Appendix B: References
+
+### Normative References
+
+- **[RFC2119]** Bradner, S., "Key words for use in RFCs to Indicate Requirement Levels", BCP 14, RFC 2119, March 1997.
+- **[CSS-CASCADE-5]** Atkins Jr., T.; Rivoal, F.; Lilley, C., "CSS Cascading and Inheritance Level 5", W3C Candidate Recommendation.
+
+### Informative References
+
+- **[FLOCSS]** Hiloki, "FLOCSS — Foundation Layout Object CSS".
+- **[BOOK]** shunei,『そのFLOCSS、なぜそこに書いた？』.
+
+---
+
+## Appendix C: Changes
+
+*This section is informative.*
+
+### v1.0 → v1.1 の変更点
+
+#### 主要な変更
+
+- §1 のサブセクション化: Introduction [Informative], 不変原則 [Normative], 設計制約 [Normative] に分離
+- §1.3 設計制約の新設: 一方向依存ルールを不変原則を支える構造的制約として規定
+- §3 Responsibility Test の追加: Portability Test を補助する判定テスト
+- §3 Layer Judgment Flowchart の本文統合: 旧 Appendix A を §3 に移動し、誤りパターンを追加
+- §3 依存方向: CSS の参照方向に限定し、HTML の入れ子構造はルール対象外と明確化
+- §4 外部 CSS の層配置セクションの追加
+- §4 CSS Cascading and Inheritance Level 5 への明示的参照の追加
+- §5.1 トークン分類（ブランドトークン / グローバルトークン）の導入
+- §5.4 Container Queries の層責任テーブルを §9 から移動・統合（container-name ガイダンスを追加）
+- §5.4 に container-name の MAY ルールを新設
+- §5.5 「迷ったら Component」の SHOULD 化と条件付き限定
+- §5.6 上書きパターンの拡充（CSS 変数経由パターンの追加）
+- §5.7 統合ガードの SHOULD 化と説明の簡潔化
+- §5.8 u-visually-hidden の論理プロパティ対応
+- §7 プライベートカスタムプロパティの上位層設定許容の明確化
+- §8 ディレクトリ構造の簡素化（ファイル例の削除）
+- Normative / Informative ラベルの付与（W3C パターン）
+- Example マーキングの付与
+- References セクションの新設（Appendix B）
+- Glossary に各用語の初出セクション番号を付記
+- Glossary: Responsibility Test の定義文を更新（Portability Test との優先関係を明記）
+
+#### 削除された内容
+
+- 書籍参照（`→ 書籍 chX`）を本文から削除（Appendix B の Informative References に集約）
+- カラートークンの階層化参考（§5.1）
+- style.css のインポート例と注記（§8）
+- コンポーネント追加/削除手順（§8）
+- 将来の展望セクション（§1）
+
+#### 章番号対応表
+
+| v1.0 | v1.1 | 内容 |
+|---|---|---|
+| §1 Introduction | §1 Overview | 親セクション名を変更。§1.1/§1.2/§1.3 にサブセクション化 |
+| — | §1.1 Introduction [Informative] | 旧 §1 の導入部分 |
+| — | §1.2 不変原則 [Normative] | 旧 §1 の不変原則部分 |
+| — | §1.3 設計制約 [Normative] | v1.1 で新設 |
+| §1 不変原則（小見出し） | §1.2 不変原則 | サブセクションに昇格 |
+| — | §1.3 設計制約 | 新設 |
+| §2 Conformance | §2 Conformance | 変更なし |
+| §3 Layer Architecture | §3 Layer Architecture | Responsibility Test, Flowchart, 誤りパターン追加 |
+| §4 Layer Order Declaration | §4 Layer Order Declaration | 外部 CSS の層配置追加 |
+| §5 Layer Definitions | §5 Layer Definitions | 各層の強化 |
+| §6 Naming Conventions | §6 Naming Conventions | 変更なし |
+| §7 Custom Properties | §7 Custom Properties | 上位層設定許容の明確化 |
+| §8 File Architecture | §8 File Architecture | 簡素化 |
+| §9 Responsive Strategy | §9 Responsive Strategy | Container Queries テーブルを §5.4 に統合 |
+| §10 Appendix A: Flowchart | — | §3 に統合、削除 |
+| §11 Appendix B: Glossary | Appendix A: Glossary | 繰り上げ、初出番号付記 |
+| — | Appendix B: References | 新設 |
+| — | Appendix C: Changes | 新設 |
