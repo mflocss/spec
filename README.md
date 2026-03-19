@@ -1,6 +1,8 @@
 # mFLOCSS Specification
 
-mFLOCSS（Modified FLOCSS）の公式仕様書です。
+mFLOCSS（Modified FLOCSS）は、CSS の設計判断を体系化する思考フレームワークです。[FLOCSS](https://github.com/hiloki/flocss) の層設計を継承しつつ、`@layer` による構造的制御と明文化された判断基準を加えた 8 層フラットアーキテクチャを提供します。
+
+このリポジトリは mFLOCSS の公式仕様書です。
 
 ## 仕様書
 
@@ -23,6 +25,7 @@ mFLOCSS（Modified FLOCSS）の公式仕様書です。
 
 | リソース | 説明 |
 |---|---|
+| [FLOCSS](https://github.com/hiloki/flocss) | mFLOCSS の原典となった CSS 設計手法 |
 | [書籍『そのFLOCSS、なぜそこに書いた？』](https://zenn.dev/shunei/books/mflocss-design) | 仕様の設計意図・判断プロセスの解説書 |
 | [mflocss-starter](https://github.com/mflocss/starter) | リファレンス実装 |
 | [mflocss-wordpress-starter](https://github.com/mflocss/wordpress-starter) | WordPress 向けスターター |
@@ -43,4 +46,4 @@ CSS の進化に応じて、以下の変更を検討する。
 
 ## ライセンス
 
-CC BY-SA 4.0
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) — 著作者表示と同一ライセンスでの配布を条件に、商用利用・改変が可能です。

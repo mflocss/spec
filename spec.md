@@ -723,8 +723,8 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 
 ### Informative References
 
-- **[FLOCSS]** Hiloki, "FLOCSS — Foundation Layout Object CSS".
-- **[BOOK]** shunei,『そのFLOCSS、なぜそこに書いた？』.
+- **[FLOCSS]** Hiloki, "FLOCSS — Foundation Layout Object CSS". https://github.com/hiloki/flocss
+- **[BOOK]** shunei,『そのFLOCSS、なぜそこに書いた？』. https://zenn.dev/shunei/books/mflocss-design
 
 ---
 
