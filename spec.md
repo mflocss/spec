@@ -719,7 +719,7 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 
 - **[RFC2119]** Bradner, S., "Key words for use in RFCs to Indicate Requirement Levels", BCP 14, RFC 2119, March 1997.
 - **[CSS-CASCADE-5]** Atkins Jr., T.; Rivoal, F.; Lilley, C., "CSS Cascading and Inheritance Level 5", W3C Candidate Recommendation.
-- **[CSS-PROPERTIES-VALUES-1]** Atkins Jr., T.; Bynens, M.; Rivoal, F., "CSS Properties and Values API Level 1", W3C Working Draft.
+- **[CSS-PROPERTIES-VALUES-1]** Atkins-Bittner, T.; Stearns, A.; Whitworth, G., "CSS Properties and Values API Level 1", W3C Working Draft.
 
 ### Informative References
 
