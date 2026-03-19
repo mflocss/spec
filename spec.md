@@ -136,6 +136,10 @@ Step 4: 別のサイトにそのまま持っていけるか？（Portability Tes
   └─ No → Project
   ※ Portability Test で判断が曖昧な場合は、Responsibility Test（§3）を補助的に使用する。
 
+※ Step 5-6 は Step 1-4 の判定結果とは独立して評価する。
+  1つのスタイルが Step 4 で Component と判定され、かつ Step 5 で
+  Animation にも該当する場合、動きの部分を Animation 層に分離する。
+
 Step 5: prefers-reduced-motion で無効化すべき動きか？
   └─ Yes → Animation
 
@@ -170,7 +174,7 @@ MUST: CSS Cascading and Inheritance Level 5 [CSS-CASCADE-5] に定義される `
 
 ### @layer と @property
 
-MUST: `@property` を使用する場合は `@layer` の外に配置しなければならない。CSS 仕様上、`@layer` 内の `@property` は無視される。`@property` 自体の使用は任意である。
+MUST: `@property` を使用する場合は `@layer` の外に配置しなければならない。現行の CSS 仕様（CSS Properties and Values API Level 1）において、`@layer` 内の `@property` は無視される。`@property` 自体の使用は任意である。
 
 ### !important の優先度逆転
 
@@ -259,7 +263,7 @@ SHOULD: `light-dark()` 関数を使用する。
 
 **責任**: ブラウザ環境の初期化と基本スタイル
 
-- MUST: 要素型セレクタのみを使用しなければならない（クラスセレクタ・ID セレクタ禁止）。属性セレクタ、擬似クラス、擬似要素は、`:where()` 内で要素型セレクタと組み合わせて使用することを推奨する
+- MUST: 要素型セレクタのみを使用しなければならない（クラスセレクタ・ID セレクタ禁止）。SHOULD: 属性セレクタ、擬似クラス、擬似要素は、`:where()` 内で要素型セレクタと組み合わせて使用すべきである
 - SHOULD: `:where()` で詳細度をゼロに保つべきである。アタッチメント方式で取り込む外部リセット CSS は `:where()` を使用していない場合がある。`@layer` による層順序制御が詳細度の予測可能性を構造的に担保するため、`:where()` は推奨とする
 - MUST: ブランドトークンについては Theme のセマンティック変数を参照しなければならない（グローバルトークンの直接参照は許容 — Tokens 層のトークン分類を参照）
 
@@ -505,6 +509,8 @@ SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)
 
 - **Modifier（`.-xxx`）**: 静的なバリエーション。HTML に記述し、原則として変化しない
 - **State（`.is-xxx`, `.has-xxx`）**: 動的な状態。JS やユーザー操作により変化する
+
+State のスタイルは、対象の Block が属する層に記述する（例: `.c-button.is-active` は Component 層、`.a-fade-in.is-active` は Animation 層）。
 
 ### Modifier に `-` を採用する理由
 
