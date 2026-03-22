@@ -28,7 +28,6 @@ mFLOCSS（Modified FLOCSS）は、CSS の設計判断を体系化する思考フ
 | [FLOCSS](https://github.com/hiloki/flocss) | mFLOCSS の原典となった CSS 設計手法 |
 | [書籍『そのFLOCSS、なぜそこに書いた？』](https://zenn.dev/shunei/books/mflocss-design) | 仕様の設計意図・判断プロセスの解説書 |
 | [mflocss-starter](https://github.com/mflocss/starter) | リファレンス実装 |
-| [mflocss-wordpress-starter](https://github.com/mflocss/wordpress-starter) | WordPress 向けスターター |
 | [mflocss.dev](https://mflocss.dev) | 公式サイト |
 
 ## 将来の展望
