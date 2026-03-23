@@ -1,7 +1,7 @@
 # mFLOCSS 仕様 v1.1
 
 > **ステータス**: ドラフト
-> **最終更新**: 2026-03-17
+> **最終更新**: 2026-03-23
 > **著者**: shunei
 
 ---
@@ -15,6 +15,8 @@
 mFLOCSS は、CSS の設計判断を体系化する思考フレームワークである。
 
 「どの層に、なぜ書くか」という問いに対し、明確な判断基準を提供する。`@layer` ベースの 8 層フラットアーキテクチャを採用する。
+
+mFLOCSS はルールブックではなく思考フレームワークである。MUST は思想の核（`@layer` による層順序の固定・層の分離・判断基準の存在）に限定し、実践上の推奨は SHOULD で表現する。
 
 #### 対象範囲
 
@@ -39,7 +41,7 @@ mFLOCSS は以下の 4 原則に基づく。層数が変わってもこれらは
 
 不変原則を支える構造的制約。層数が変わっても維持される。
 
-1. **一方向依存** — 上位層（番号が大きい層）は下位層を参照してよいが、逆方向の参照は禁止する。詳細ルールは §3 を参照
+1. **一方向依存** — 上位層（番号が大きい層）は下位層を参照してよいが、逆方向の参照は禁止する（MUST NOT、§3 参照）。詳細ルールは §3 を参照
 
 ---
 
@@ -241,6 +243,7 @@ SHOULD: カテゴリ別にファイルを分割する（color / typography / str
 
 - MUST: Tokens のカスタムプロパティを参照しなければならない（ハードコード値の直接指定は禁止）
 - MUST: ダークモード / テーマ切替はこの層のみで完結させなければならない
+- SHOULD: `:root` セレクタを基本とすべきである。MAY: ダークモード切替で `data` 属性セレクタ（例: `[data-theme='dark']`）を使用してよい。`light-dark()` 関数を使用する場合（SHOULD）は `:root` のみで完結する
 
 SHOULD: `light-dark()` 関数を使用する。
 
@@ -372,6 +375,7 @@ SHOULD: Component と Project の判断に迷った場合は Component とする
 
 **プレフィックス**: `p-`
 
+- MUST NOT: Portability Test（§3）に合格するスタイルを Project 層に記述してはならない。該当するスタイルは Component 層（§5.5）に記述する
 - Component や Layout を内包し、ページやセクションに合わせた配置・装飾を担う
 - インラインスタイルについては §7 Custom Properties を参照
 
@@ -385,7 +389,7 @@ Project 層は上位層として、Component のスタイルをページやセ�
 |---|---|---|
 | 直接プロパティ上書き | 特定の配置先でパーツのスタイルを変更 | `.p-hero > .c-button { font-size: ... }` |
 | CSS 変数経由 | Component/Layout が公開するプライベートカスタムプロパティの値を設定 | `.p-about { --_padding-min: 2.5rem; }` |
-| Modifier（Component 自身） | 汎用バリエーション | `.c-button.-primary` |
+| Modifier（Component 層 / Project 層で定義） | 汎用バリエーション | `.c-button.-primary` |
 
 SHOULD: 直接プロパティ上書きと CSS 変数経由のどちらも使用できる場合は、CSS 変数経由を優先する。CSS 変数経由は Component/Layout の内部構造に依存しないため保守性が高い。
 
@@ -459,7 +463,7 @@ SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)
 
 - MUST: `!important` を付与しなければならない
 - MUST NOT: 特定の Block や Element に帰属できるスタイルを Utility に書いてはならない — Utility は特定の Block に帰属しない横断的かつ局所的な単一目的のスタイルに限る
-- MUST NOT: Utility 層以外の全層で `!important` を使用してはならない
+- `!important` の使用制限については §4 を参照
 
 **適切な用途**: アクセシビリティ非表示（`u-visually-hidden`）、レスポンシブ表示制御
 
@@ -505,10 +509,14 @@ SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)
 | Modifier | `.-{modifier}` | `.c-button.-primary` |
 | State | `.is-{state}`, `.has-{state}` | `.is-active`, `.has-children` |
 
+SHOULD: 層の識別のためにプレフィックス（§3 の層テーブルを参照）を使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。
+
 ### Modifier と State の使い分け
 
 - **Modifier（`.-xxx`）**: 静的なバリエーション。HTML に記述し、原則として変化しない
 - **State（`.is-xxx`, `.has-xxx`）**: 動的な状態。JS やユーザー操作により変化する
+
+SHOULD: Modifier は Component 層と Project 層で使用すべきである。SHOULD NOT: Layout 層では使用すべきでない（Layout は配置と空間のみを担当し、バリエーションは上位層で制御する）。SHOULD NOT: Animation 層と Utility 層は単一目的のスタイルであり、Modifier を使用すべきでない。
 
 State のスタイルは、対象の Block が属する層に記述する（例: `.c-button.is-active` は Component 層、`.a-fade-in.is-active` は Animation 層）。
 
@@ -529,7 +537,7 @@ SHOULD NOT: Element を 2 階層以上ネストすべきではない（`__elemen
 
 ### ファイル名
 
-MUST: ファイル名は主要クラス名と一致させなければならない — `{prefix}-{name}.css`。1 ファイルに関連クラスをグループ化する場合は、代表クラス名をファイル名とする（例: `u-hidden.css`）。
+SHOULD: ファイル名は主要クラス名と一致させるべきである — `{prefix}-{name}.css`。1 ファイルに関連クラスをグループ化する場合は、代表クラス名をファイル名とする（例: `u-hidden.css`）。
 
 例: `.c-button` → `c-button.css`, `.l-section` → `l-section.css`
 
@@ -710,6 +718,7 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 | **プライベートカスタムプロパティ** | `--_` プレフィックスを持つ変数。内部 API であり、外部からの直接依存を想定しない（初出: §5.4） |
 | **先制宣言** | `layer-order.css` における `@layer` の優先順位宣言。全スタイル定義に先行して記述される（初出: §4） |
 | **2 ガード原則** | Animation 層で `prefers-reduced-motion` と `scripting` の 2 条件を考慮すること。推奨は `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガード（初出: §5.7） |
+| **Modifier（`.-xxx`）** | 静的なバリエーション。Component 層と Project 層で使用する（SHOULD）。HTML に記述し、原則として変化しない（初出: §6） |
 
 ---
 
@@ -766,6 +775,21 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 - §5.8 Utility: MUST NOT の判定基準を「Block/Element への帰属可否」に明確化
 - §9 Container Queries を SHOULD で規定
 - §5.3 Foundation にサブレイヤー構成（foundation.reset / foundation.base）を SHOULD で追加
+
+### v1.1 内の変更（2026-03-23）
+
+- §1.1 Introduction: 思考フレームワーク方針の明記（MUST は思想の核に限定、実践推奨は SHOULD）
+- §5.2 Theme: セレクタ制約の追加（`:root` 基本、`data` 属性セレクタ許容）
+- §5.8 Utility: `!important` MUST NOT の重複を §4 への参照に変更
+- §6 Naming Conventions: ファイル名の MUST を SHOULD に変更
+- §6 Naming Conventions: プレフィックスの SHOULD を明記
+- §6 Naming Conventions: Modifier の適用可能な層を明記（Component / Project）
+- §5.6 Project: Portability Test 合格スタイルの Project 記述を禁止する MUST NOT を追加
+- §5.2 Theme: セレクタ制約の「許容する」に MAY を明記
+- §6 Modifier: Layout/Animation/Utility での不使用を SHOULD NOT で明記
+- §5.6 上書きパターン表: Modifier 行に層の帰属を注記
+- §1.3: 依存方向の「禁止する」に MUST NOT（§3 参照）を付記
+- Glossary: Modifier の定義を追加
 
 #### 削除された内容
 
