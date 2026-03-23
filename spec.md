@@ -63,7 +63,7 @@ mFLOCSS は以下の 4 原則に基づく。層数が変わってもこれらは
 
 ### 準拠条件
 
-mFLOCSS v1.1 に準拠するとは、本仕様の全 MUST / MUST NOT ルールに違反しないことを意味する。設計判断を伴うルール（Portability Test 等）の判定は、本仕様が提供するテスト（§3 Portability Test, Layout Test, Responsibility Test）に基づく。
+mFLOCSS v1.1 に準拠するとは、本仕様の全 MUST / MUST NOT ルールに違反しないことを意味する。MUST は `@layer` の構造的整合性・アクセシビリティ・命名体系の維持に限定される。設計判断の品質（層の選択・トークン参照チェーン等）は SHOULD で推奨し、遵守するほど設計の一貫性と保守性が向上する。
 
 ### バージョニング
 
@@ -207,7 +207,7 @@ MUST: 外部 CSS は `@import url() layer()` または npm + バンドラーを�
 **責任**: プリミティブなデザイン値の定義
 
 - MUST: `:root` セレクタのみを使用しなければならない
-- MUST: 値のみを定義しなければならない（セマンティクスを持たせない）
+- SHOULD: 値のみを定義すべきである（セマンティクスを持たせない）
 - MUST NOT: 他の層のカスタムプロパティを参照してはならない
 
 **トークンの分類**:
@@ -216,7 +216,7 @@ Tokens はブランドトークンとグローバルトークンに分類され�
 
 | 分類 | 性質 | 例 | Theme 経由 |
 |------|------|-----|-----------|
-| ブランドトークン | プロジェクトごとに変わる値 | color, typography, structure | MUST |
+| ブランドトークン | プロジェクトごとに変わる値 | color, typography, structure | SHOULD |
 | グローバルトークン | プロジェクト非依存の普遍値 | ease, z-index, font-weight | 直接参照 MAY |
 
 判断基準: 「ブランドやプロジェクトが変わったとき、この値を変更するか？」— Yes ならブランドトークン、No ならグローバルトークン。
@@ -242,8 +242,8 @@ SHOULD: カテゴリ別にファイルを分割する（color / typography / str
 
 **責任**: Tokens をセマンティック変数にマッピング
 
-- MUST: Tokens のカスタムプロパティを参照しなければならない（ハードコード値の直接指定は禁止）
-- MUST: ダークモード / テーマ切替はこの層のみで完結させなければならない
+- SHOULD: Tokens のカスタムプロパティを参照すべきである（ハードコード値の直接指定は非推奨）
+- SHOULD: ダークモード / テーマ切替はこの層のみで完結させるべきである
 - SHOULD: `:root` セレクタを基本とすべきである。MAY: ダークモード切替で `data` 属性セレクタ（例: `[data-theme='dark']`）を使用してよい。`light-dark()` 関数を使用する場合（SHOULD）は `:root` のみで完結する
 
 SHOULD: `light-dark()` 関数を使用する。
@@ -271,7 +271,7 @@ SHOULD: `light-dark()` 関数を使用する。
 
 - MUST: 要素型セレクタのみを使用しなければならない（クラスセレクタ・ID セレクタ禁止）。SHOULD: 属性セレクタ、擬似クラス、擬似要素は、`:where()` 内で要素型セレクタと組み合わせて使用すべきである
 - SHOULD: `:where()` で詳細度をゼロに保つべきである。アタッチメント方式で取り込む外部リセット CSS は `:where()` を使用していない場合がある。`@layer` による層順序制御が詳細度の予測可能性を構造的に担保するため、`:where()` は推奨とする
-- MUST: ブランドトークンについては Theme のセマンティック変数を参照しなければならない（グローバルトークンの直接参照は許容 — Tokens 層のトークン分類を参照）
+- SHOULD: ブランドトークンについては Theme のセマンティック変数を参照すべきである（グローバルトークンの直接参照は許容 — Tokens 層のトークン分類を参照）
 
 SHOULD: Foundation 層はサブレイヤー `foundation.reset`（外部リセット CSS）と `foundation.base`（自作ベーススタイル）に分離すべきである。これにより、外部リセット CSS が `:where()` を使用していない場合でも、自作ベーススタイルがリセットを上書きできる。
 
@@ -318,7 +318,7 @@ SHOULD: reset / base / form の 3 ファイルに分割する。form を独立�
 
 **プレフィックス**: `l-`
 
-- MUST NOT: 見た目に関するプロパティ（`color`, `font-size`, `background-color`, `border`, `text-align` 等の視覚的プロパティ）を宣言してはならない
+- SHOULD NOT: 見た目に関するプロパティ（`color`, `font-size`, `background-color`, `border`, `text-align` 等の視覚的プロパティ）を宣言すべきでない
 
 SHOULD: `container-type: inline-size` を宣言し、Container Queries の基盤を提供する。Container Queries を使用しないプロジェクトではこの限りではない。
 
@@ -359,12 +359,12 @@ MAY: `container-name` を併用し、名前付きコンテナを定義してよ�
 
 **プレフィックス**: `c-`
 
-- MUST: Portability Test に合格しなければならない（「別サイトにそのまま持っていけるか？」）
-- MUST NOT: 特定のサイトでしか使えない見た目にしてはならない
-- MUST: ブランドトークンについては Theme のセマンティック変数のみを参照しなければならない（グローバルトークンの直接参照は許容 — Tokens 層のトークン分類を参照）
-- MUST NOT: 外部レイアウトに影響するプロパティ（ルート要素の `margin`, `position: fixed/sticky`, ルート要素の `overflow` 等）を Component のルート要素に含めてはならない — 配置は使う側の責任（Responsibility Test）である
+- SHOULD: Portability Test に合格すべきである（「別サイトにそのまま持っていけるか？」）
+- SHOULD NOT: 特定のサイトでしか使えない見た目にすべきでない
+- SHOULD: ブランドトークンについては Theme のセマンティック変数のみを参照すべきである（グローバルトークンの直接参照は許容 — Tokens 層のトークン分類を参照）
+- SHOULD NOT: 外部レイアウトに影響するプロパティ（ルート要素の `margin`, `position: fixed/sticky`, ルート要素の `overflow` 等）を Component のルート要素に含めるべきでない — 配置は使う側の責任（Responsibility Test）である
 
-> **注記（Informative）**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 MUST NOT の対象外である。これらは Component 自身の視覚的責任に該当する
+> **注記（Informative）**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 SHOULD NOT の対象外である。これらは Component 自身の視覚的責任に該当する
 
 SHOULD: 1 コンポーネント 1 ファイルとする。
 
@@ -378,7 +378,7 @@ SHOULD: Component と Project の判断に迷った場合は Component とする
 
 **プレフィックス**: `p-`
 
-- MUST NOT: Portability Test（§3）に合格するスタイルを Project 層に記述してはならない。該当するスタイルは Component 層（§5.5）に記述する
+- SHOULD NOT: Portability Test（§3）に合格するスタイルを Project 層に記述すべきでない。該当するスタイルは Component 層（§5.5）に記述する
 - Component や Layout を内包し、ページやセクションに合わせた配置・装飾を担う
 
 SHOULD: サイト固有のデザイン要件があるセクションには、セクションルートに Project Block を付与し、セクション内の要素は Element として構築すべきである。サイト固有のスタイリングが不要なセクションは Layout と Component のみで構成してよい。
@@ -482,7 +482,7 @@ SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)
 **検証問い**: 「このスタイルは特定の Block に帰属せず、単一プロパティ（または密接に関連する最小プロパティセット）で完結するか？」 — Yes なら Utility。No なら Component / Project。
 
 - MUST: `!important` を付与しなければならない
-- MUST NOT: 特定の Block や Element に帰属できるスタイルを Utility に書いてはならない — Utility は特定の Block に帰属しない横断的かつ局所的な単一目的のスタイルに限る
+- SHOULD NOT: 特定の Block や Element に帰属できるスタイルを Utility に書くべきでない — Utility は特定の Block に帰属しない横断的かつ局所的な単一目的のスタイルに限る
 - `!important` の使用制限については §4 を参照
 
 **適切な用途**: アクセシビリティ非表示（`u-visually-hidden`）、レスポンシブ表示制御
@@ -586,8 +586,8 @@ SHOULD: ファイル名は主要クラス名と一致させるべきである �
 Tokens（値）→ Theme（意味）→ Foundation 以降（使用）
 ```
 
-- MUST: Foundation 以降の層はブランドトークンについて Theme のセマンティック変数を参照しなければならない
-- MUST NOT: Foundation 以降の層がブランドトークンを直接参照してはならない（Theme を経由する）
+- SHOULD: Foundation 以降の層はブランドトークンについて Theme のセマンティック変数を参照すべきである
+- SHOULD NOT: Foundation 以降の層がブランドトークンを直接参照すべきでない（Theme を経由する）
 - MAY: グローバルトークン（ease, z-index 等）は Foundation 以降の層から直接参照してよい（Tokens 層のトークン分類を参照）
 
 例外: Tokens の値を Theme 層でマッピングする際のみ、ブランドトークンへの直接参照が許される。
@@ -752,7 +752,7 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 | **Portability Test** | 「そのパーツを別のサイトにそのまま持っていけるか？」— Component と Project の境界を判定する基準テスト（初出: §3） |
 | **Layout Test** | 「このスタイルを変えると、中身の見た目（色・文字・装飾）が変わるか？」— Layout 層の責任範囲を判定する検証問い（初出: §5.4） |
 | **Responsibility Test** | 「このスタイルは、パーツ自身の視覚的責任か？それとも使う側のデザイン要件か？」— Component と Project の境界を補助的に判定するテスト。Portability Test が明確な判定を返す場合はそちらに従う（§3 参照）（初出: §3） |
-| **ブランドトークン** | プロジェクトごとに変わるデザイン値（color, typography, structure）。Foundation 以降の層では Theme 経由で参照しなければならない（初出: §5.1） |
+| **ブランドトークン** | プロジェクトごとに変わるデザイン値（color, typography, structure）。Foundation 以降の層では Theme 経由で参照すべきである（初出: §5.1） |
 | **グローバルトークン** | プロジェクト非依存の普遍値（ease, z-index, font-weight）。Foundation 以降の層から直接参照してよい（初出: §5.1） |
 | **3 層参照チェーン** | Tokens（値）→ Theme（意味）→ Foundation 以降（使用）。カスタムプロパティの参照パスを規定する（初出: §7） |
 | **公開 API（カスタムプロパティ）** | `--{対象}-{名前}` 形式の変数。上位層または JS から上書きされることを想定する外部インターフェース（初出: §7） |
