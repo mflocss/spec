@@ -10,7 +10,7 @@ v1.0 内部ドラフトからの全変更を含む。
 
 ### 構造・方針
 
-- §1.1 Introduction: 「思考フレームワークであり、ルールブックではない」方針を明記（MUST は思想の核に限定、実践推奨は SHOULD）
+- §1.1 Introduction: 思考フレームワークの定義を厳密化（「ルールブックではなく」→「判断基準を厳密に定義する」、MUST の適用範囲を「思想の核」→「構造的整合性を保証するルール」に明確化）
 - §1 のサブセクション化: Introduction [Informative], 不変原則 [Normative], 設計制約 [Normative] に分離
 - §1.3 設計制約の新設: 一方向依存ルールを不変原則を支える構造的制約として規定。MUST NOT（§3 参照）を付記
 - Normative / Informative ラベルの付与（W3C パターン）
@@ -48,6 +48,7 @@ v1.0 内部ドラフトからの全変更を含む。
 - §6 プレフィックスの SHOULD を明記（@scope 等の将来の CSS 機能で不要になりうるため MUST としない）
 - §6 Modifier の適用可能な層を明記（Component / Project で SHOULD、Layout / Animation / Utility で SHOULD NOT）
 - §6 Block なしの Element 使用を禁止する MUST を追加（BEM の公式定義に基づく）
+- §6 Element-Block MUST の「定義」を明確化: Block クラスの HTML 上の存在を要件とし、CSS ルールセット不在時の MUST 違反にならない旨を追記
 
 ### カスタムプロパティ
 
@@ -64,7 +65,9 @@ v1.0 内部ドラフトからの全変更を含む。
 - Glossary: Responsibility Test の定義文を更新（Portability Test との優先関係を明記）
 - Glossary: Modifier の定義を追加
 - Glossary: Block / Element の定義を追加
+- Glossary: Element 定義から MUST を除去し、規範的定義は §6 参照に変更
 - Changes を CHANGELOG.md に分離
+- Appendix C: 不要なテーブル行を削除
 
 ### v1.0 からの削除
 

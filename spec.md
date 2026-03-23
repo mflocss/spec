@@ -16,7 +16,7 @@ mFLOCSS は、CSS の設計判断を体系化する思考フレームワーク�
 
 「どの層に、なぜ書くか」という問いに対し、明確な判断基準を提供する。`@layer` ベースの 8 層フラットアーキテクチャを採用する。
 
-mFLOCSS はルールブックではなく思考フレームワークである。MUST は思想の核（`@layer` による層順序の固定・層の分離・判断基準の存在）に限定し、実践上の推奨は SHOULD で表現する。
+mFLOCSS は、CSS の設計判断を体系化する思考フレームワークであり、本仕様はその判断基準を厳密に定義する。MUST は設計の構造的整合性を保証するルール（`@layer` による層順序の固定・層の分離・命名規則の一貫性等）に適用し、設計判断の推奨は SHOULD で表現する。
 
 #### 対象範囲
 
@@ -509,7 +509,7 @@ SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)
 | Block | `.{prefix}-{name}` | `.c-button`, `.l-section` |
 | Element | `.__{element}` | `.c-card__title` |
 
-MUST: Element（`__element`）は、対応する Block が定義されていなければならない。Block なしの Element は使用してはならない。BEM の「Element は常に Block の一部であり、Block から分離して使用してはならない」に基づく。
+MUST: Element（`__element`）は、対応する Block クラスが HTML 上に存在しなければならない。Block なしの Element は使用してはならない。CSS にルールセットがなくても、HTML 上に Block クラスが付与されていれば MUST 違反にはならない。BEM の「Element は常に Block の一部であり、Block から分離して使用してはならない」に基づく。
 | Modifier | `.-{modifier}` | `.c-button.-primary` |
 | State | `.is-{state}`, `.has-{state}` | `.is-active`, `.has-children` |
 
@@ -723,7 +723,7 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 | **先制宣言** | `layer-order.css` における `@layer` の優先順位宣言。全スタイル定義に先行して記述される（初出: §4） |
 | **2 ガード原則** | Animation 層で `prefers-reduced-motion` と `scripting` の 2 条件を考慮すること。推奨は `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガード（初出: §5.7） |
 | **Block** | BEM における独立した意味のあるエンティティ。プレフィックス付きクラス名（`.c-card`, `.p-hero` 等）で表現する（初出: §6） |
-| **Element（`__element`）** | Block の一部であり、Block から分離して使用してはならない（MUST）。`.__{element}` の形式で記述する（初出: §6） |
+| **Element（`__element`）** | Block の一部。命名は `.__{element}` の形式。Block なしでの使用禁止等の規範的定義は §6 を参照（初出: §6） |
 | **Modifier（`.-xxx`）** | 静的なバリエーション。Component 層と Project 層で使用する（SHOULD）。HTML に記述し、原則として変化しない（初出: §6） |
 
 ---
@@ -746,4 +746,3 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 ## Appendix C: Changes
 
 変更履歴は [CHANGELOG.md](./CHANGELOG.md) を参照。
-| — | Appendix C: Changes | 新設 |
