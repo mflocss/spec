@@ -7,6 +7,7 @@ mFLOCSS（Modified FLOCSS）は、CSS の設計判断を体系化する思考フ
 ## 仕様書
 
 - [spec.md](spec.md) — mFLOCSS Specification v1.1
+- [CHANGELOG.md](CHANGELOG.md) — 変更履歴
 
 ## 仕様の読み方
 

@@ -377,6 +377,8 @@ SHOULD: Component と Project の判断に迷った場合は Component とする
 
 - MUST NOT: Portability Test（§3）に合格するスタイルを Project 層に記述してはならない。該当するスタイルは Component 層（§5.5）に記述する
 - Component や Layout を内包し、ページやセクションに合わせた配置・装飾を担う
+
+SHOULD: サイト固有のデザイン要件があるセクションには、セクションルートに Project Block を付与し、セクション内の要素は Element として構築すべきである。サイト固有のスタイリングが不要なセクションは Layout と Component のみで構成してよい。
 - インラインスタイルについては §7 Custom Properties を参照
 
 SHOULD: ページ単位または機能単位でファイルを分割する。
@@ -506,6 +508,8 @@ SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)
 |---|---|---|
 | Block | `.{prefix}-{name}` | `.c-button`, `.l-section` |
 | Element | `.__{element}` | `.c-card__title` |
+
+MUST: Element（`__element`）は、対応する Block が定義されていなければならない。Block なしの Element は使用してはならない。BEM の「Element は常に Block の一部であり、Block から分離して使用してはならない」に基づく。
 | Modifier | `.-{modifier}` | `.c-button.-primary` |
 | State | `.is-{state}`, `.has-{state}` | `.is-active`, `.has-children` |
 
@@ -718,6 +722,8 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 | **プライベートカスタムプロパティ** | `--_` プレフィックスを持つ変数。内部 API であり、外部からの直接依存を想定しない（初出: §5.4） |
 | **先制宣言** | `layer-order.css` における `@layer` の優先順位宣言。全スタイル定義に先行して記述される（初出: §4） |
 | **2 ガード原則** | Animation 層で `prefers-reduced-motion` と `scripting` の 2 条件を考慮すること。推奨は `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガード（初出: §5.7） |
+| **Block** | BEM における独立した意味のあるエンティティ。プレフィックス付きクラス名（`.c-card`, `.p-hero` 等）で表現する（初出: §6） |
+| **Element（`__element`）** | Block の一部であり、Block から分離して使用してはならない（MUST）。`.__{element}` の形式で記述する（初出: §6） |
 | **Modifier（`.-xxx`）** | 静的なバリエーション。Component 層と Project 層で使用する（SHOULD）。HTML に記述し、原則として変化しない（初出: §6） |
 
 ---
