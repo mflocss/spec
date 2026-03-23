@@ -1,7 +1,7 @@
 # mFLOCSS 仕様 v1.1
 
 > **ステータス**: ドラフト
-> **最終更新**: 2026-03-17
+> **最終更新**: 2026-03-23
 > **著者**: shunei
 
 ---
@@ -15,6 +15,8 @@
 mFLOCSS は、CSS の設計判断を体系化する思考フレームワークである。
 
 「どの層に、なぜ書くか」という問いに対し、明確な判断基準を提供する。`@layer` ベースの 8 層フラットアーキテクチャを採用する。
+
+mFLOCSS はルールブックではなく思考フレームワークである。MUST は思想の核（`@layer` による層順序の固定・層の分離・判断基準の存在）に限定し、実践上の推奨は SHOULD で表現する。
 
 #### 対象範囲
 
@@ -39,7 +41,7 @@ mFLOCSS は以下の 4 原則に基づく。層数が変わってもこれらは
 
 不変原則を支える構造的制約。層数が変わっても維持される。
 
-1. **一方向依存** — 上位層（番号が大きい層）は下位層を参照してよいが、逆方向の参照は禁止する。詳細ルールは §3 を参照
+1. **一方向依存** — 上位層（番号が大きい層）は下位層を参照してよいが、逆方向の参照は禁止する（MUST NOT、§3 参照）。詳細ルールは §3 を参照
 
 ---
 
@@ -241,6 +243,7 @@ SHOULD: カテゴリ別にファイルを分割する（color / typography / str
 
 - MUST: Tokens のカスタムプロパティを参照しなければならない（ハードコード値の直接指定は禁止）
 - MUST: ダークモード / テーマ切替はこの層のみで完結させなければならない
+- SHOULD: `:root` セレクタを基本とすべきである。MAY: ダークモード切替で `data` 属性セレクタ（例: `[data-theme='dark']`）を使用してよい。`light-dark()` 関数を使用する場合（SHOULD）は `:root` のみで完結する
 
 SHOULD: `light-dark()` 関数を使用する。
 
@@ -372,6 +375,7 @@ SHOULD: Component と Project の判断に迷った場合は Component とする
 
 **プレフィックス**: `p-`
 
+- MUST NOT: Portability Test（§3）に合格するスタイルを Project 層に記述してはならない。該当するスタイルは Component 層（§5.5）に記述する
 - Component や Layout を内包し、ページやセクションに合わせた配置・装飾を担う
 - インラインスタイルについては §7 Custom Properties を参照
 
@@ -385,7 +389,7 @@ Project 層は上位層として、Component のスタイルをページやセ�
 |---|---|---|
 | 直接プロパティ上書き | 特定の配置先でパーツのスタイルを変更 | `.p-hero > .c-button { font-size: ... }` |
 | CSS 変数経由 | Component/Layout が公開するプライベートカスタムプロパティの値を設定 | `.p-about { --_padding-min: 2.5rem; }` |
-| Modifier（Component 自身） | 汎用バリエーション | `.c-button.-primary` |
+| Modifier（Component 層 / Project 層で定義） | 汎用バリエーション | `.c-button.-primary` |
 
 SHOULD: 直接プロパティ上書きと CSS 変数経由のどちらも使用できる場合は、CSS 変数経由を優先する。CSS 変数経由は Component/Layout の内部構造に依存しないため保守性が高い。
 
@@ -459,7 +463,7 @@ SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)
 
 - MUST: `!important` を付与しなければならない
 - MUST NOT: 特定の Block や Element に帰属できるスタイルを Utility に書いてはならない — Utility は特定の Block に帰属しない横断的かつ局所的な単一目的のスタイルに限る
-- MUST NOT: Utility 層以外の全層で `!important` を使用してはならない
+- `!important` の使用制限については §4 を参照
 
 **適切な用途**: アクセシビリティ非表示（`u-visually-hidden`）、レスポンシブ表示制御
 
@@ -505,10 +509,14 @@ SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)
 | Modifier | `.-{modifier}` | `.c-button.-primary` |
 | State | `.is-{state}`, `.has-{state}` | `.is-active`, `.has-children` |
 
+SHOULD: 層の識別のためにプレフィックス（§3 の層テーブルを参照）を使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。
+
 ### Modifier と State の使い分け
 
 - **Modifier（`.-xxx`）**: 静的なバリエーション。HTML に記述し、原則として変化しない
 - **State（`.is-xxx`, `.has-xxx`）**: 動的な状態。JS やユーザー操作により変化する
+
+SHOULD: Modifier は Component 層と Project 層で使用すべきである。SHOULD NOT: Layout 層では使用すべきでない（Layout は配置と空間のみを担当し、バリエーションは上位層で制御する）。SHOULD NOT: Animation 層と Utility 層は単一目的のスタイルであり、Modifier を使用すべきでない。
 
 State のスタイルは、対象の Block が属する層に記述する（例: `.c-button.is-active` は Component 層、`.a-fade-in.is-active` は Animation 層）。
 
@@ -529,7 +537,7 @@ SHOULD NOT: Element を 2 階層以上ネストすべきではない（`__elemen
 
 ### ファイル名
 
-MUST: ファイル名は主要クラス名と一致させなければならない — `{prefix}-{name}.css`。1 ファイルに関連クラスをグループ化する場合は、代表クラス名をファイル名とする（例: `u-hidden.css`）。
+SHOULD: ファイル名は主要クラス名と一致させるべきである — `{prefix}-{name}.css`。1 ファイルに関連クラスをグループ化する場合は、代表クラス名をファイル名とする（例: `u-hidden.css`）。
 
 例: `.c-button` → `c-button.css`, `.l-section` → `l-section.css`
 
@@ -710,6 +718,7 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 | **プライベートカスタムプロパティ** | `--_` プレフィックスを持つ変数。内部 API であり、外部からの直接依存を想定しない（初出: §5.4） |
 | **先制宣言** | `layer-order.css` における `@layer` の優先順位宣言。全スタイル定義に先行して記述される（初出: §4） |
 | **2 ガード原則** | Animation 層で `prefers-reduced-motion` と `scripting` の 2 条件を考慮すること。推奨は `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガード（初出: §5.7） |
+| **Modifier（`.-xxx`）** | 静的なバリエーション。Component 層と Project 層で使用する（SHOULD）。HTML に記述し、原則として変化しない（初出: §6） |
 
 ---
 
@@ -730,69 +739,5 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 
 ## Appendix C: Changes
 
-*This section is informative.*
-
-### v1.0 → v1.1 の変更点
-
-#### 主要な変更
-
-- §1 のサブセクション化: Introduction [Informative], 不変原則 [Normative], 設計制約 [Normative] に分離
-- §1.3 設計制約の新設: 一方向依存ルールを不変原則を支える構造的制約として規定
-- §3 Responsibility Test の追加: Portability Test を補助する判定テスト
-- §3 Layer Judgment Flowchart の本文統合: 旧 Appendix A を §3 に移動し、誤りパターンを追加
-- §3 依存方向: CSS の参照方向に限定し、HTML の入れ子構造はルール対象外と明確化
-- §4 外部 CSS の層配置セクションの追加
-- §4 CSS Cascading and Inheritance Level 5 への明示的参照の追加
-- §5.1 トークン分類（ブランドトークン / グローバルトークン）の導入
-- §5.4 Container Queries の層責任テーブルを §9 から移動・統合（container-name ガイダンスを追加）
-- §5.4 に container-name の MAY ルールを新設
-- §5.5 「迷ったら Component」の SHOULD 化と条件付き限定
-- §5.6 上書きパターンの拡充（CSS 変数経由パターンの追加）
-- §5.7 統合ガードの SHOULD 化と説明の簡潔化
-- §5.8 u-visually-hidden の論理プロパティ対応
-- §7 プライベートカスタムプロパティの上位層設定許容の明確化
-- §8 ディレクトリ構造の簡素化（ファイル例の削除）
-- Normative / Informative ラベルの付与（W3C パターン）
-- Example マーキングの付与
-- References セクションの新設（Appendix B）
-- Glossary に各用語の初出セクション番号を付記
-- Glossary: Responsibility Test の定義文を更新（Portability Test との優先関係を明記）
-- §2 準拠条件: 設計判断を伴うルールの判定基準（テスト参照）を追記
-- §5.3 Foundation: 「要素セレクタのみ」を「要素型セレクタのみ」に厳密化し、属性セレクタ・擬似クラス・擬似要素の許容範囲を明記
-- §5.3 Foundation の `:where()` 詳細度ゼロを MUST から SHOULD に変更（外部リセット CSS のアタッチメント方式を考慮）
-- §5.5 Component: MUST NOT の例外（内部 Element）を構造的に分離
-- §5.5 Component: サイト固有禁止ルールの MUST → MUST NOT 修正（RFC 2119 準拠）
-- §5.7 Animation: 2 ガード原則の MUST を達成条件ベースに書き直し
-- §5.8 Utility: MUST NOT の判定基準を「Block/Element への帰属可否」に明確化
-- §9 Container Queries を SHOULD で規定
-- §5.3 Foundation にサブレイヤー構成（foundation.reset / foundation.base）を SHOULD で追加
-
-#### 削除された内容
-
-- 書籍参照（`→ 書籍 chX`）を本文から削除（Appendix B の Informative References に集約）
-- カラートークンの階層化参考（§5.1）
-- style.css のインポート例と注記（§8）
-- コンポーネント追加/削除手順（§8）
-- 将来の展望セクション（§1）
-
-#### 章番号対応表
-
-| v1.0 | v1.1 | 内容 |
-|---|---|---|
-| §1 Introduction | §1 Overview | 親セクション名を変更。§1.1/§1.2/§1.3 にサブセクション化 |
-| — | §1.1 Introduction [Informative] | 旧 §1 の導入部分 |
-| — | §1.2 不変原則 [Normative] | 旧 §1 の不変原則部分 |
-| — | §1.3 設計制約 [Normative] | v1.1 で新設 |
-| §1 不変原則（小見出し） | §1.2 不変原則 | サブセクションに昇格 |
-| §2 Conformance | §2 Conformance | 変更なし |
-| §3 Layer Architecture | §3 Layer Architecture | Responsibility Test, Flowchart, 誤りパターン追加 |
-| §4 Layer Order Declaration | §4 Layer Order Declaration | 外部 CSS の層配置追加 |
-| §5 Layer Definitions | §5 Layer Definitions | 各層の強化 |
-| §6 Naming Conventions | §6 Naming Conventions | 変更なし |
-| §7 Custom Properties | §7 Custom Properties | 上位層設定許容の明確化 |
-| §8 File Architecture | §8 File Architecture | 簡素化 |
-| §9 Responsive Strategy | §9 Responsive Strategy | Container Queries テーブルを §5.4 に統合 |
-| §10 Appendix A: Flowchart | — | §3 に統合、削除 |
-| §11 Appendix B: Glossary | Appendix A: Glossary | 繰り上げ、初出番号付記 |
-| — | Appendix B: References | 新設 |
+変更履歴は [CHANGELOG.md](./CHANGELOG.md) を参照。
 | — | Appendix C: Changes | 新設 |
