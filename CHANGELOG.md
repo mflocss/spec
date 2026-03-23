@@ -36,6 +36,7 @@ v1.0 内部ドラフトからの全変更を含む。
 - §5.5 「迷ったら Component」の SHOULD 化と条件付き限定
 - §5.5 Component: MUST NOT の例外（内部 Element）を構造的に分離
 - §5.6 Project: Portability Test 合格スタイルの Project 記述を禁止する MUST NOT を追加
+- §5.6 Project: セクションルートへの Project Block 付与を SHOULD で推奨
 - §5.6 上書きパターンの拡充（CSS 変数経由パターンの追加）。Modifier 行に層の帰属を注記
 - §5.7 Animation: 2 ガード原則の MUST を達成条件ベースに書き直し。統合ガードの SHOULD 化
 - §5.8 Utility: MUST NOT の判定基準を「Block/Element への帰属可否」に明確化。`!important` MUST NOT の重複を §4 への参照に変更
@@ -46,6 +47,7 @@ v1.0 内部ドラフトからの全変更を含む。
 - §6 ファイル名の MUST を SHOULD に変更（運用規約であり思想の核ではない）
 - §6 プレフィックスの SHOULD を明記（@scope 等の将来の CSS 機能で不要になりうるため MUST としない）
 - §6 Modifier の適用可能な層を明記（Component / Project で SHOULD、Layout / Animation / Utility で SHOULD NOT）
+- §6 Block なしの Element 使用を禁止する MUST を追加（BEM の公式定義に基づく）
 
 ### カスタムプロパティ
 
@@ -61,6 +63,7 @@ v1.0 内部ドラフトからの全変更を含む。
 - Glossary に各用語の初出セクション番号を付記
 - Glossary: Responsibility Test の定義文を更新（Portability Test との優先関係を明記）
 - Glossary: Modifier の定義を追加
+- Glossary: Block / Element の定義を追加
 - Changes を CHANGELOG.md に分離
 
 ### v1.0 からの削除
