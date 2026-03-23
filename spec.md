@@ -340,12 +340,12 @@ MAY: `container-name` を併用し、名前付きコンテナを定義してよ�
 ```css
 @layer layout {
   .l-section {
-    --_padding-min: 3.75rem;
-    --_padding-max: 6.25rem;
+    --section-padding-min: 3.75rem;
+    --section-padding-max: 6.25rem;
 
     container-type: inline-size;
     container-name: section;
-    padding-block: clamp(var(--_padding-min), 8vi, var(--_padding-max));
+    padding-block: clamp(var(--section-padding-min), 8vi, var(--section-padding-max));
   }
 }
 ```
@@ -390,14 +390,14 @@ Project 層は上位層として、Component のスタイルをページやセ�
 | パターン | 用途 | 例 |
 |---|---|---|
 | 直接プロパティ上書き | 特定の配置先でパーツのスタイルを変更 | `.p-hero > .c-button { font-size: ... }` |
-| CSS 変数経由 | Component/Layout が公開するプライベートカスタムプロパティの値を設定 | `.p-about { --_padding-min: 2.5rem; }` |
+| CSS 変数経由 | Component/Layout が公開する公開 API カスタムプロパティの値を設定 | `.p-about { --section-padding-min: 2.5rem; }` |
 | Modifier（Component 層 / Project 層で定義） | 汎用バリエーション | `.c-button.-primary` |
 
 SHOULD: 直接プロパティ上書きと CSS 変数経由のどちらも使用できる場合は、CSS 変数経由を優先する。CSS 変数経由は Component/Layout の内部構造に依存しないため保守性が高い。
 
 Modifier は Component に内包される再利用可能なバリエーション。Project 上書きはサイト固有のデザイン要件に基づき Component のスタイルを調整するもの。
 
-Layout の振る舞いをページやセクションに合わせて変えたい場合は、Project の Block または Element として定義する（例: `class="l-section p-about"`, `class="l-inner p-about__inner"`）。
+Layout や Component の振る舞いをページやセクションに合わせて変えたい場合は、Project の Block または Element として定義する（例: `class="l-section p-about"`, `class="l-inner p-about__inner"`）。
 
 > **Example:**
 
@@ -405,8 +405,8 @@ Layout の振る舞いをページやセクションに合わせて変えたい�
 @layer project {
   /* Project の Block として Layout の配置先適応を担う */
   .p-about {
-    --_padding-min: 2.5rem;
-    --_padding-max: 3.75rem;
+    --section-padding-min: 2.5rem;
+    --section-padding-max: 3.75rem;
   }
 
   /* Project 固有のパーツ */
@@ -551,7 +551,8 @@ SHOULD: ファイル名は主要クラス名と一致させるべきである �
 |---|---|---|
 | Tokens | `--{カテゴリ}-{名前}` | `--slate-600`, `--font-ja` |
 | Theme | `--color-{役割}`, `--font-{役割}` | `--color-main`, `--font-body` |
-| Private | `--_{名前}` | `--_min`, `--_max` |
+| 公開 API | `--{対象}-{名前}` | `--section-padding-min`, `--badge-bg` |
+| Private | `--_{名前}` | `--_font-size-min` |
 
 ---
 
@@ -573,34 +574,45 @@ Tokens（値）→ Theme（意味）→ Foundation 以降（使用）
 
 例外: Tokens の値を Theme 層でマッピングする際のみ、ブランドトークンへの直接参照が許される。
 
-### プライベートカスタムプロパティパターン
+### 公開 API / プライベート命名規則
 
-MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライベートカスタムプロパティ（`--_xxx`）を定義してよい。`--_` プレフィックスは内部変数であることを命名で明示する。外部 API ではないことを示す。プライベートカスタムプロパティは外部 API ではないが、上位層（Project 等）から値を設定することは許容される。これは §5.6 の CSS 変数経由上書きパターンの基盤となる。
+カスタムプロパティは公開 API とプライベートに分類する。
+
+| 分類 | プレフィックス | 用途 | 例 |
+|---|---|---|---|
+| 公開 API | `--{対象}-{名前}` | 上位層または JS から上書きされる変数 | `--section-padding-min`, `--badge-bg`, `--stagger-delay` |
+| プライベート | `--_` | Block 内部でのみ使用する変数 | `--_font-size-min`, `--_delay` |
+
+SHOULD: 上位層（Project 等）から値を設定する変数、または JS から値を注入する変数は、`--{対象}-{名前}` の公開 API 命名を使用すべきである。外部からの契約として機能する変数にプライベート命名（`--_`）を使用すると、意図が不明確になる。
+
+SHOULD: 公開 API のカスタムプロパティには `@property` で `inherits: false` を指定し、子孫への意図しない継承を防止すべきである。パフォーマンスの向上にも寄与する。
+
+MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライベートカスタムプロパティ（`--_xxx`）を定義してよい。プライベートカスタムプロパティは外部から参照・設定されることを想定しない内部実装である。
 
 > **Example:**
 
 ```css
-/* Layout 層で定義 */
+/* Layout 層で公開 API を定義 */
 @layer layout {
   .l-section {
-    --_padding-min: 3.75rem;
-    --_padding-max: 6.25rem;
+    --section-padding-min: 3.75rem;
+    --section-padding-max: 6.25rem;
 
-    padding-block: clamp(var(--_padding-min), 8vi, var(--_padding-max));
+    padding-block: clamp(var(--section-padding-min), 8vi, var(--section-padding-max));
   }
 }
 ```
 
-Layout の振る舞いをページやセクションに合わせて変えたい場合は、Project の Block または Element として定義する。
+上位層（Project 等）から公開 API の値を設定し、Layout や Component の振る舞いをページやセクションに合わせて変える。これは §5.6 の CSS 変数経由上書きパターンの基盤となる。
 
 > **Example:**
 
 ```css
 @layer project {
-  /* Project の Block として l-section のプライベートカスタムプロパティを上書き */
+  /* Project の Block として公開 API を上書き */
   .p-about {
-    --_padding-min: 2.5rem;
-    --_padding-max: 3.75rem;
+    --section-padding-min: 2.5rem;
+    --section-padding-max: 3.75rem;
   }
 
   /* Project の Element として l-inner の振る舞いを配置先適応 */
@@ -614,7 +626,7 @@ Layout の振る舞いをページやセクションに合わせて変えたい�
 
 MUST NOT: HTML マークアップに静的なインラインスタイルを記述してはならない。インラインスタイルはどの `@layer` にも属さず、mFLOCSS の「どこに何を書くか」を追跡可能にする設計思想と矛盾する。
 
-MAY: JS からプライベートカスタムプロパティの値を動的に注入してよい。CSS が「何をするか」を定義し、JS が「いつ・どの値で」を決める疎結合パターンとして許容する。
+MAY: JS から公開 API のカスタムプロパティの値を動的に注入してよい。CSS が「何をするか」を定義し、JS が「いつ・どの値で」を決める疎結合パターンとして許容する。
 
 ---
 
@@ -639,6 +651,12 @@ css/
 ├── animation/
 └── utility/
 ```
+
+### 1 Block = 1 ファイル
+
+SHOULD: 1 つの CSS ファイルには 1 つの Block を定義すべきである。複数の独立した Block を 1 ファイルに含めると、ファイル名と Block の対応が崩れる。
+
+ただし Utility 層は例外とする。Utility は Block 構造を持たない単一目的のクラスであり、セマンティックな意味でグループ化することが推奨される（§5.8 参照）。
 
 ### layer-order.css
 
@@ -719,7 +737,8 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 | **ブランドトークン** | プロジェクトごとに変わるデザイン値（color, typography, structure）。Foundation 以降の層では Theme 経由で参照しなければならない（初出: §5.1） |
 | **グローバルトークン** | プロジェクト非依存の普遍値（ease, z-index, font-weight）。Foundation 以降の層から直接参照してよい（初出: §5.1） |
 | **3 層参照チェーン** | Tokens（値）→ Theme（意味）→ Foundation 以降（使用）。カスタムプロパティの参照パスを規定する（初出: §7） |
-| **プライベートカスタムプロパティ** | `--_` プレフィックスを持つ変数。内部 API であり、外部からの直接依存を想定しない（初出: §5.4） |
+| **公開 API（カスタムプロパティ）** | `--{対象}-{名前}` 形式の変数。上位層または JS から上書きされることを想定する外部インターフェース（初出: §7） |
+| **プライベートカスタムプロパティ** | `--_` プレフィックスを持つ変数。Block 内部でのみ使用し、外部からの参照・設定を想定しない（初出: §7） |
 | **先制宣言** | `layer-order.css` における `@layer` の優先順位宣言。全スタイル定義に先行して記述される（初出: §4） |
 | **2 ガード原則** | Animation 層で `prefers-reduced-motion` と `scripting` の 2 条件を考慮すること。推奨は `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガード（初出: §5.7） |
 | **Block** | BEM における独立した意味のあるエンティティ。プレフィックス付きクラス名（`.c-card`, `.p-hero` 等）で表現する（初出: §6） |

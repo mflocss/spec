@@ -50,13 +50,20 @@ v1.0 内部ドラフトからの全変更を含む。
 - §6 Block なしの Element 使用を禁止する MUST を追加（BEM の公式定義に基づく）
 - §6 Element-Block MUST の「定義」を明確化: Block クラスの HTML 上の存在を要件とし、CSS ルールセット不在時の MUST 違反にならない旨を追記
 
+### 命名規則（カスタムプロパティ）
+
+- §6 カスタムプロパティ命名まとめテーブルに公開 API 行を追加
+
 ### カスタムプロパティ
 
-- §7 プライベートカスタムプロパティの上位層設定許容の明確化
+- §7 公開 API / プライベート命名規則の導入（公開 API `--{対象}-{名前}` とプライベート `--_{名前}` の分類）
+- §7 公開 API に `@property` で `inherits: false` を指定する SHOULD の追加
+- §7 JS 注入 MAY をプライベートから公開 API 命名に整合
 
 ### ファイル構成
 
 - §8 ディレクトリ構造の簡素化（ファイル例の削除）
+- §8 1 Block = 1 ファイルの SHOULD を追加（Utility 層は例外）
 
 ### Appendix
 
@@ -90,7 +97,7 @@ v1.0 内部ドラフトからの全変更を含む。
 | §4 Layer Order Declaration | §4 Layer Order Declaration | 外部 CSS の層配置追加 |
 | §5 Layer Definitions | §5 Layer Definitions | 各層の強化 |
 | §6 Naming Conventions | §6 Naming Conventions | 変更なし |
-| §7 Custom Properties | §7 Custom Properties | 上位層設定許容の明確化 |
+| §7 Custom Properties | §7 Custom Properties | 公開 API / プライベート命名規則の導入 |
 | §8 File Architecture | §8 File Architecture | 簡素化 |
 | §9 Responsive Strategy | §9 Responsive Strategy | Container Queries テーブルを §5.4 に統合 |
 | §10 Appendix A: Flowchart | — | §3 に統合、削除 |
