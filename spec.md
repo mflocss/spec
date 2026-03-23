@@ -236,7 +236,7 @@ Tokens はブランドトークンとグローバルトークンに分類され�
 }
 ```
 
-SHOULD: カテゴリ別にファイルを分割する（color / typography / structure / ease / z）。
+SHOULD: カテゴリ別にファイルを分割すべきである（color / typography / structure / ease / z）。
 
 ### 5.2 Theme
 
@@ -246,7 +246,7 @@ SHOULD: カテゴリ別にファイルを分割する（color / typography / str
 - SHOULD: ダークモード / テーマ切替はこの層のみで完結させるべきである
 - SHOULD: `:root` セレクタを基本とすべきである。MAY: ダークモード切替で `data` 属性セレクタ（例: `[data-theme='dark']`）を使用してよい。`light-dark()` 関数を使用する場合（SHOULD）は `:root` のみで完結する
 
-SHOULD: `light-dark()` 関数を使用する。
+SHOULD: `light-dark()` 関数を使用すべきである。
 
 **命名規則**: `--color-{役割}`, `--font-{役割}`
 
@@ -294,7 +294,7 @@ SHOULD: Foundation 層はサブレイヤー `foundation.reset`（外部リセッ
 }
 ```
 
-SHOULD: reset / base / form の 3 ファイルに分割する。form を独立させる理由は、フォーム要素（input, select, textarea, button）はブラウザ間のデフォルトスタイル差異が最も大きく、正規化のコード量が多くなるためである。
+SHOULD: reset / base / form の 3 ファイルに分割すべきである。form を独立させる理由は、フォーム要素（input, select, textarea, button）はブラウザ間のデフォルトスタイル差異が最も大きく、正規化のコード量が多くなるためである。
 
 > **注記（Informative）**: リセット CSS はアタッチメント方式とする。リファレンス実装が参考を提供するが、各プロジェクトに適したリセットを選定・適用すること。リセット CSS の内部実装は本仕様の準拠対象外とする。
 
@@ -320,7 +320,7 @@ SHOULD: reset / base / form の 3 ファイルに分割する。form を独立�
 
 - SHOULD NOT: 見た目に関するプロパティ（`color`, `font-size`, `background-color`, `border`, `text-align` 等の視覚的プロパティ）を宣言すべきでない
 
-SHOULD: `container-type: inline-size` を宣言し、Container Queries の基盤を提供する。Container Queries を使用しないプロジェクトではこの限りではない。
+SHOULD: `container-type: inline-size` を宣言し、Container Queries の基盤を提供すべきである。Container Queries を使用しないプロジェクトではこの限りではない。
 
 MAY: `container-name` を併用し、名前付きコンテナを定義してよい。セクション単位で名前付きコンテナを定義すると、`@container` での参照先を明示できる。
 
@@ -366,11 +366,11 @@ MAY: `container-name` を併用し、名前付きコンテナを定義してよ�
 
 > **注記（Informative）**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 SHOULD NOT の対象外である。これらは Component 自身の視覚的責任に該当する
 
-SHOULD: 1 コンポーネント 1 ファイルとする。
+SHOULD: 1 コンポーネント 1 ファイルとすべきである。
 
 MAY: Component の中に他の Component を内包してよい（例: `.c-card` の中に `.c-button` を配置する）。内包しても Portability Test に合格するなら Component のままである。
 
-SHOULD: Component と Project の判断に迷った場合は Component とする。Project で上書き可能だが、逆（Project → Component への汎化）は困難であるため。Portability Test で明確に No と判断できる場合はこの限りではない。
+SHOULD: Component と Project の判断に迷った場合は Component とすべきである。Project で上書き可能だが、逆（Project → Component への汎化）は困難であるため。Portability Test で明確に No と判断できる場合はこの限りではない。
 
 ### 5.6 Project
 
@@ -384,7 +384,7 @@ SHOULD: Component と Project の判断に迷った場合は Component とする
 SHOULD: サイト固有のデザイン要件があるセクションには、セクションルートに Project Block を付与し、セクション内の要素は Element として構築すべきである。サイト固有のスタイリングが不要なセクションは Layout と Component のみで構成してよい。
 - インラインスタイルについては §7 Custom Properties を参照
 
-SHOULD: ページ単位または機能単位でファイルを分割する。
+SHOULD: ページ単位または機能単位でファイルを分割すべきである。
 
 #### 上書きパターン
 
@@ -396,7 +396,7 @@ Project 層は上位層として、Component のスタイルをページやセ�
 | CSS 変数経由 | Component/Layout が公開する公開 API カスタムプロパティの値を設定 | `.p-about { --section-padding-min: 2.5rem; }` |
 | Modifier（Component 層 / Project 層で定義） | 汎用バリエーション | `.c-button.-primary` |
 
-SHOULD: 直接プロパティ上書きと CSS 変数経由のどちらも使用できる場合は、CSS 変数経由を優先する。CSS 変数経由は Component/Layout の内部構造に依存しないため保守性が高い。
+SHOULD: 直接プロパティ上書きと CSS 変数経由のどちらも使用できる場合は、CSS 変数経由を優先すべきである。CSS 変数経由は Component/Layout の内部構造に依存しないため保守性が高い。
 
 Modifier は Component に内包される再利用可能なバリエーション。Project 上書きはサイト固有のデザイン要件に基づき Component のスタイルを調整するもの。
 
@@ -453,7 +453,7 @@ SHOULD: 装飾的アニメーションは Animation 層に分離し、2 ガー�
 
 この 2 条件の考慮を **2 ガード原則** と呼ぶ。
 
-SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用する。条件を満たさない場合にブロック全体が不適用になり、フォールバック安全性が高い。
+SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用すべきである。条件を満たさない場合にブロック全体が不適用になり、フォールバック安全性が高い。
 
 上記の統合ガードパターン（SHOULD）に従えば、この MUST は自動的に満たされる。統合ガードを使用しない場合は、`prefers-reduced-motion: reduce` でアニメーション関連プロパティが初期値に解決されること、`scripting: none` で要素の可視性が維持されることを個別に検証する。
 
@@ -684,7 +684,7 @@ SHOULD: 1 つの CSS ファイルには 1 つの Block を定義すべきであ�
 
 MUST: `layer-order.css` を最初に読み込み、その後層順にファイルをインポートしなければならない。
 
-SHOULD: 各ファイルがどの層に属するかを明確にする。方法はプロジェクトの規模やツールチェーンに応じて選択してよい。
+SHOULD: 各ファイルがどの層に属するかを明確にすべきである。方法はプロジェクトの規模やツールチェーンに応じて選択してよい。
 
 | 方式 | 説明 |
 |---|---|
@@ -714,13 +714,13 @@ SP ファースト / PC ファーストはプロジェクトごとに判断す�
 | Media Queries | ビューポート全体の離散的変化 | ナビゲーション切替、カラム数変更 |
 | `clamp()` | 連続的な流体デザイン | フォントサイズ、余白の滑らかな変化 |
 
-SHOULD: コンポーネント単位のレスポンシブデザインには Container Queries を使用する。ビューポート全体の変化には Media Queries、連続的な流体デザインには `clamp()` を使い分ける。
+SHOULD: コンポーネント単位のレスポンシブデザインには Container Queries を使用すべきである。ビューポート全体の変化には Media Queries、連続的な流体デザインには `clamp()` を使い分ける。
 
 Container Queries の層責任（`container-type` / `container-name` / `@container` の配置先）は §5.4 Layout を参照。
 
 ### Container Queries の単位
 
-SHOULD: Container Queries 内のサイズ指定には `cqi`（container query inline-size）を使用する。`vw` はビューポート基準であり、コンテナ基準の設計と矛盾する。
+SHOULD: Container Queries 内のサイズ指定には `cqi`（container query inline-size）を使用すべきである。`vw` はビューポート基準であり、コンテナ基準の設計と矛盾する。
 
 > **Example:**
 
