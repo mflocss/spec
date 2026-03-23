@@ -397,7 +397,7 @@ SHOULD: 直接プロパティ上書きと CSS 変数経由のどちらも使用�
 
 Modifier は Component に内包される再利用可能なバリエーション。Project 上書きはサイト固有のデザイン要件に基づき Component のスタイルを調整するもの。
 
-Layout の振る舞いをページやセクションに合わせて変えたい場合は、Project の Block または Element として定義する（例: `class="l-section p-about"`, `class="l-inner p-about__inner"`）。
+Layout や Component の振る舞いをページやセクションに合わせて変えたい場合は、Project の Block または Element として定義する（例: `class="l-section p-about"`, `class="l-inner p-about__inner"`）。
 
 > **Example:**
 
@@ -580,10 +580,10 @@ Tokens（値）→ Theme（意味）→ Foundation 以降（使用）
 
 | 分類 | プレフィックス | 用途 | 例 |
 |---|---|---|---|
-| 公開 API | `--{対象}-{名前}` | 上位層または JS から上書きされる変数 | `--section-padding-min`, `--badge-bg`, `--stagger-delay` |
-| プライベート | `--_{名前}` | Block 内部でのみ使用する変数 | `--_font-size-min`, `--_delay` |
+| 公開 API | `--` | 上位層または JS から上書きされる変数 | `--section-padding-min`, `--badge-bg`, `--stagger-delay` |
+| プライベート | `--_` | Block 内部でのみ使用する変数 | `--_font-size-min`, `--_delay` |
 
-SHOULD: 上位層（Project 等）から値を設定する変数、または JS から値を注入する変数は、公開 API 命名（`--_` プレフィックスなし）を使用すべきである。外部からの契約として機能する変数にプライベート命名を使用すると、意図が不明確になる。
+SHOULD: 上位層（Project 等）から値を設定する変数、または JS から値を注入する変数は、`--` プレフィックスの公開 API 命名を使用すべきである。外部からの契約として機能する変数にプライベート命名（`--_`）を使用すると、意図が不明確になる。
 
 SHOULD: 公開 API のカスタムプロパティには `@property` で `inherits: false` を指定し、子孫への意図しない継承を防止すべきである。パフォーマンスの向上にも寄与する。
 
@@ -603,7 +603,7 @@ MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライ�
 }
 ```
 
-上位層（Project 等）から公開 API の値を設定し、Layout の振る舞いをページやセクションに合わせて変える。これは §5.6 の CSS 変数経由上書きパターンの基盤となる。
+上位層（Project 等）から公開 API の値を設定し、Layout や Component の振る舞いをページやセクションに合わせて変える。これは §5.6 の CSS 変数経由上書きパターンの基盤となる。
 
 > **Example:**
 
