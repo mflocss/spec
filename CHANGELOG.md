@@ -39,6 +39,9 @@ v1.0 内部ドラフトからの全変更を含む。
 - §5.6 Project: セクションルートへの Project Block 付与を SHOULD で推奨
 - §5.6 上書きパターンの拡充（CSS 変数経由パターンの追加）。Modifier 行に層の帰属を注記
 - §5.7 Animation: 2 ガード原則の MUST を達成条件ベースに書き直し。統合ガードの SHOULD 化
+- §5.7 Animation: 装飾的アニメーション / 機能的トランジションの分類と判断基準を追加
+- §3 Flowchart Step 5: 装飾的アニメーション / 機能的トランジションの分岐に更新
+- Glossary: 装飾的アニメーション・機能的トランジションの定義を追加
 - §5.8 Utility: MUST NOT の判定基準を「Block/Element への帰属可否」に明確化。`!important` MUST NOT の重複を §4 への参照に変更
 - §9 Container Queries を SHOULD で規定
 

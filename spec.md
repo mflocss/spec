@@ -142,8 +142,9 @@ Step 4: 別のサイトにそのまま持っていけるか？（Portability Tes
   1つのスタイルが Step 4 で Component と判定され、かつ Step 5 で
   Animation にも該当する場合、動きの部分を Animation 層に分離する。
 
-Step 5: prefers-reduced-motion で無効化すべき動きか？
-  └─ Yes → Animation
+Step 5: 装飾的アニメーション（視覚演出）か？
+  ├─ Yes → Animation（2 ガード原則を適用）
+  └─ 機能的トランジション（インタラクションフィードバック）→ Component / Project に残す
 
 Step 6: 局所的な単一目的の微調整か？
   └─ Yes → Utility
@@ -434,6 +435,19 @@ Layout や Component の振る舞いをページやセクションに合わせ�
 **プレフィックス**: `a-`
 
 - MUST: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装としなければならない
+
+#### 動きの分類
+
+Animation 層に分離すべき動きと、Component/Project に残してよい動きを区別する。
+
+| 分類 | 性質 | 例 | 層 |
+|---|---|---|---|
+| 装飾的アニメーション | 視覚演出。なくても機能に影響しない | fade-in, slide-up, stagger, parallax | Animation |
+| 機能的トランジション | インタラクションフィードバック。ユーザー操作に対する応答 | hover の色変化, ボタンの translate, フォーカスリングの遷移 | Component / Project |
+
+SHOULD: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである。機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい。
+
+判断基準: 「その動きを無効化しても、インタラクションの意味が伝わるか？」 — Yes（なくても伝わる）→ 装飾的 → Animation。No（ないと操作感が損なわれる）→ 機能的 → Component/Project。
 
 この 2 条件の考慮を **2 ガード原則** と呼ぶ。
 
@@ -740,6 +754,8 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 | **公開 API（カスタムプロパティ）** | `--{対象}-{名前}` 形式の変数。上位層または JS から上書きされることを想定する外部インターフェース（初出: §7） |
 | **プライベートカスタムプロパティ** | `--_` プレフィックスを持つ変数。Block 内部でのみ使用し、外部からの参照・設定を想定しない（初出: §7） |
 | **先制宣言** | `layer-order.css` における `@layer` の優先順位宣言。全スタイル定義に先行して記述される（初出: §4） |
+| **装飾的アニメーション** | 視覚演出としての動き。無効化しても機能に影響しない。Animation 層に分離し、2 ガード原則を適用する（初出: §5.7） |
+| **機能的トランジション** | インタラクションフィードバックとしての動き。ユーザー操作に対する応答であり、対象の Block が属する層（Component または Project）に記述する（初出: §5.7） |
 | **2 ガード原則** | Animation 層で `prefers-reduced-motion` と `scripting` の 2 条件を考慮すること。推奨は `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガード（初出: §5.7） |
 | **Block** | BEM における独立した意味のあるエンティティ。プレフィックス付きクラス名（`.c-card`, `.p-hero` 等）で表現する（初出: §6） |
 | **Element（`__element`）** | Block の一部。命名は `.__{element}` の形式。Block なしでの使用禁止等の規範的定義は §6 を参照（初出: §6） |
