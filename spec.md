@@ -454,11 +454,11 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 | 装飾的アニメーション | 視覚演出。なくても機能に影響しない | fade-in, slide-up, stagger, parallax | Animation |
 | 機能的トランジション | インタラクションフィードバック。ユーザー操作に対する応答 | hover の色変化, ボタンの translate, フォーカスリングの遷移 | Component / Project |
 
+MUST で定義した `prefers-reduced-motion` と `scripting` の 2 条件の考慮を **2 ガード原則** と呼ぶ。
+
 SHOULD: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである。機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい。
 
 判断基準: 「その動きを無効化しても、インタラクションの意味が伝わるか？」 — Yes（なくても伝わる）→ 装飾的 → Animation。No（ないと操作感が損なわれる）→ 機能的 → Component/Project。
-
-この 2 条件の考慮を **2 ガード原則** と呼ぶ。
 
 SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用すべきである。条件を満たさない場合にブロック全体が不適用になり、フォールバック安全性が高い。
 
