@@ -687,6 +687,7 @@ MUST: ディレクトリ名は層名と一致させなければならない。
 ```
 css/
 ├── layer-order.css
+├── property.css
 ├── style.css
 ├── tokens/
 ├── theme/
@@ -698,6 +699,8 @@ css/
 └── utility/
 ```
 
+`layer-order.css` と `property.css` は `@layer` の外で機能する宣言であり、いずれの層にも属さない。層ディレクトリと同列に配置する。
+
 ### 1 Block = 1 ファイル
 
 SHOULD: 1 つの CSS ファイルには 1 つの Block を定義すべきである。複数の独立した Block を 1 ファイルに含めると、ファイル名と Block の対応が崩れる。
@@ -707,6 +710,10 @@ SHOULD: 1 つの CSS ファイルには 1 つの Block を定義すべきであ�
 ### layer-order.css
 
 `@layer` の先制宣言のみを含む。スタイル定義は一切置かない。
+
+### property.css
+
+`@property` 宣言を含む。§4 の MUST により `@layer` の外に配置する必要があるため、層ディレクトリには入れない。
 
 ### style.css（エントリポイント）
 
