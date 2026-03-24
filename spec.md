@@ -402,6 +402,8 @@ Modifier は Component に内包される再利用可能なバリエーション
 
 Layout や Component の振る舞いをページやセクションに合わせて変えたい場合は、Project の Block または Element として定義する（例: `class="l-section p-about"`, `class="l-inner p-about__inner"`）。
 
+MAY: Project が内包する Component や Layout の要素に、現時点で固有スタイルがなくても Project の Element クラスを付与してよい（例: `class="c-section-heading p-about__heading"`）。カスタマイズ時に CSS の追加だけで対応できる拡張点として機能する。
+
 > **Example:**
 
 ```css
