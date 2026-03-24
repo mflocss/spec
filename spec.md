@@ -649,6 +649,8 @@ MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライ�
 
 上位層（Project 等）から公開 API の値を設定し、Layout や Component の振る舞いをページやセクションに合わせて変える。これは §5.6 の CSS 変数経由上書きパターンの基盤となる。
 
+> **Note:** 上位層（Project）が下位層（Layout）の公開 API 変数の値を設定することは、正しい依存方向（上位→下位）に沿った操作であり、§3 の MUST NOT（下位→上位の参照禁止）に抵触しない。
+
 > **Example:**
 
 ```css
