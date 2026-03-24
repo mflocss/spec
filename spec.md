@@ -436,7 +436,7 @@ Layout や Component の振る舞いをページやセクションに合わせ�
 
 **セレクタ**: `data-animate` 属性 — `[data-animate="{種別}"]`（例: `data-animate="fade-in"`, `data-animate="slide-up"`, `data-animate="scale-in"`）
 
-> **設計根拠**: Animation 層のスタイルは JS の IntersectionObserver と連動して `is-active` クラスを付与する設計が一般的である。§6 の JS 連携規定（「JS からの要素取得には `data-*` 属性を使用する」）に準拠するため、クラスプレフィックス（`a-`）ではなく `data-animate` 属性を採用する。
+> **設計根拠**: Animation 層のスタイルは JS（IntersectionObserver 等）と連動して状態クラスを付与する。JS からの要素取得には `data-*` 属性を使用する（§6 JS 連携）ため、クラスプレフィックス（`a-`）ではなく `data-animate` 属性を採用する。
 
 - MUST: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装としなければならない
 
@@ -561,9 +561,9 @@ SHOULD NOT: Element を 2 階層以上ネストすべきではない（`__elemen
 
 ### ファイル名
 
-SHOULD: ファイル名は主要クラス名と一致させるべきである — `{prefix}-{name}.css`。1 ファイルに関連クラスをグループ化する場合は、代表クラス名をファイル名とする（例: `u-hidden.css`）。Animation 層は `animate-{種別}.css`（例: `animate-fade-in.css`）とし、`data-animate` の値に対応させる。
+SHOULD: ファイル名は主要クラス名と一致させるべきである — `{prefix}-{name}.css`。1 ファイルに関連クラスをグループ化する場合は、代表クラス名をファイル名とする（例: `u-hidden.css`）。Animation 層は `{種別}.css`（例: `fade-in.css`）とし、`data-animate` の値に対応させる（`animation/` ディレクトリが層を識別するため、ファイル名にプレフィックスは不要）。
 
-例: `.c-button` → `c-button.css`, `.l-section` → `l-section.css`, `[data-animate="fade-in"]` → `animate-fade-in.css`
+例: `.c-button` → `c-button.css`, `.l-section` → `l-section.css`, `[data-animate="fade-in"]` → `animation/fade-in.css`
 
 ### カスタムプロパティ命名まとめ
 
