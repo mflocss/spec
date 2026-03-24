@@ -437,7 +437,7 @@ Layout や Component の振る舞いをページやセクションに合わせ�
 **セレクタ**: `data-animate` 属性および `data-stagger` 属性
 
 - `[data-animate="{種別}"]` — 要素自体のアニメーション種別を指定する（例: `data-animate="fade-in"`, `data-animate="slide-up"`）
-- `[data-stagger]` — 子要素に段階的な遅延を適用するコンテナを示す（値なし）。JS が各子要素に `--stagger-delay` を設定する
+- `[data-stagger="{種別}"]` — 子要素に段階的な遅延を適用するコンテナ。値はアニメーション種別で、`data-animate` と同じ `@keyframes` を共有する（例: `data-stagger="fade-in-slide-up"`）。JS が各子要素に `--stagger-delay` を設定する
 
 > **設計根拠**: Animation 層のスタイルは JS（IntersectionObserver 等）と連動して状態クラスを付与する。JS からの要素取得には `data-*` 属性を使用する（§6 JS 連携）ため、クラスプレフィックス（`a-`）ではなく `data-animate` 属性を採用する。
 
@@ -464,14 +464,14 @@ SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)
 
 #### @keyframes 命名
 
-SHOULD: `@keyframes` 名は `data-animate` の値と一致させるべきである（例: `data-animate="scale-in"` → `@keyframes scale-in`）。`@layer` は `@keyframes` 名のスコープを分離しないため、`data-animate` の値との対応関係を明確にすることで名前衝突のリスクを低減する。
+SHOULD: `@keyframes` を使用する場合、`@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（例: `data-animate="scale-in"` → `@keyframes scale-in`）。`data-animate` と `data-stagger` は同じ種別値を持つ場合、同じ `@keyframes` を共有する。`@layer` は `@keyframes` 名のスコープを分離しないため、属性値との対応関係を明確にすることで名前衝突のリスクを低減する。
 
 > **Example:**
 
 ```css
 @layer animation {
   @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
-    /* 個別要素のアニメーション */
+    /* transition ベース（@keyframes 不要） */
     [data-animate="fade-in"] {
       opacity: 0;
       transition: opacity 0.4s var(--ease-out-cubic);
@@ -480,9 +480,18 @@ SHOULD: `@keyframes` 名は `data-animate` の値と一致させるべきであ�
       opacity: 1;
     }
 
-    /* 子要素の段階的遅延 */
-    [data-stagger] > * {
-      transition-delay: var(--stagger-delay, 0s);
+    /* @keyframes ベース */
+    @keyframes fade-in-slide-up {
+      from { opacity: 0; translate: 0 1.25rem; }
+    }
+    [data-animate="fade-in-slide-up"] {
+      animation: fade-in-slide-up 0.6s var(--ease-out-cubic) both;
+    }
+
+    /* stagger: 同じ @keyframes を遅延付きで子要素に適用 */
+    [data-stagger="fade-in-slide-up"] > * {
+      animation: fade-in-slide-up 0.6s var(--ease-out-cubic) both;
+      animation-delay: var(--stagger-delay, 0s);
     }
   }
 }
