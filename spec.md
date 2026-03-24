@@ -86,7 +86,7 @@ mFLOCSS は 8 つの層で構成される。
 | 4 | layout | `l-` | 位置と空間の配置 |
 | 5 | component | `c-` | 配置先に左右されない再利用可能なパーツ |
 | 6 | project | `p-` | サイト固有のパーツとデザイン要件 |
-| 7 | animation | `a-` | 動きの分離管理 |
+| 7 | animation | — | 動きの分離管理 |
 | 8 | utility | `u-` | 単一目的のスタイル上書き |
 
 ### 層間の依存方向
@@ -434,7 +434,9 @@ Layout や Component の振る舞いをページやセクションに合わせ�
 
 **責任**: 動きの分離管理
 
-**プレフィックス**: `a-`
+**セレクタ**: `data-animate` 属性 — `[data-animate="{種別}"]`（例: `data-animate="fade-in"`, `data-animate="slide-up"`, `data-animate="scale-in"`）
+
+> **設計根拠**: Animation 層のスタイルは JS（IntersectionObserver 等）と連動して状態クラスを付与する。JS からの要素取得には `data-*` 属性を使用する（§6 JS 連携）ため、クラスプレフィックス（`a-`）ではなく `data-animate` 属性を採用する。
 
 - MUST: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装としなければならない
 
@@ -462,11 +464,11 @@ SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)
 ```css
 @layer animation {
   @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
-    .a-fade-in {
+    [data-animate="fade-in"] {
       opacity: 0;
       transition: opacity 0.4s var(--ease-out-cubic);
     }
-    .a-fade-in.is-active {
+    [data-animate="fade-in"].is-active {
       opacity: 1;
     }
   }
@@ -531,16 +533,16 @@ MUST: Element（`__element`）は、対応する Block クラスが HTML 上に�
 | Modifier | `.-{modifier}` | `.c-button.-primary` |
 | State | `.is-{state}`, `.has-{state}` | `.is-active`, `.has-children` |
 
-SHOULD: 層の識別のためにプレフィックス（§3 の層テーブルを参照）を使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。
+SHOULD: 層の識別のためにプレフィックス（§3 の層テーブルを参照）を使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。Tokens・Theme・Foundation はクラスセレクタを使用しないため、Animation は `data-animate` 属性セレクタを使用するため（§5.7 設計根拠を参照）、プレフィックスの対象外とする。
 
 ### Modifier と State の使い分け
 
 - **Modifier（`.-xxx`）**: 静的なバリエーション。HTML に記述し、原則として変化しない
 - **State（`.is-xxx`, `.has-xxx`）**: 動的な状態。JS やユーザー操作により変化する
 
-SHOULD: Modifier は Component 層と Project 層で使用すべきである。SHOULD NOT: Layout 層では使用すべきでない（Layout は配置と空間のみを担当し、バリエーションは上位層で制御する）。SHOULD NOT: Animation 層と Utility 層は単一目的のスタイルであり、Modifier を使用すべきでない。
+SHOULD: Modifier は Component 層と Project 層で使用すべきである。SHOULD NOT: Layout 層では使用すべきでない（Layout は配置と空間のみを担当し、バリエーションは上位層で制御する）。SHOULD NOT: Animation 層（`data-animate` 属性セレクタ）と Utility 層は単一目的のスタイルであり、Modifier を使用すべきでない。
 
-State のスタイルは、対象の Block が属する層に記述する（例: `.c-button.is-active` は Component 層、`.a-fade-in.is-active` は Animation 層）。
+State のスタイルは、対象の Block が属する層に記述する（例: `.c-button.is-active` は Component 層、`[data-animate="fade-in"].is-active` は Animation 層）。
 
 ### Modifier に `-` を採用する理由
 
@@ -559,9 +561,9 @@ SHOULD NOT: Element を 2 階層以上ネストすべきではない（`__elemen
 
 ### ファイル名
 
-SHOULD: ファイル名は主要クラス名と一致させるべきである — `{prefix}-{name}.css`。1 ファイルに関連クラスをグループ化する場合は、代表クラス名をファイル名とする（例: `u-hidden.css`）。
+SHOULD: ファイル名は主要クラス名と一致させるべきである — `{prefix}-{name}.css`。1 ファイルに関連クラスをグループ化する場合は、代表クラス名をファイル名とする（例: `u-hidden.css`）。Animation 層は `{種別}.css`（例: `fade-in.css`）とし、`data-animate` の値に対応させる（`animation/` ディレクトリが層を識別するため、ファイル名にプレフィックスは不要）。
 
-例: `.c-button` → `c-button.css`, `.l-section` → `l-section.css`
+例: `.c-button` → `c-button.css`, `.l-section` → `l-section.css`, `[data-animate="fade-in"]` → `animation/fade-in.css`
 
 ### カスタムプロパティ命名まとめ
 
