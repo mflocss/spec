@@ -462,6 +462,10 @@ SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)
 
 上記の統合ガードパターン（SHOULD）に従えば、この MUST は自動的に満たされる。統合ガードを使用しない場合は、`prefers-reduced-motion: reduce` でアニメーション関連プロパティが初期値に解決されること、`scripting: none` で要素の可視性が維持されることを個別に検証する。
 
+#### @keyframes 命名
+
+SHOULD: `@keyframes` 名は `data-animate` の値と一致させるべきである（例: `data-animate="scale-in"` → `@keyframes scale-in`）。`@layer` は `@keyframes` 名のスコープを分離しないため、`data-animate` の値との対応関係を明確にすることで名前衝突のリスクを低減する。
+
 > **Example:**
 
 ```css
