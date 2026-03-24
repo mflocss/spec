@@ -228,7 +228,7 @@ Tokens はブランドトークンとグローバルトークンに分類され�
 ```css
 @layer tokens {
   :root {
-    --slate-600: oklch(0.45 0.02 260);
+    --slate-600: #4a5568;
     --font-ja: "Noto Sans JP", sans-serif;
     --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
     --z-header: 100;
