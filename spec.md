@@ -166,7 +166,7 @@ Step 6: 局所的な単一目的の微調整か？
 
 ### 先制宣言
 
-MUST: CSS Cascading and Inheritance Level 5 [CSS-CASCADE-5] に定義される `@layer` の優先順位宣言をエントリポイント CSS の先頭で、全ての `@import` に先行して行わなければならない。
+MUST: CSS Cascading and Inheritance Level 5 [CSS-CASCADE-5] に定義される `@layer` による層間の優先順位宣言をエントリポイント CSS の先頭で、全ての `@import` に先行して行わなければならない。
 
 > **Example:**
 
@@ -783,7 +783,7 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 | **3 層参照チェーン** | Tokens（値）→ Theme（意味）→ Foundation 以降（使用）。カスタムプロパティの参照パスを規定する（初出: §7） |
 | **公開 API（カスタムプロパティ）** | `--{対象}-{名前}` 形式の変数。上位層または JS から上書きされることを想定する外部インターフェース（初出: §7） |
 | **プライベートカスタムプロパティ** | `--_` プレフィックスを持つ変数。Block 内部でのみ使用し、外部からの参照・設定を想定しない（初出: §7） |
-| **先制宣言** | `layer-order.css` における `@layer` の優先順位宣言。全スタイル定義に先行して記述される（初出: §4） |
+| **先制宣言** | `layer-order.css` における `@layer` による層間の優先順位宣言。全スタイル定義に先行して記述される（初出: §4） |
 | **装飾的アニメーション** | 視覚演出としての動き。無効化しても機能に影響しない。Animation 層に分離し、2 ガード原則を適用する（初出: §5.7） |
 | **機能的トランジション** | インタラクションフィードバックとしての動き。ユーザー操作に対する応答であり、対象の Block が属する層（Component または Project）に記述する（初出: §5.7） |
 | **2 ガード原則** | Animation 層で `prefers-reduced-motion` と `scripting` の 2 条件を考慮すること。推奨は `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガード（初出: §5.7） |
