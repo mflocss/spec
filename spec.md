@@ -445,6 +445,8 @@ MAY: Project が内包する Component や Layout の要素に、現時点で固
 
 - MUST: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装としなければならない
 
+この `prefers-reduced-motion` と `scripting` の 2 条件の考慮を **2 ガード原則** と呼ぶ。
+
 #### 動きの分類
 
 Animation 層に分離すべき動きと、Component/Project に残してよい動きを区別する。
@@ -453,8 +455,6 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 |---|---|---|---|
 | 装飾的アニメーション | 視覚演出。なくても機能に影響しない | fade-in, slide-up, stagger, parallax | Animation |
 | 機能的トランジション | インタラクションフィードバック。ユーザー操作に対する応答 | hover の色変化, ボタンの translate, フォーカスリングの遷移 | Component / Project |
-
-MUST で定義した `prefers-reduced-motion` と `scripting` の 2 条件の考慮を **2 ガード原則** と呼ぶ。
 
 SHOULD: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである。機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい。
 
@@ -649,7 +649,7 @@ MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライ�
 
 上位層（Project 等）から公開 API の値を設定し、Layout や Component の振る舞いをページやセクションに合わせて変える。これは §5.6 の CSS 変数経由上書きパターンの基盤となる。
 
-> **Note:** 上位層（Project）が下位層（Layout）の公開 API 変数の値を設定することは、正しい依存方向（上位→下位）に沿った操作であり、§3 の MUST NOT（下位→上位の参照禁止）に抵触しない。
+> **Note:** 上位層（Project）が下位層（Layout, Component）の公開 API 変数の値を設定することは、正しい依存方向（上位→下位）に沿った操作であり、§3 の MUST NOT（下位→上位の参照禁止）に抵触しない。
 
 > **Example:**
 
