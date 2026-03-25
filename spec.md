@@ -555,14 +555,14 @@ SHOULD: `@keyframes` を使用する場合、`@keyframes` 名は対応する `da
 
 MUST: Element（`__element`）は、対応する Block クラスが HTML 上に存在しなければならない。Block なしの Element は使用してはならない。CSS にルールセットがなくても、HTML 上に Block クラスが付与されていれば MUST 違反にはならない。BEM の「Element は常に Block の一部であり、Block から分離して使用してはならない」に基づく。
 | Modifier | `.-{modifier}` | `.c-button.-primary` |
-| State | `.is-{state}`, `.has-{state}` | `.is-active`, `.has-children` |
+| State | `.is-{state}` | `.is-active`, `.is-open`, `.is-loading` |
 
 SHOULD: 層の識別のためにプレフィックス（§3 の層テーブルを参照）を使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。Tokens・Theme・Foundation はクラスセレクタを使用しないため、Animation は `data-animate` 属性セレクタを使用するため（§5.7 設計根拠を参照）、プレフィックスの対象外とする。
 
 ### Modifier と State の使い分け
 
 - **Modifier（`.-xxx`）**: 静的なバリエーション。HTML に記述し、原則として変化しない
-- **State（`.is-xxx`, `.has-xxx`）**: 動的な状態。JS やユーザー操作により変化する
+- **State（`.is-xxx`）**: 要素自身の動的な状態。JS やユーザー操作により変化する。子要素の状態に基づく親のスタイルは CSS `:has()` 擬似クラスで記述する（SHOULD）
 
 SHOULD: Modifier は Component 層と Project 層で使用すべきである。SHOULD NOT: Layout 層では使用すべきでない（Layout は配置と空間のみを担当し、バリエーションは上位層で制御する）。SHOULD NOT: Animation 層（`data-animate` 属性セレクタ）と Utility 層は単一目的のスタイルであり、Modifier を使用すべきでない。
 
