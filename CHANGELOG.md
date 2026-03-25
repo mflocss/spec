@@ -2,9 +2,9 @@
 
 mFLOCSS 仕様の変更履歴。
 
-> v1.0 は内部ドラフト。v1.1 が初の正式リリース。
+> v1.0 は内部ドラフト。v1.2 が初の正式リリース。
 
-## v1.1（初の正式リリース）
+## v1.2（初の正式リリース）
 
 v1.0 内部ドラフトからの全変更を含む。
 
@@ -87,14 +87,14 @@ v1.0 内部ドラフトからの全変更を含む。
 - コンポーネント追加/削除手順（§8）
 - 将来の展望セクション（§1）
 
-### 章番号対応表（v1.0 → v1.1）
+### 章番号対応表（v1.0 → v1.2）
 
-| v1.0 | v1.1 | 内容 |
+| v1.0 | v1.2 | 内容 |
 |---|---|---|
 | §1 Introduction | §1 Overview | 親セクション名を変更。§1.1/§1.2/§1.3 にサブセクション化 |
 | — | §1.1 Introduction [Informative] | 旧 §1 の導入部分 |
 | — | §1.2 不変原則 [Normative] | 旧 §1 の不変原則部分 |
-| — | §1.3 設計制約 [Normative] | v1.1 で新設 |
+| — | §1.3 設計制約 [Normative] | v1.2 で新設 |
 | §2 Conformance | §2 Conformance | 変更なし |
 | §3 Layer Architecture | §3 Layer Architecture | Responsibility Test, Flowchart, 誤りパターン追加 |
 | §4 Layer Order Declaration | §4 Layer Order Declaration | 外部 CSS の層配置追加 |
