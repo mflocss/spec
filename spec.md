@@ -181,7 +181,7 @@ MUST: `@property` を使用する場合は `@layer` の外に配置しなけれ�
 
 ### !important の優先度逆転
 
-`@layer` 内で `!important` を使用した場合、通常とは逆順で優先される（先に宣言された層が勝つ）。MUST NOT: Utility 層以外の全層で `!important` を使用してはならない。この制約により優先度逆転の複雑性を回避する。
+`@layer` 内で `!important` を使用した場合、通常とは逆順で優先される（先に宣言された層が勝つ）。MUST NOT: Utility 層以外の全層で `!important` を使用してはならない（`foundation.reset` サブレイヤーは §5.3 注記により準拠対象外）。この制約により優先度逆転の複雑性を回避する。
 
 ### 外部 CSS の層配置
 
