@@ -340,7 +340,7 @@ MAY: `container-name` を併用し、名前付きコンテナを定義してよ�
 
 プライベートカスタムプロパティ（`--_xxx`）の使用については §7 Custom Properties を参照。
 
-**検証問い（Layout Test）**: 「このスタイルを変えると、中身の見た目（色・文字・装飾）が変わるか？」 — Yes なら Layout ではない。
+**検証問い（Layout Test）**: 「このスタイルは、要素の配置・寸法・空間の確保を担っているか？」 — Yes なら Layout。「中身の見た目（色・文字・装飾・影・透明度）が変わるか？」 — Yes なら Layout ではない。
 
 > **Example:**
 
@@ -488,12 +488,21 @@ SHOULD: `@keyframes` を使用する場合、`@keyframes` 名は対応する `da
       opacity: 1;
     }
 
-    /* @keyframes ベース */
+    /* @keyframes ベース（即時再生） */
     @keyframes fade-in-slide-up {
       from { opacity: 0; translate: 0 1.25rem; }
     }
     [data-animate="fade-in-slide-up"] {
       animation: fade-in-slide-up 0.6s var(--ease-out-cubic) both;
+    }
+
+    /* @keyframes ベース（play-state 制御 — JS が .is-visible 付与で再生開始） */
+    [data-animate="scale-in"] {
+      animation: scale-in 0.8s var(--ease-out-quart) both;
+      animation-play-state: paused;
+    }
+    [data-animate="scale-in"].is-visible {
+      animation-play-state: running;
     }
 
     /* stagger: 同じ @keyframes を遅延付きで子要素に適用 */
@@ -792,8 +801,8 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 | 用語 | 定義 |
 |---|---|
 | **Portability Test** | 「そのパーツを別のサイトにそのまま持っていけるか？」— Component と Project の境界を判定する基準テスト（初出: §3） |
-| **Layout Test** | 「このスタイルを変えると、中身の見た目（色・文字・装飾）が変わるか？」— Layout 層の責任範囲を判定する検証問い（初出: §5.4） |
-| **Responsibility Test** | 「このスタイルは、パーツ自身の視覚的責任か？それとも使う側のデザイン要件か？」— Component と Project の境界を補助的に判定するテスト。Portability Test が明確な判定を返す場合はそちらに従う（§3 参照）（初出: §3） |
+| **Layout Test** | 「このスタイルは、要素の配置・寸法・空間の確保を担っているか？」— Layout 層の責任範囲を判定する検証問い。補助テスト:「中身の見た目（色・文字・装飾・影・透明度）が変わるか？」— Yes なら Layout ではない（初出: §5.4） |
+| **Responsibility Test** | 「このスタイルは、パーツ自身の視覚的責任か？それとも使う側のデザイン要件か？」— Component と Project の境界を補助的に判定するテスト。優先順位は §3 を参照（初出: §3） |
 | **ブランドトークン** | プロジェクトごとに変わるデザイン値（color, typography, structure）。Foundation 以降の層では Token 層のセマンティック変数経由で参照すべきである（初出: §5.1） |
 | **グローバルトークン** | 多くのプロジェクトで共通して使える値（ease, z-index, font-weight）。Foundation 以降の層から直接参照してよい（初出: §5.1） |
 | **参照チェーン** | Token（プリミティブ → セマンティック）→ Foundation 以降（使用）。カスタムプロパティの参照パスを規定する（初出: §7） |
