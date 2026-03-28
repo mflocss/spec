@@ -1,7 +1,7 @@
 # mFLOCSS 仕様 v1.2
 
 > **ステータス**: ドラフト
-> **最終更新**: 2026-03-23
+> **最終更新**: 2026-03-28
 > **著者**: shunei
 
 ---
@@ -61,6 +61,8 @@ mFLOCSS は以下の 4 原則に基づく。層数が変わってもこれらは
 | SHOULD NOT | 非推奨。正当な理由がある場合に限り逸脱を許容する |
 | MAY | 任意。プロジェクトの判断に委ねる |
 
+> **注記（Informative）**: SHOULD からの逸脱は、不変原則（§1.2）を理解した上で判断すること。逸脱の理由をコード内コメントまたは設計文書に残すことを推奨する。
+
 ### 準拠条件
 
 mFLOCSS v1.2 に準拠するとは、本仕様の全 MUST / MUST NOT ルールに違反しないことを意味する。MUST は `@layer` の構造的整合性・アクセシビリティ・命名体系の維持に限定される。設計判断の品質（層の選択・トークン参照チェーン等）は SHOULD で推奨し、遵守するほど設計の一貫性と保守性が向上する。
@@ -80,9 +82,9 @@ mFLOCSS は 8 つの層で構成される。
 
 | 順序 | 層名 | プレフィックス | 責任 |
 |---|---|---|---|
-| 1 | tokens | — | プリミティブなデザイン値の定義 |
-| 2 | theme | — | Tokens をセマンティック変数にマッピング |
-| 3 | foundation | — | ブラウザ環境の初期化と基本スタイル |
+| 1 | token | — | デザイントークンの定義（プリミティブ値とセマンティック変数） |
+| 2 | reset | — | ブラウザデフォルトの正規化（外部リセット CSS の取り込み） |
+| 3 | foundation | — | 要素の基本スタイル |
 | 4 | layout | `l-` | 位置と空間の配置 |
 | 5 | component | `c-` | 配置先に左右されない再利用可能なパーツ |
 | 6 | project | `p-` | サイト固有のパーツとデザイン要件 |
@@ -124,11 +126,11 @@ Component と Project の境界を補助的に判定するテスト。Portabilit
 
 ```
 Step 1: デザイントークン（色の値、フォント名、z-index 値等）か？
-  ├─ プリミティブな値の定義 → Tokens
-  └─ セマンティックなマッピング → Theme
+  └─ Yes → Token（プリミティブ値とセマンティック変数を同層で管理）
 
-Step 2: ブラウザ環境の初期化・要素の基本スタイルか？
-  └─ Yes → Foundation
+Step 2: ブラウザデフォルトの正規化か？要素の基本スタイルか？
+  ├─ 正規化（リセット CSS）→ Reset
+  └─ 要素の基本スタイル → Foundation
 
 Step 3: 配置と空間だけか？（色・文字・装飾に触れないか？）
   └─ Yes → Layout
@@ -172,7 +174,7 @@ MUST: CSS Cascading and Inheritance Level 5 [CSS-CASCADE-5] に定義される `
 
 ```css
 /* layer-order.css */
-@layer tokens, theme, foundation, layout, component, project, animation, utility;
+@layer token, reset, foundation, layout, component, project, animation, utility;
 ```
 
 ### @layer と @property
@@ -181,7 +183,7 @@ MUST: `@property` を使用する場合は `@layer` の外に配置しなけれ�
 
 ### !important の優先度逆転
 
-`@layer` 内で `!important` を使用した場合、通常とは逆順で優先される（先に宣言された層が勝つ）。MUST NOT: Utility 層以外の全層で `!important` を使用してはならない（`foundation.reset` サブレイヤーは §5.3 注記により準拠対象外）。この制約により優先度逆転の複雑性を回避する。
+`@layer` 内で `!important` を使用した場合、通常とは逆順で優先される（先に宣言された層が勝つ）。MUST NOT: Reset 層および Utility 層を除く全層で `!important` を使用してはならない。Reset 層は外部リセット CSS を取り込むため、その内部実装における `!important` の有無は本仕様の準拠対象外とする（§5.2 注記参照）。この制約により優先度逆転の複雑性を回避する。
 
 ### 外部 CSS の層配置
 
@@ -193,7 +195,7 @@ MUST: 外部 CSS は `@import url() layer()` または npm + バンドラーを�
 
 | 外部 CSS の種類 | 配置先 |
 |---|---|
-| リセット系ライブラリ | `layer(foundation)` |
+| リセット系ライブラリ | `layer(reset)` |
 | UI コンポーネント系ライブラリ | `layer(component)` |
 
 ---
@@ -202,115 +204,117 @@ MUST: 外部 CSS は `@import url() layer()` または npm + バンドラーを�
 
 *This section is normative.*
 
-### 5.1 Tokens
+### 5.1 Token
 
-**責任**: プリミティブなデザイン値の定義
+**責任**: デザイントークンの定義（プリミティブ値とセマンティック変数）
 
 - MUST: `:root` セレクタのみを使用しなければならない
-- SHOULD: 値のみを定義すべきである（セマンティクスを持たせない）
 - MUST NOT: 他の層のカスタムプロパティを参照してはならない
 
 **トークンの分類**:
 
-Tokens はブランドトークンとグローバルトークンに分類される。
+Token 層はプリミティブ変数とセマンティック変数を同一層内で管理する。
 
-| 分類 | 性質 | 例 | Theme 経由 |
-|------|------|-----|-----------|
-| ブランドトークン | プロジェクトごとに変わる値 | color, typography, structure | SHOULD |
-| グローバルトークン | 多くのプロジェクトで共通して使える値 | ease, z-index, font-weight | 直接参照 MAY |
+SHOULD: コンテキスト依存の値（ダークモード切替等）を持つカテゴリは、プリミティブ変数（`--_` プレフィックス）とセマンティック変数を同一ファイル内で分離すべきである。コンテキスト依存でないカテゴリは値のみを定義する。
 
-判断基準: 「ブランドやプロジェクトが変わったとき、この値を変更する必要があるか？」— Yes ならブランドトークン、No ならグローバルトークン。
+| 分類 | 性質 | 例 |
+|------|------|-----|
+| プリミティブ変数 | 生の値の定義 | `--_slate-600`, `--font-ja`, `--ease-out-cubic` |
+| セマンティック変数 | 意味を持つマッピング | `--color-main`, `--color-surface` |
+| グローバルトークン | 多くのプロジェクトで共通して使える値 | `--ease-out-cubic`, `--z-header` |
 
-**命名規則**: `--{カテゴリ}-{名前}`
+判断基準: 「ブランドやプロジェクトが変わったとき、この値を変更する必要があるか？」— Yes ならブランドトークン（プリミティブ + セマンティック）、No ならグローバルトークン。
+
+SHOULD: ダークモード / テーマ切替は Token 層のセマンティック変数で完結させるべきである。
+
+SHOULD: `light-dark()` 関数を使用すべきである。
+
+**命名規則**:
+
+| 種別 | パターン | 例 |
+|------|----------|-----|
+| プリミティブ（color） | `--_{カテゴリ}-{名前}` | `--_slate-600` |
+| セマンティック（color） | `--color-{役割}` | `--color-main` |
+| その他のカテゴリ | `--{カテゴリ}-{名前}` | `--font-ja`, `--space-m` |
 
 > **Example:**
 
 ```css
-@layer tokens {
+@layer token {
   :root {
-    --slate-600: #4a5568;
+    /* プリミティブ（color） */
+    --_slate-600: #4a5568;
+    --_slate-900: #1a202c;
+    --_slate-100: #f1f5f9;
+    --_white: #fff;
+
+    /* セマンティック（color） */
+    color-scheme: light dark;
+    --color-main: light-dark(var(--_slate-900), var(--_slate-100));
+    --color-surface: light-dark(var(--_white), var(--_slate-900));
+
+    /* typography */
     --font-ja: "Noto Sans JP", sans-serif;
+    --font-body: var(--font-ja);
+
+    /* global */
     --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
     --z-header: 100;
   }
 }
 ```
 
-SHOULD: カテゴリ別にファイルを分割すべきである（color / typography / structure / ease / z）。
+SHOULD: カテゴリ別にファイルを分割すべきである（color / typography / space / ease / z）。
 
-### 5.2 Theme
+### 5.2 Reset
 
-**責任**: Tokens をセマンティック変数にマッピング
+**責任**: ブラウザデフォルトの正規化（外部リセット CSS の取り込み）
 
-- SHOULD: Tokens のカスタムプロパティを参照すべきである（ハードコード値の直接指定は非推奨）
-- SHOULD: ダークモード / テーマ切替はこの層のみで完結させるべきである
-- SHOULD: `:root` セレクタを基本とすべきである。MAY: ダークモード切替で `data` 属性セレクタ（例: `[data-theme='dark']`）を使用してよい。`light-dark()` 関数を使用する場合（SHOULD）は `:root` のみで完結する
+- MAY: Reset 層の使用は任意である
+- MUST: Reset 層を使用する場合、外部リセット CSS の取り込みに限定しなければならない
+- SHOULD: Reset 層を使用する場合、プロジェクトに適したリセット CSS を選定し、この層に配置すべきである
 
-SHOULD: `light-dark()` 関数を使用すべきである。
-
-**命名規則**: `--color-{役割}`, `--font-{役割}`
+> **注記（Informative）**: リセット CSS はアタッチメント方式とする。リファレンス実装が参考を提供するが、各プロジェクトに適したリセットを選定・適用すること。リセット CSS の内部実装は本仕様の準拠対象外とする。`:where()` を使用していない外部リセット CSS でも、独立層として隔離されるため、Foundation 以降の層との詳細度競合を防止できる。
 
 > **Example:**
 
 ```css
-@layer theme {
-  :root {
-    color-scheme: light dark;
-    --color-main: light-dark(var(--slate-900), var(--slate-100));
-    --color-surface: light-dark(var(--white), var(--slate-900));
-    --font-body: var(--font-ja);
-  }
-}
+/* reset/index.css */
+@import url("modern-normalize.css") layer(reset);
 ```
 
 ### 5.3 Foundation
 
-**責任**: ブラウザ環境の初期化と基本スタイル
+**責任**: 要素の基本スタイル
 
-**検証問い**: 「このスタイルは、要素のブラウザデフォルトの正規化または基本スタイルの定義か？」 — Yes なら Foundation。No（特定のコンテキストに依存する）なら上位層。
+**検証問い**: 「このスタイルは、要素の基本スタイルの定義か？」 — Yes なら Foundation。No（特定のコンテキストに依存する）なら上位層。
 
 - MUST: 要素型セレクタのみを使用しなければならない（クラスセレクタ・ID セレクタ禁止）。SHOULD: 属性セレクタ、擬似クラス、擬似要素は、`:where()` 内で要素型セレクタと組み合わせて使用すべきである
-- SHOULD: `:where()` で詳細度をゼロに保つべきである。アタッチメント方式で取り込む外部リセット CSS は `:where()` を使用していない場合がある。`@layer` による層順序制御が詳細度の予測可能性を構造的に担保するため、`:where()` は推奨とする
-- SHOULD: ブランドトークンについては Theme のセマンティック変数を参照すべきである（グローバルトークンの直接参照は許容 — Tokens 層のトークン分類を参照）
-
-SHOULD: Foundation 層はサブレイヤー `foundation.reset`（外部リセット CSS）と `foundation.base`（自作ベーススタイル）に分離すべきである。これにより、外部リセット CSS が `:where()` を使用していない場合でも、自作ベーススタイルがリセットを上書きできる。
-
-サブレイヤーを使用する場合（SHOULD）:
+- SHOULD: `:where()` で詳細度をゼロに保つべきである。`@layer` による層順序制御が詳細度の予測可能性を構造的に担保するため、`:where()` は推奨とする
+- SHOULD: ブランドトークンについては Token 層のセマンティック変数を参照すべきである（グローバルトークンの直接参照は許容 — Token 層のトークン分類を参照）
 
 > **Example:**
 
 ```css
-/* foundation/index.css */
-@layer reset, base;
-
-/* foundation/reset.css — 外部リセット CSS */
-@import url("modern-normalize.css") layer(reset);
-
 /* foundation/base.css — 自作ベーススタイル */
-@layer base {
-  :where(body) {
-    line-height: 1.5;
-  }
-}
-```
-
-SHOULD: reset / base / form の 3 ファイルに分割すべきである。form を独立させる理由は、フォーム要素（input, select, textarea, button）はブラウザ間のデフォルトスタイル差異が最も大きく、正規化のコード量が多くなるためである。
-
-> **注記（Informative）**: リセット CSS はアタッチメント方式とする。リファレンス実装が参考を提供するが、各プロジェクトに適したリセットを選定・適用すること。リセット CSS の内部実装は本仕様の準拠対象外とする。
-
-サブレイヤーを使用しない場合:
-
-> **Example:**
-
-```css
 @layer foundation {
   :where(body) {
     font-family: var(--font-body);
     color: var(--color-main);
     background-color: var(--color-surface);
+    line-height: 1.5;
+  }
+}
+
+/* foundation/form.css — フォーム要素の基本スタイル */
+@layer foundation {
+  :where(input, select, textarea, button) {
+    font: inherit;
   }
 }
 ```
+
+SHOULD: base / form の 2 ファイルに分割すべきである。form を独立させる理由は、フォーム要素（input, select, textarea, button）はブラウザ間のデフォルトスタイル差異が大きく、正規化のコード量が多くなるためである。
 
 ### 5.4 Layout
 
@@ -336,7 +340,7 @@ MAY: `container-name` を併用し、名前付きコンテナを定義してよ�
 
 プライベートカスタムプロパティ（`--_xxx`）の使用については §7 Custom Properties を参照。
 
-**検証問い（Layout Test）**: 「このスタイルを変えると、中身の見た目（色・文字・装飾）が変わるか？」 — Yes なら Layout ではない。
+**検証問い（Layout Test）**: 「このスタイルは、要素の配置・寸法・空間の確保を担っているか？」 — Yes なら Layout。「中身の見た目（色・文字・装飾・影・透明度）が変わるか？」 — Yes なら Layout ではない。
 
 > **Example:**
 
@@ -361,7 +365,7 @@ MAY: `container-name` を併用し、名前付きコンテナを定義してよ�
 
 - SHOULD: Portability Test に合格すべきである（「別サイトにそのまま持っていけるか？」）
 - SHOULD NOT: 特定のサイトでしか使えない見た目にすべきでない
-- SHOULD: ブランドトークンについては Theme のセマンティック変数のみを参照すべきである（グローバルトークンの直接参照は許容 — Tokens 層のトークン分類を参照）
+- SHOULD: ブランドトークンについては Token 層のセマンティック変数のみを参照すべきである（グローバルトークンの直接参照は許容 — Token 層のトークン分類を参照）
 - SHOULD NOT: 外部レイアウトに影響するプロパティ（ルート要素の `margin`, `position: fixed/sticky`, ルート要素の `overflow` 等）を Component のルート要素に含めるべきでない — 配置は使う側の責任（Responsibility Test）である
 
 > **注記（Informative）**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 SHOULD NOT の対象外である。これらは Component 自身の視覚的責任に該当する
@@ -436,6 +440,8 @@ MAY: Project が内包する Component や Layout の要素に、現時点で固
 
 **責任**: 動きの分離管理
 
+> **注記（Informative）**: Animation を独立層とする理由は、装飾的アニメーションに対するアクセシビリティガード（prefers-reduced-motion + scripting の2ガード原則）を一元管理するためである。機能的トランジション（ホバーフィードバック等）は Component/Project 層に記述してよい。
+
 **セレクタ**: `data-animate` 属性および `data-stagger` 属性
 
 - `[data-animate="{種別}"]` — 要素自体のアニメーション種別を指定する（例: `data-animate="fade-in"`, `data-animate="slide-up"`）
@@ -482,12 +488,21 @@ SHOULD: `@keyframes` を使用する場合、`@keyframes` 名は対応する `da
       opacity: 1;
     }
 
-    /* @keyframes ベース */
+    /* @keyframes ベース（即時再生） */
     @keyframes fade-in-slide-up {
       from { opacity: 0; translate: 0 1.25rem; }
     }
     [data-animate="fade-in-slide-up"] {
       animation: fade-in-slide-up 0.6s var(--ease-out-cubic) both;
+    }
+
+    /* @keyframes ベース（play-state 制御 — JS が .is-visible 付与で再生開始） */
+    [data-animate="scale-in"] {
+      animation: scale-in 0.8s var(--ease-out-quart) both;
+      animation-play-state: paused;
+    }
+    [data-animate="scale-in"].is-visible {
+      animation-play-state: running;
     }
 
     /* stagger: 同じ @keyframes を遅延付きで子要素に適用 */
@@ -557,7 +572,7 @@ MUST: Element（`__element`）は、対応する Block クラスが HTML 上に�
 | Modifier | `.-{modifier}` | `.c-button.-primary` |
 | State | `.is-{state}` | `.is-active`, `.is-open`, `.is-loading` |
 
-SHOULD: 層の識別のためにプレフィックス（§3 の層テーブルを参照）を使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。Tokens・Theme・Foundation はクラスセレクタを使用しないため、Animation は `data-animate` 属性セレクタを使用するため（§5.7 設計根拠を参照）、プレフィックスの対象外とする。
+SHOULD: 層の識別のためにプレフィックス（§3 の層テーブルを参照）を使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-animate` 属性セレクタを使用するため（§5.7 設計根拠を参照）、プレフィックスの対象外とする。
 
 ### Modifier と State の使い分け
 
@@ -593,8 +608,9 @@ SHOULD: ファイル名は主要クラス名と一致させるべきである �
 
 | 層 | パターン | 例 |
 |---|---|---|
-| Tokens | `--{カテゴリ}-{名前}` | `--slate-600`, `--font-ja` |
-| Theme | `--color-{役割}`, `--font-{役割}` | `--color-main`, `--font-body` |
+| Token（プリミティブ / color） | `--_{カテゴリ}-{名前}` | `--_slate-600` |
+| Token（セマンティック / color） | `--color-{役割}` | `--color-main` |
+| Token（その他カテゴリ） | `--{カテゴリ}-{名前}` | `--font-ja`, `--space-m` |
 | 公開 API | `--{対象}-{名前}` | `--section-padding-min`, `--badge-bg` |
 | Private | `--_{名前}` | `--_font-size-min` |
 
@@ -604,19 +620,17 @@ SHOULD: ファイル名は主要クラス名と一致させるべきである �
 
 *This section is normative.*
 
-### 3 層参照チェーン
+### 参照チェーン
 
-カスタムプロパティは以下の 3 層を経由して使用する。
+カスタムプロパティは以下の経路で使用する。
 
 ```
-Tokens（値）→ Theme（意味）→ Foundation 以降（使用）
+Token（プリミティブ → セマンティック）→ Foundation 以降（使用）
 ```
 
-- SHOULD: Foundation 以降の層はブランドトークンについて Theme のセマンティック変数を参照すべきである
-- SHOULD NOT: Foundation 以降の層がブランドトークンを直接参照すべきでない（Theme を経由する）
-- MAY: グローバルトークン（ease, z-index 等）は Foundation 以降の層から直接参照してよい（Tokens 層のトークン分類を参照）
-
-例外: Tokens の値を Theme 層でマッピングする際のみ、ブランドトークンへの直接参照が許される。
+- SHOULD: Foundation 以降の層はブランドトークンについて Token 層のセマンティック変数を参照すべきである
+- SHOULD NOT: Foundation 以降の層がプリミティブ変数（`--_` プレフィックス）を直接参照すべきでない（セマンティック変数を経由する）
+- MAY: グローバルトークン（ease, z-index 等）は Foundation 以降の層から直接参照してよい（Token 層のトークン分類を参照）
 
 ### 公開 API / プライベート命名規則
 
@@ -649,7 +663,7 @@ MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライ�
 
 上位層（Project 等）から公開 API の値を設定し、Layout や Component の振る舞いをページやセクションに合わせて変える。これは §5.6 の CSS 変数経由上書きパターンの基盤となる。
 
-> **Note:** 上位層（Project）が下位層（Layout, Component）の公開 API 変数の値を設定することは、正しい依存方向（上位→下位）に沿った操作であり、§3 の MUST NOT（下位→上位の参照禁止）に抵触しない。
+> **注記（Informative）**: 上位層（Project）が下位層（Layout, Component）の公開 API 変数の値を設定することは、正しい依存方向（上位→下位）に沿った操作であり、§3 の MUST NOT（下位→上位の参照禁止）に抵触しない。
 
 > **Example:**
 
@@ -672,6 +686,8 @@ MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライ�
 
 MUST NOT: HTML マークアップに静的なインラインスタイルを記述してはならない。インラインスタイルはどの `@layer` にも属さず、mFLOCSS の「どこに何を書くか」を追跡可能にする設計思想と矛盾する。
 
+> **注記（Informative）**: 本規定は開発者が意図的に記述するスタイルに適用される。CMS やライブラリが自動生成するインラインスタイルは適用対象外とする。
+
 MAY: JS から公開 API のカスタムプロパティの値を動的に注入してよい。CSS が「何をするか」を定義し、JS が「いつ・どの値で」を決める疎結合パターンとして許容する。
 
 ---
@@ -687,10 +703,10 @@ MUST: ディレクトリ名は層名と一致させなければならない。
 ```
 css/
 ├── layer-order.css
-├── property.css
+├── property.css          /* 任意（@property を使用する場合のみ） */
 ├── style.css
-├── tokens/
-├── theme/
+├── token/
+├── reset/
 ├── foundation/
 ├── layout/
 ├── component/
@@ -699,7 +715,7 @@ css/
 └── utility/
 ```
 
-`layer-order.css` と `property.css` は `@layer` の外で機能する宣言であり、いずれの層にも属さない。層ディレクトリと同列に配置する。
+`layer-order.css` は `@layer` の外で機能する宣言であり、いずれの層にも属さない。`property.css` は `@property` を使用する場合のみ作成する（§4 参照）。いずれも層ディレクトリと同列に配置する。
 
 ### 1 Block = 1 ファイル
 
@@ -713,7 +729,7 @@ SHOULD: 1 つの CSS ファイルには 1 つの Block を定義すべきであ�
 
 ### property.css
 
-`@property` 宣言を含む。§4 の MUST により `@layer` の外に配置する必要があるため、層ディレクトリには入れない。
+`@property` 宣言を含む。§4 の MUST により `@layer` の外に配置する必要があるため、層ディレクトリには入れない。`@property` を使用しないプロジェクトではこのファイルは不要である。
 
 ### style.css（エントリポイント）
 
@@ -785,11 +801,11 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 | 用語 | 定義 |
 |---|---|
 | **Portability Test** | 「そのパーツを別のサイトにそのまま持っていけるか？」— Component と Project の境界を判定する基準テスト（初出: §3） |
-| **Layout Test** | 「このスタイルを変えると、中身の見た目（色・文字・装飾）が変わるか？」— Layout 層の責任範囲を判定する検証問い（初出: §5.4） |
-| **Responsibility Test** | 「このスタイルは、パーツ自身の視覚的責任か？それとも使う側のデザイン要件か？」— Component と Project の境界を補助的に判定するテスト。Portability Test が明確な判定を返す場合はそちらに従う（§3 参照）（初出: §3） |
-| **ブランドトークン** | プロジェクトごとに変わるデザイン値（color, typography, structure）。Foundation 以降の層では Theme 経由で参照すべきである（初出: §5.1） |
+| **Layout Test** | 「このスタイルは、要素の配置・寸法・空間の確保を担っているか？」— Layout 層の責任範囲を判定する検証問い。補助テスト:「中身の見た目（色・文字・装飾・影・透明度）が変わるか？」— Yes なら Layout ではない（初出: §5.4） |
+| **Responsibility Test** | 「このスタイルは、パーツ自身の視覚的責任か？それとも使う側のデザイン要件か？」— Component と Project の境界を補助的に判定するテスト。優先順位は §3 を参照（初出: §3） |
+| **ブランドトークン** | プロジェクトごとに変わるデザイン値（color, typography, structure）。Foundation 以降の層では Token 層のセマンティック変数経由で参照すべきである（初出: §5.1） |
 | **グローバルトークン** | 多くのプロジェクトで共通して使える値（ease, z-index, font-weight）。Foundation 以降の層から直接参照してよい（初出: §5.1） |
-| **3 層参照チェーン** | Tokens（値）→ Theme（意味）→ Foundation 以降（使用）。カスタムプロパティの参照パスを規定する（初出: §7） |
+| **参照チェーン** | Token（プリミティブ → セマンティック）→ Foundation 以降（使用）。カスタムプロパティの参照パスを規定する（初出: §7） |
 | **公開 API（カスタムプロパティ）** | `--{対象}-{名前}` 形式の変数。上位層または JS から上書きされることを想定する外部インターフェース（初出: §7） |
 | **プライベートカスタムプロパティ** | `--_` プレフィックスを持つ変数。Block 内部でのみ使用し、外部からの参照・設定を想定しない（初出: §7） |
 | **先制宣言** | `layer-order.css` における `@layer` による層間の優先順位宣言。全スタイル定義に先行して記述される（初出: §4） |
