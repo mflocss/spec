@@ -232,7 +232,7 @@ SHOULD: コンテキスト依存の値（ダークモード切替等）を持つ
 | セマンティック変数 | 意味を持つマッピング | `--color-main`, `--color-surface` |
 | グローバルトークン | 多くのプロジェクトで共通して使える値 | `--ease-out-cubic`, `--z-header` |
 
-判断基準: 「ブランドやプロジェクトが変わったとき、この値を変更する必要があるか？」— Yes ならブランドトークン（プリミティブ + セマンティック）、No ならグローバルトークン。
+判断基準: 「ブランドやプロジェクトが変わったとき、この値を変更する必要があるか？」 — Yes ならブランドトークン（プリミティブ + セマンティック）、No ならグローバルトークン。
 
 SHOULD: ダークモード / テーマ切替は Token 層のセマンティック変数で完結させるべきである。
 
@@ -245,6 +245,10 @@ SHOULD: ダークモード / テーマ切替は Token 層のセマンティッ�
 | プリミティブ（color） | `--_{カテゴリ}-{名前}` | `--_slate-600` |
 | セマンティック（color） | `--color-{役割}` | `--color-main` |
 | その他のカテゴリ | `--{カテゴリ}-{名前}` | `--font-family`, `--space-md` |
+
+SHOULD: カテゴリ別にファイルを分割すべきである（color / typography / space / structure / ease / z-index）。
+
+> **注記（Informative）**: 単位変換ヘルパー（例: `--px` による `rem` 変換関数）のような補助的カスタムプロパティも Token 層に配置できる。これらはデザイントークンそのものではないが、トークン定義の基盤として `:root` で定義される性質上、Token 層が適切な配置先となる。
 
 > **Example:**
 
@@ -267,10 +271,6 @@ SHOULD: ダークモード / テーマ切替は Token 層のセマンティッ�
 ```
 
 > **注記（Informative）**: この Example ではカラー値に hex を使用しているが、mFLOCSS はカラー関数の選択を規定しない。hex, hsl, oklch 等、プロジェクトに適した形式を使用してよい（MAY）。
-
-SHOULD: カテゴリ別にファイルを分割すべきである（color / typography / space / structure / ease / z-index）。
-
-> **注記（Informative）**: 単位変換ヘルパー（例: `--px` による `rem` 変換関数）のような補助的カスタムプロパティも Token 層に配置できる。これらはデザイントークンそのものではないが、トークン定義の基盤として `:root` で定義される性質上、Token 層が適切な配置先となる。
 
 ### 5.2 Reset
 
@@ -305,6 +305,7 @@ SHOULD: カテゴリ別にファイルを分割すべきである（color / typo
 - SHOULD: 属性セレクタ、擬似クラスは、`:where()` 内で要素型セレクタと組み合わせて使用すべきである。擬似要素は `:where()` の引数に使用できないため、外に記述する（例: `:where(p)::before`）
 - SHOULD: `:where()` で詳細度をゼロに保つべきである。`@layer` による層順序制御が詳細度の予測可能性を構造的に担保するため、`:where()` は推奨とする
 - SHOULD: ブランドトークンについては Token 層のセマンティック変数を参照すべきである（グローバルトークンの直接参照は許容 — Token 層のトークン分類を参照）
+- SHOULD: base と form を分離すべきである。form を独立させる理由は、フォーム要素（input, select, textarea, button）はブラウザ間のデフォルトスタイル差異が大きく、正規化のコード量が多くなるためである。
 
 > **Example:**
 
@@ -327,8 +328,6 @@ SHOULD: カテゴリ別にファイルを分割すべきである（color / typo
 }
 ```
 
-SHOULD: base と form を分離すべきである。form を独立させる理由は、フォーム要素（input, select, textarea, button）はブラウザ間のデフォルトスタイル差異が大きく、正規化のコード量が多くなるためである。
-
 ### 5.4 Layout
 
 **責任**: 位置と空間の配置
@@ -342,6 +341,11 @@ SHOULD: base と form を分離すべきである。form を独立させる理�
 3. **配置制御**: `position: sticky` / `z-index` などの構造的な配置
 4. **Container Queries の基盤**: `container-type` / `container-name` の宣言
 5. **公開 API の提供**: カスタムプロパティで上位層（Project）に値の設定を委ねる
+
+**検証問い（Layout Test）**:
+
+- 「このスタイルは、要素の配置・寸法・空間の確保を担っているか？」 — Yes なら Layout
+- 「中身の見た目（色・文字・装飾・影・透明度）が変わるか？」 — Yes なら Layout ではない
 
 - SHOULD NOT: 見た目に関するプロパティ（`color`, `font-size`, `background-color`, `border`, `text-align` 等の視覚的プロパティ）を宣言すべきでない
 - SHOULD: `container-type: inline-size` を宣言し、Container Queries の基盤を提供すべきである。Container Queries を使用しないプロジェクトではこの限りではない
@@ -358,8 +362,6 @@ SHOULD: base と form を分離すべきである。form を独立させる理�
 | `@container` によるスタイル切替 | Component / Project |
 
 プライベートカスタムプロパティ（`--_xxx`）の使用については §7 Custom Properties を参照。
-
-**検証問い（Layout Test）**: 「このスタイルは、要素の配置・寸法・空間の確保を担っているか？」 — Yes なら Layout。「中身の見た目（色・文字・装飾・影・透明度）が変わるか？」 — Yes なら Layout ではない。
 
 > **Example:**
 
@@ -511,9 +513,18 @@ MAY: Project が内包する Component や Layout の要素に、現時点で固
 
 > **設計根拠**: Animation 層のスタイルは JS（IntersectionObserver 等）と連動する。JS からの要素取得には `data-*` 属性を使用する（§6 JS 連携）ため、`data-animate` 属性セレクタを採用する。
 
+**検証問い（Animation Test）**: 「その動きを無効化しても、インタラクションの意味が伝わるか？」 — Yes（なくても伝わる）→ 装飾的 → Animation。No（ないと操作感が損なわれる）→ 機能的 → Component/Project。
+
 - MUST: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装としなければならない
 
 この `prefers-reduced-motion` と `scripting` の 2 条件の考慮を **2 ガード原則** と呼ぶ。
+
+- SHOULD: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである
+- MAY: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
+- SHOULD: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale`）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。前庭障害のトリガーになりうるためである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
+- SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用すべきである。条件を満たさない場合にブロック全体が不適用になり、フォールバック（代替値）安全性が高い
+
+上記の統合ガードパターン（SHOULD）に従えば、2 ガード原則の MUST（`prefers-reduced-motion: reduce` でのアニメーション無効化と `scripting: none` での可視性維持）は自動的に満たされる。統合ガードを使用しない場合は、`prefers-reduced-motion: reduce` でアニメーション関連プロパティが初期値に解決されること、`scripting: none` で要素の可視性が維持されることを個別に検証する。
 
 #### 動きの分類
 
@@ -523,16 +534,6 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 |---|---|---|---|
 | 装飾的アニメーション | 視覚演出。なくても機能に影響しない | fade-in, slide-up, stagger, parallax | Animation |
 | 機能的トランジション | インタラクションフィードバック。ユーザー操作に対する応答 | hover の色変化, ボタンの translate, フォーカスリングの遷移 | Component / Project |
-
-- SHOULD: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである
-- MAY: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
-- SHOULD: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale`）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。前庭障害のトリガーになりうるためである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
-
-判断基準: 「その動きを無効化しても、インタラクションの意味が伝わるか？」 — Yes（なくても伝わる）→ 装飾的 → Animation。No（ないと操作感が損なわれる）→ 機能的 → Component/Project。
-
-- SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用すべきである。条件を満たさない場合にブロック全体が不適用になり、フォールバック（代替値）安全性が高い
-
-上記の統合ガードパターン（SHOULD）に従えば、2 ガード原則の MUST（`prefers-reduced-motion: reduce` でのアニメーション無効化と `scripting: none` での可視性維持）は自動的に満たされる。統合ガードを使用しない場合は、`prefers-reduced-motion: reduce` でアニメーション関連プロパティが初期値に解決されること、`scripting: none` で要素の可視性が維持されることを個別に検証する。
 
 #### @keyframes 命名
 
