@@ -219,7 +219,7 @@ SHOULD: コンテキスト依存の値（ダークモード切替等）を持つ
 
 | 分類 | 性質 | 例 |
 |------|------|-----|
-| プリミティブ変数 | 生の値の定義 | `--_sage-600`, `--font-family`, `--ease-out-cubic` |
+| プリミティブ変数 | 生の値の定義 | `--_slate-600`, `--font-family`, `--ease-out-cubic` |
 | セマンティック変数 | 意味を持つマッピング | `--color-main`, `--color-surface` |
 | グローバルトークン | 多くのプロジェクトで共通して使える値 | `--ease-out-cubic`, `--z-header` |
 
@@ -233,7 +233,7 @@ SHOULD: `light-dark()` 関数を使用すべきである。
 
 | 種別 | パターン | 例 |
 |------|----------|-----|
-| プリミティブ（color） | `--_{カテゴリ}-{名前}` | `--_sage-600` |
+| プリミティブ（color） | `--_{カテゴリ}-{名前}` | `--_slate-600` |
 | セマンティック（color） | `--color-{役割}` | `--color-main` |
 | その他のカテゴリ | `--{カテゴリ}-{名前}` | `--font-family`, `--space-md` |
 
@@ -243,19 +243,18 @@ SHOULD: `light-dark()` 関数を使用すべきである。
 @layer token {
   :root {
     /* プリミティブ（color） */
-    --_sage-400: oklch(65% 0.08 150deg);
-    --_sage-600: oklch(45% 0.1 150deg);
-    --_neutral-50: oklch(98% 0.005 70deg);
-    --_neutral-900: oklch(17% 0.008 70deg);
-    --_white: oklch(100% 0 0deg);
+    --_slate-600: #4a5568;
+    --_slate-900: #1a202c;
+    --_slate-100: #f1f5f9;
+    --_white: #fff;
 
     /* セマンティック（color） */
     color-scheme: light dark;
-    --color-main: light-dark(var(--_sage-600), var(--_sage-400));
-    --color-surface: light-dark(var(--_white), var(--_neutral-900));
+    --color-main: light-dark(var(--_slate-900), var(--_slate-100));
+    --color-surface: light-dark(var(--_white), var(--_slate-900));
 
     /* typography */
-    --font-family: 'Noto Sans JP', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', meiryo, sans-serif;
+    --font-family: "Noto Sans JP", sans-serif;
 
     /* global */
     --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
@@ -264,7 +263,9 @@ SHOULD: `light-dark()` 関数を使用すべきである。
 }
 ```
 
-SHOULD: カテゴリ別にファイルを分割すべきである（color / typography / space / structure / ease / z）。
+> **注記（Informative）**: この Example ではカラー値に hex を使用しているが、mFLOCSS はカラー関数の選択を規定しない。hex, hsl, oklch 等、プロジェクトに適した形式を使用してよい（MAY）。
+
+SHOULD: カテゴリ別にファイルを分割すべきである（color / typography / space / structure / ease / z-index）。
 
 > **注記（Informative）**: 単位変換ヘルパー（例: `--px` による `rem` 変換関数）のような補助的カスタムプロパティも Token 層に配置できる。これらはデザイントークンそのものではないが、トークン定義の基盤として `:root` で定義される性質上、Token 層が適切な配置先となる。
 
@@ -610,7 +611,7 @@ SHOULD: ファイル名は主要クラス名と一致させるべきである �
 
 | 層 | パターン | 例 |
 |---|---|---|
-| Token（プリミティブ / color） | `--_{カテゴリ}-{名前}` | `--_sage-600` |
+| Token（プリミティブ / color） | `--_{カテゴリ}-{名前}` | `--_slate-600` |
 | Token（セマンティック / color） | `--color-{役割}` | `--color-main` |
 | Token（その他カテゴリ） | `--{カテゴリ}-{名前}` | `--font-family`, `--space-md` |
 | 公開 API | `--{対象}-{名前}` | `--section-padding-min`, `--badge-bg` |
