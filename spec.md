@@ -1,4 +1,4 @@
-# mFLOCSS 仕様 v1.2
+# mFLOCSS 仕様
 
 > **ステータス**: ドラフト
 > **最終更新**: 2026-03-28
@@ -16,7 +16,9 @@ mFLOCSS は、CSS の設計判断を体系化する思考フレームワーク�
 
 「どの層に、なぜ書くか」という問いに対し、明確な判断基準を提供する。`@layer` ベースの 8 層フラットアーキテクチャを採用する。
 
-mFLOCSS は、CSS の設計判断を体系化する思考フレームワークであり、ルールブックではない。本仕様はその判断基準を厳密に定義する。MUST は設計の構造的整合性を保証するルール（`@layer` による層順序の固定・層の分離・命名規則の一貫性等）に適用し、設計判断の推奨は SHOULD で表現する。
+mFLOCSS は、CSS の設計判断を体系化する思考フレームワークであり、ルールブックではない。本仕様はその判断基準を厳密に定義する。
+
+MUST は設計の構造的整合性を保証するルール（`@layer` による層順序の固定・層の分離・命名規則の一貫性等）に適用し、設計判断の推奨は SHOULD で表現する。
 
 #### 対象範囲
 
@@ -65,7 +67,11 @@ mFLOCSS は以下の 4 原則に基づく。層数が変わってもこれらは
 
 ### 準拠条件
 
-mFLOCSS v1.2 に準拠するとは、本仕様の全 MUST / MUST NOT ルールに違反しないことを意味する。MUST は `@layer` の構造的整合性・アクセシビリティ・命名体系の維持に限定される。設計判断の品質（層の選択・トークン参照チェーン等）は SHOULD で推奨し、遵守するほど設計の一貫性と保守性が向上する。
+mFLOCSS に準拠するとは、本仕様の全 MUST / MUST NOT ルールに違反しないことを意味する。
+
+MUST は `@layer` の構造的整合性・アクセシビリティ・命名体系の維持に限定される。
+
+設計判断の品質（層の選択・トークン参照チェーン等）は SHOULD で推奨し、遵守するほど設計の一貫性と保守性が向上する。
 
 ### バージョニング
 
@@ -78,7 +84,7 @@ mFLOCSS v1.2 に準拠するとは、本仕様の全 MUST / MUST NOT ルール�
 
 *This section is normative.*
 
-mFLOCSS は 8 つの層で構成される。
+mFLOCSS は 8 つの層で構成される。本章以降で使用する Block・Element 等の命名規則は §6 で定義する。
 
 | 順序 | 層名 | プレフィックス | 責任 |
 |---|---|---|---|
@@ -93,10 +99,8 @@ mFLOCSS は 8 つの層で構成される。
 
 ### 層間の依存方向
 
-MAY: 上位層（番号が大きい層）は下位層を参照してよい。逆方向の参照は禁止する。
-
-- MUST NOT: 下位層から上位層のクラスやカスタムプロパティを参照してはならない
-- 例: Component 層が Project 層のクラスに依存してはならない
+- MAY: 上位層（番号が大きい層）は下位層を参照してよい
+- MUST NOT: 下位層から上位層のクラスやカスタムプロパティを参照してはならない（例: Component 層が Project 層のクラスに依存してはならない）
 
 依存方向ルールは **CSS の参照方向** に適用される。HTML の入れ子構造はこのルールの対象外である。Component の中に Project を配置し、その中に Component を置く構造（例: `.c-modal` > `.p-login-form` > `.c-button`）は、CSS で他の層のクラスを参照しない限り違反にならない。
 
@@ -154,11 +158,9 @@ Step 6: 局所的な単一目的の微調整か？
 
 #### よくある誤りパターン
 
-**A. 機能近接バイアス（思い込み）**: 「テーブルのスクロールラッパー → Component」と判断する誤り。スクロール制御は使う側のコンテナの制約であり、テーブルパーツ自体の責任ではない。正しくは Project の Element。
+**A. 機能近接バイアス（思い込み）**: 「テーブルのスクロールラッパー → Component」と判断する誤り。`overflow-x: auto` 等のスクロール制御は使う側のコンテナの制約であり、テーブルパーツ自体の責任ではない。正しくは `p-xxx__table-wrap` として Project の Element に持たせる。
 
 **B. Layout への過干渉**: `l-section` に `text-align: center` を追加する誤り。テキスト整列は視覚的プロパティであり、Layout の責任（配置と空間）を超えている。正しくは Project。
-
-**C. ラッパーの帰属誤り**: `overflow-x: auto` を Component のラッパーとして定義する誤り。コンテナ幅の制約対応はサイト固有のデザイン要件に依存する。正しくは `p-xxx__table-wrap` として Project の Element に持たせる。
 
 ---
 
@@ -183,7 +185,9 @@ MUST: `@property` を使用する場合は `@layer` の外に配置しなけれ�
 
 ### !important の優先度逆転
 
-`@layer` 内で `!important` を使用した場合、通常とは逆順で優先される（先に宣言された層が勝つ）。MUST NOT: Reset 層および Utility 層を除く全層で `!important` を使用してはならない。Reset 層は外部リセット CSS を取り込むため、その内部実装における `!important` の有無は本仕様の準拠対象外とする（§5.2 注記参照）。この制約により優先度逆転の複雑性を回避する。
+`@layer` 内で `!important` を使用した場合、通常とは逆順で優先される（先に宣言された層が勝つ）。
+
+MUST NOT: Reset 層および Utility 層を除く全層で `!important` を使用してはならない。Reset 層は外部リセット CSS を取り込むため、その内部実装における `!important` の有無は本仕様の準拠対象外とする（§5.2 注記参照）。この制約により優先度逆転の複雑性を回避する。
 
 ### 外部 CSS の層配置
 
@@ -250,22 +254,16 @@ SHOULD: ダークモード / テーマ切替は Token 層のセマンティッ�
 @layer token {
   :root {
     /* プリミティブ（color） */
-    --_slate-600: #4a5568;
     --_slate-900: #1a202c;
     --_slate-100: #f1f5f9;
-    --_white: #fff;
 
     /* セマンティック（color） */
     color-scheme: light dark;
     --color-main: light-dark(var(--_slate-900), var(--_slate-100));
-    --color-surface: light-dark(var(--_white), var(--_slate-900));
 
-    /* typography */
+    /* グローバルトークン */
     --font-family: "Noto Sans JP", sans-serif;
-
-    /* global */
     --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
-    --z-header: 100;
   }
 }
 ```
@@ -281,7 +279,7 @@ SHOULD: カテゴリ別にファイルを分割すべきである（color / typo
 **責任**: ブラウザデフォルトの正規化（外部リセット CSS の取り込み）
 
 - MAY: Reset 層の使用は任意である
-- MUST: Reset 層を使用する場合、ブラウザデフォルトの正規化に限定しなければならない（自作・外部を問わない）
+- MUST: Reset 層を使用する場合、ブラウザデフォルトの初期化に限定しなければならない（自作・外部を問わない）。プロジェクト固有のスタイルを Reset 層に記述してはならない
 - SHOULD: Reset 層を使用する場合、プロジェクトに適したリセット CSS を選定し、この層に配置すべきである
 
 > **注記（Informative）**: リセット CSS は自作でも外部ライブラリでもよい。リファレンス実装が参考を提供するが、各プロジェクトに適したリセットを選定・適用すること。リセット CSS の内部実装は本仕様の準拠対象外とする。`:where()` を使用していない外部リセット CSS でも、独立層として隔離されるため、Foundation 以降の層との詳細度競合を防止できる。
@@ -305,7 +303,8 @@ SHOULD: カテゴリ別にファイルを分割すべきである（color / typo
 
 **検証問い**: 「このスタイルは、要素の基本スタイルの定義か？」 — Yes なら Foundation。No（特定のコンテキストに依存する）なら上位層。
 
-- MUST: 要素型セレクタのみを使用しなければならない（クラスセレクタ・ID セレクタ禁止）。SHOULD: 属性セレクタ、擬似クラス、擬似要素は、`:where()` 内で要素型セレクタと組み合わせて使用すべきである
+- MUST: 要素型セレクタのみを使用しなければならない（クラスセレクタ・ID セレクタ禁止）
+- SHOULD: 属性セレクタ、擬似クラスは、`:where()` 内で要素型セレクタと組み合わせて使用すべきである。擬似要素は `:where()` の引数に使用できないため、外に記述する（例: `:where(p)::before`）
 - SHOULD: `:where()` で詳細度をゼロに保つべきである。`@layer` による層順序制御が詳細度の予測可能性を構造的に担保するため、`:where()` は推奨とする
 - SHOULD: ブランドトークンについては Token 層のセマンティック変数を参照すべきである（グローバルトークンの直接参照は許容 — Token 層のトークン分類を参照）
 
@@ -330,7 +329,7 @@ SHOULD: カテゴリ別にファイルを分割すべきである（color / typo
 }
 ```
 
-SHOULD: base / form の 2 ファイルに分割すべきである。form を独立させる理由は、フォーム要素（input, select, textarea, button）はブラウザ間のデフォルトスタイル差異が大きく、正規化のコード量が多くなるためである。
+SHOULD: base と form を分離すべきである。form を独立させる理由は、フォーム要素（input, select, textarea, button）はブラウザ間のデフォルトスタイル差異が大きく、正規化のコード量が多くなるためである。
 
 ### 5.4 Layout
 
@@ -347,10 +346,8 @@ SHOULD: base / form の 2 ファイルに分割すべきである。form を独�
 5. **公開 API の提供**: カスタムプロパティで上位層（Project）に値の設定を委ねる
 
 - SHOULD NOT: 見た目に関するプロパティ（`color`, `font-size`, `background-color`, `border`, `text-align` 等の視覚的プロパティ）を宣言すべきでない
-
-SHOULD: `container-type: inline-size` を宣言し、Container Queries の基盤を提供すべきである。Container Queries を使用しないプロジェクトではこの限りではない。
-
-MAY: `container-name` を併用し、名前付きコンテナを定義してよい。セクション単位で名前付きコンテナを定義すると、`@container` での参照先を明示できる。
+- SHOULD: `container-type: inline-size` を宣言し、Container Queries の基盤を提供すべきである。Container Queries を使用しないプロジェクトではこの限りではない
+- MAY: `container-name` を併用し、名前付きコンテナを定義してよい。セクション単位で名前付きコンテナを定義すると、`@container` での参照先を明示できる
 
 #### Container Queries の層責任
 
@@ -370,23 +367,20 @@ MAY: `container-name` を併用し、名前付きコンテナを定義してよ�
 
 ```css
 @layer layout {
-  /* ストラクチャパターン: 配置・重なり・コンテナ定義 */
+  /* 配置・重なり・コンテナ定義 */
   .l-header {
     position: sticky;
     inset-block-start: 0;
     z-index: var(--z-header);
-    container-name: header;
     container-type: inline-size;
   }
 
-  /* 公開 API パターン: カスタムプロパティで上位層に余白制御を公開 */
+  /* 公開 API: カスタムプロパティで上位層に値の設定を委ねる */
   .l-section {
-    --section-padding-min: 3.75rem;
-    --section-padding-max: 6.25rem;
+    --section-padding: 3.75rem;
 
     container-type: inline-size;
-    container-name: section;
-    padding-block: clamp(var(--section-padding-min), 8vi, var(--section-padding-max));
+    padding-block: var(--section-padding);
   }
 }
 ```
@@ -411,11 +405,37 @@ MAY: `container-name` を併用し、名前付きコンテナを定義してよ�
 
 > **注記（Informative）**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 SHOULD NOT の対象外である。これらは Component 自身の視覚的責任に該当する
 
-SHOULD: 1 コンポーネント 1 ファイルとすべきである。
+- SHOULD: 1 コンポーネント 1 ファイルとすべきである
+- MAY: Component は HTML 上で任意の層の要素を内包してよい（例: `.c-card` の中に `.c-button`、`.c-modal` の中に `.l-section` や `.p-login-form` を配置する）。HTML の入れ子構造は層間の依存方向（§3）の対象外である。内包しても Portability Test に合格するなら Component のままである
+- SHOULD: Component と Project の判断に迷った場合は Component とすべきである。Project で上書き可能だが、逆（Project → Component への汎化）は困難であるため。Portability Test で明確に No と判断できる場合はこの限りではない
 
-MAY: Component の中に他の Component を内包してよい（例: `.c-card` の中に `.c-button` を配置する）。内包しても Portability Test に合格するなら Component のままである。
+> **Example:**
 
-SHOULD: Component と Project の判断に迷った場合は Component とすべきである。Project で上書き可能だが、逆（Project → Component への汎化）は困難であるため。Portability Test で明確に No と判断できる場合はこの限りではない。
+```css
+@layer component {
+  .c-card {
+    /* セマンティック変数を参照 */
+    padding: var(--space-lg);
+    background-color: var(--color-surface);
+
+    /* プライベート変数: Block 内部の計算用 */
+    --_gap: var(--space-md);
+    display: grid;
+    gap: var(--_gap);
+  }
+
+  /* Element */
+  .c-card__title {
+    font-size: var(--font-size-lg);
+  }
+
+  /* Modifier: 静的なバリエーション */
+  .c-card.-compact {
+    --_gap: var(--space-sm);
+    padding: var(--space-sm);
+  }
+}
+```
 
 ### 5.6 Project
 
@@ -430,12 +450,10 @@ SHOULD: Component と Project の判断に迷った場合は Component とすべ
 3. **セクションルートの管理**: ページ内の各セクションに Project Block を付与
 
 - SHOULD NOT: Portability Test（§3）に合格するスタイルを Project 層に記述すべきでない。該当するスタイルは Component 層（§5.5）に記述する
-- Component や Layout を内包し、ページやセクションに合わせた配置・装飾を担う
-
-SHOULD: サイト固有のデザイン要件があるセクションには、セクションルートに Project Block を付与し、セクション内の要素は Element として構築すべきである。サイト固有のスタイリングが不要なセクションは Layout と Component のみで構成してよい（MAY）。
-- インラインスタイルについては §7 Custom Properties を参照
-
-SHOULD: ページ単位または機能単位でファイルを分割すべきである。
+- MAY: Project は HTML 上で任意の層の要素を内包してよい。Component・Layout・他の Project を内包し、ページやセクションに合わせた配置・装飾を担う（例: ページ単位の `.p-home` の中にセクション単位の `.p-hero`、`.l-section`、`.c-button` を配置する）
+- SHOULD: サイト固有のデザイン要件があるセクションには、セクションルートに Project Block を付与し、セクション内の要素は Element として構築すべきである。インラインスタイルについては §7 Custom Properties を参照
+- MAY: サイト固有のスタイリングが不要なセクションは Layout と Component のみで構成してよい
+- SHOULD: ページ単位または機能単位でファイルを分割すべきである
 
 #### 上書きパターン
 
@@ -444,14 +462,14 @@ Project 層は上位層として、Component のスタイルをページやセ�
 | パターン | 用途 | 例 |
 |---|---|---|
 | 直接プロパティ上書き | 特定の配置先でパーツのスタイルを変更 | `.p-hero > .c-button { font-size: ... }` |
-| CSS 変数経由 | Component/Layout が公開する公開 API カスタムプロパティの値を設定 | `.p-about { --section-padding-min: 2.5rem; }` |
+| CSS 変数経由 | Component/Layout が公開する公開 API カスタムプロパティの値を設定 | `.p-about { --section-padding: 2.5rem; }` |
 | Modifier（Component 層 / Project 層で定義） | 汎用バリエーション | `.c-button.-primary` |
 
 SHOULD: 直接プロパティ上書きと CSS 変数経由のどちらも使用できる場合は、CSS 変数経由を優先すべきである。CSS 変数経由は Component/Layout の内部構造に依存しないため保守性が高い。
 
 Modifier は Component に内包される再利用可能なバリエーション。Project 上書きはサイト固有のデザイン要件に基づき Component のスタイルを調整するもの。
 
-Layout や Component の振る舞いをページやセクションに合わせて変えたい場合は、Project の Block または Element として定義する（例: `class="l-section p-about"`, `class="l-inner p-about__inner"`）。
+Layout や Component の振る舞いをページやセクションに合わせて変えたい場合は、Project の Block または Element として定義する（例: `class="l-section p-about"`, `class="c-button p-about__cta"`）。
 
 MAY: Project が内包する Component や Layout の要素に、現時点で固有スタイルがなくても Project の Element クラスを付与してよい（例: `class="c-section-heading p-about__heading"`）。カスタマイズ時に CSS の追加だけで対応できる拡張点として機能する。
 
@@ -459,26 +477,19 @@ MAY: Project が内包する Component や Layout の要素に、現時点で固
 
 ```css
 @layer project {
-  /* Project の Block として Layout の配置先適応を担う */
+  /* Block: Layout の公開 API を上書き */
   .p-about {
-    --section-padding-min: 2.5rem;
-    --section-padding-max: 3.75rem;
+    --section-padding: 2.5rem;
+  }
+
+  /* Element: Layout の配置先適応 */
+  .p-about__inner {
+    max-inline-size: 50rem;
   }
 
   /* Project 固有のパーツ */
   .p-hero__lead {
     text-align: center;
-    margin-block-start: 2.5rem;
-  }
-
-  /* Project の Element としてレイアウトの配置先適応を担う */
-  .p-about__inner {
-    max-inline-size: 50rem;
-  }
-
-  /* テーブルのスクロールラッパー（サイト固有の制約対応） */
-  .p-philosophy__table-wrap {
-    overflow-x: auto;
   }
 }
 ```
@@ -500,7 +511,7 @@ MAY: Project が内包する Component や Layout の要素に、現時点で固
 - `[data-animate="{種別}"]` — 要素自体のアニメーション種別を指定する（例: `data-animate="fade-in"`, `data-animate="slide-up"`）
 - `[data-stagger="{種別}"]` — 子要素に段階的な遅延を適用するコンテナ。値はアニメーション種別で、`data-animate` と同じ `@keyframes` を共有する（例: `data-stagger="fade-in-slide-up"`）。JS が各子要素に `--stagger-delay` を設定する
 
-> **設計根拠**: Animation 層のスタイルは JS（IntersectionObserver 等）と連動して状態クラスを付与する。JS からの要素取得には `data-*` 属性を使用する（§6 JS 連携）ため、クラスプレフィックス（`a-`）ではなく `data-animate` 属性を採用する。
+> **設計根拠**: Animation 層のスタイルは JS（IntersectionObserver 等）と連動する。JS からの要素取得には `data-*` 属性を使用する（§6 JS 連携）ため、`data-animate` 属性セレクタを採用する。
 
 - MUST: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装としなければならない
 
@@ -515,11 +526,13 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 | 装飾的アニメーション | 視覚演出。なくても機能に影響しない | fade-in, slide-up, stagger, parallax | Animation |
 | 機能的トランジション | インタラクションフィードバック。ユーザー操作に対する応答 | hover の色変化, ボタンの translate, フォーカスリングの遷移 | Component / Project |
 
-SHOULD: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである。MAY: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい。
+- SHOULD: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである
+- MAY: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
+- SHOULD: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale`）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。前庭障害のトリガーになりうるためである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
 
 判断基準: 「その動きを無効化しても、インタラクションの意味が伝わるか？」 — Yes（なくても伝わる）→ 装飾的 → Animation。No（ないと操作感が損なわれる）→ 機能的 → Component/Project。
 
-SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用すべきである。条件を満たさない場合にブロック全体が不適用になり、フォールバック（代替値）安全性が高い。
+- SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用すべきである。条件を満たさない場合にブロック全体が不適用になり、フォールバック（代替値）安全性が高い
 
 上記の統合ガードパターン（SHOULD）に従えば、この MUST は自動的に満たされる。統合ガードを使用しない場合は、`prefers-reduced-motion: reduce` でアニメーション関連プロパティが初期値に解決されること、`scripting: none` で要素の可視性が維持されることを個別に検証する。
 
@@ -531,28 +544,13 @@ SHOULD: `@keyframes` を使用する場合、`@keyframes` 名は対応する `da
 
 ```css
 @layer animation {
+  /* 統合ガード: 2 ガード原則を一括適用 */
   @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
-    /* @keyframes 即時再生: 統合ガード + data-animate */
-    @keyframes fade-in-slide-up {
-      from { opacity: 0; translate: 0 1.25rem; }
+    @keyframes fade-in {
+      from { opacity: 0; }
     }
-    [data-animate="fade-in-slide-up"] {
-      animation: fade-in-slide-up 0.6s var(--ease-out-cubic) both;
-    }
-
-    /* @keyframes play-state 制御: JS が .is-visible 付与で再生開始 */
-    [data-animate="scale-in"] {
-      animation: scale-in 0.8s var(--ease-out-quart) both;
-      animation-play-state: paused;
-    }
-    [data-animate="scale-in"].is-visible {
-      animation-play-state: running;
-    }
-
-    /* stagger: 同じ @keyframes を遅延付きで子要素に適用 */
-    [data-stagger="fade-in-slide-up"] > * {
-      animation: fade-in-slide-up 0.6s var(--ease-out-cubic) both;
-      animation-delay: var(--stagger-delay, 0s);
+    [data-animate="fade-in"] {
+      animation: fade-in 0.6s var(--ease-out-cubic) both;
     }
   }
 }
@@ -586,16 +584,10 @@ SHOULD: `@keyframes` を使用する場合、`@keyframes` 名は対応する `da
 
 ```css
 @layer utility {
-  .u-visually-hidden:not(:focus, :active, :focus-within) {
-    position: absolute !important;
-    inline-size: 1px !important;
-    block-size: 1px !important;
-    padding: 0 !important;
-    margin: -1px !important;
-    overflow: hidden !important;
-    white-space: nowrap !important;
-    border: 0 !important;
-    clip-path: inset(50%) !important;
+  .u-hidden-sp {
+    @media (width < 768px) {
+      display: none !important;
+    }
   }
 }
 ```
@@ -610,30 +602,26 @@ SHOULD: `@keyframes` を使用する場合、`@keyframes` 名は対応する `da
 
 ```
 .{prefix}-{name}__{element}
-.{prefix}-{name}.-modifier
+.{prefix}-{name}.-{modifier}
 ```
 
 | 要素 | 形式 | 例 |
 |---|---|---|
 | Block | `.{prefix}-{name}` | `.c-button`, `.l-section` |
 | Element | `.__{element}` | `.c-card__title` |
-
-MUST: Element（`__element`）は、対応する Block クラスが HTML 上に存在しなければならない。Block なしの Element は使用してはならない。CSS にルールセットがなくても、HTML 上に Block クラスが付与されていれば MUST 違反にはならない。BEM の「Element は常に Block の一部であり、Block から分離して使用してはならない」に基づく。
 | Modifier | `.-{modifier}` | `.c-button.-primary` |
 | State | `.is-{state}` | `.is-active`, `.is-open`, `.is-loading` |
 
-SHOULD: 層の識別のためにプレフィックス（§3 の層テーブルを参照）を使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-animate` 属性セレクタを使用するため（§5.7 設計根拠を参照）、プレフィックスの対象外とする。
+- MUST: Element（`__element`）は、対応する Block クラスが HTML 上に存在しなければならない。Block なしの Element は使用してはならない。CSS にルールセットがなくても、HTML 上に Block クラスが付与されていれば MUST 違反にはならない。BEM の「Element は常に Block の一部であり、Block から分離して使用してはならない」に基づく
+
+- SHOULD: 層の識別のためにプレフィックス（§3 の層テーブルを参照）を使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-animate` 属性セレクタを使用するため（§5.7 設計根拠を参照）、プレフィックスの対象外とする
 
 ### Modifier と State の使い分け
 
-- **Modifier（`.-xxx`）**: 静的なバリエーション。HTML に記述し、原則として変化しない
-- **State（`.is-xxx`）**: 要素自身の動的な状態。JS やユーザー操作により変化する
+- **Modifier（`.-xxx`）**: 静的なバリエーション。Block または Element と併用する。HTML に記述し、原則として変化しない
+- **State（`.is-xxx`）**: 要素自身の動的な状態。Block、Element、または Animation の属性セレクタと併用する。JS やユーザー操作により変化する
 
 > **注記（Informative）**: 子要素の状態に基づく親のスタイルには CSS `:has()` 擬似クラスが有用である。JS による親クラスの付け替えも代替手段として使用できる。
-
-SHOULD: Modifier は Component 層と Project 層で使用すべきである。SHOULD NOT: Layout 層では使用すべきでない（Layout は配置と空間のみを担当し、バリエーションは上位層で制御する）。SHOULD NOT: Animation 層（`data-animate` 属性セレクタ）と Utility 層は単一目的のスタイルであり、Modifier を使用すべきでない。
-
-State のスタイルは、対象の Block が属する層に記述する（例: `.c-button.is-active` は Component 層、`[data-animate="fade-in"].is-active` は Animation 層）。
 
 ### Modifier に `-` を採用する理由
 
@@ -644,7 +632,19 @@ BEM の `--` ではなく `.-modifier` を採用する。
 
 ### Element の深さ
 
-SHOULD NOT: Element を 2 階層以上ネストすべきではない（`__element1__element2` は非推奨）。Element が深くなる場合はコンポーネントの分離を検討する。
+SHOULD NOT: Element を 2 階層以上ネストすべきではない。Element が深くなる場合はコンポーネントの分離を検討する。
+
+```
+/* 非推奨: Element のネスト */
+.p-hero__content__title
+
+/* 推奨: Element 名をフラットにする */
+.p-hero__content-title
+
+/* 推奨: 別の Block に分離する */
+.p-hero-content        /* 新しい Block */
+.p-hero-content__title /* その Element */
+```
 
 ### JS 連携
 
@@ -662,8 +662,8 @@ SHOULD: ファイル名は主要クラス名と一致させるべきである �
 |---|---|---|
 | Token（プリミティブ / color） | `--_{カテゴリ}-{名前}` | `--_slate-600` |
 | Token（セマンティック / color） | `--color-{役割}` | `--color-main` |
-| Token（その他カテゴリ） | `--{カテゴリ}-{名前}` | `--font-family`, `--space-md` |
-| 公開 API | `--{対象}-{名前}` | `--section-padding-min`, `--badge-bg` |
+| Token（その他カテゴリ） | `--{カテゴリ}-{名前}` | `--space-md`, `--ease-out-cubic` |
+| 公開 API | `--{対象}-{名前}` | `--section-padding`, `--badge-bg` |
 | Private | `--_{名前}` | `--_font-size-min` |
 
 ---
@@ -690,14 +690,13 @@ Token（プリミティブ → セマンティック）→ Foundation 以降（�
 
 | 分類 | プレフィックス | 用途 | 例 |
 |---|---|---|---|
-| 公開 API | `--{対象}-{名前}` | 上位層または JS から上書きされる変数 | `--section-padding-min`, `--badge-bg`, `--stagger-delay` |
+| 公開 API | `--{対象}-{名前}` | 上位層または JS から上書きされる変数 | `--section-padding`, `--badge-bg`, `--stagger-delay` |
 | プライベート | `--_` | Block 内部でのみ使用する変数 | `--_font-size-min`, `--_delay` |
 
-SHOULD: 上位層（Project 等）から値を設定する変数、または JS から値を注入する変数は、`--{対象}-{名前}` の公開 API 命名を使用すべきである。外部からの契約として機能する変数にプライベート命名（`--_`）を使用すると、意図が不明確になる。
+- SHOULD: 上位層（Project 等）から値を設定する変数、または JS から値を注入する変数は、`--{対象}-{名前}` の公開 API 命名を使用すべきである。外部からの契約として機能する変数にプライベート命名（`--_`）を使用すると、意図が不明確になる
+- MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライベートカスタムプロパティ（`--_xxx`）を定義してよい。プライベートカスタムプロパティは外部から参照・設定されることを想定しない内部実装である
 
 > **注記（Informative）**: 公開 API のカスタムプロパティに `@property` で `inherits: false` を指定すると、子孫への意図しない継承を防止でき、パフォーマンスの向上にも寄与する。
-
-MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライベートカスタムプロパティ（`--_xxx`）を定義してよい。プライベートカスタムプロパティは外部から参照・設定されることを想定しない内部実装である。
 
 上位層（Project 等）から公開 API の値を設定し、Layout や Component の振る舞いをページやセクションに合わせて変える。これは §5.6 の CSS 変数経由上書きパターンの基盤となる。
 
@@ -733,11 +732,10 @@ MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライ�
 
 ### インラインスタイル
 
-MUST NOT: HTML マークアップに静的なインラインスタイルを記述してはならない。インラインスタイルはどの `@layer` にも属さない unlayered CSS として扱われ、全ての layered CSS より優先されるため、層構造による優先順位制御を破壊する。
+- MUST NOT: HTML マークアップに静的なインラインスタイルを記述してはならない。インラインスタイルはどの `@layer` にも属さない unlayered CSS として扱われ、全ての layered CSS より優先されるため、層構造による優先順位制御を破壊する
+- MAY: JS から公開 API のカスタムプロパティの値を動的に注入してよい。CSS が「何をするか」を定義し、JS が「いつ・どの値で」を決める互いに依存しない連携パターンとして許容する
 
-> **注記（Informative）**: 本規定は開発者が意図的に記述するスタイルに適用される。CMS やライブラリが自動生成するインラインスタイルは適用対象外とする。
-
-MAY: JS から公開 API のカスタムプロパティの値を動的に注入してよい。CSS が「何をするか」を定義し、JS が「いつ・どの値で」を決める互いに依存しない連携パターンとして許容する。
+> **注記（Informative）**: 上記 MUST NOT は開発者が意図的に記述するスタイルに適用される。CMS やライブラリが自動生成するインラインスタイルは適用対象外とする。
 
 ---
 
@@ -764,7 +762,11 @@ css/
 └── utility/
 ```
 
-`layer-order.css` は `@layer` の外で機能する宣言であり、いずれの層にも属さない。`property.css` は `@property` を使用する場合のみ作成する（§4 参照）。いずれも層ディレクトリと同列に配置する。
+`layer-order.css` は `@layer` の外で機能する宣言であり、いずれの層にも属さない。
+
+`property.css` は `@property` を使用する場合のみ作成する（§4 参照）。
+
+いずれも層ディレクトリと同列に配置する。
 
 ### 1 Block = 1 ファイル
 
@@ -782,9 +784,8 @@ SHOULD: 1 つの CSS ファイルには 1 つの Block を定義すべきであ�
 
 ### style.css（エントリポイント）
 
-MUST: `layer-order.css` を最初に読み込み、その後層順にファイルをインポートしなければならない。
-
-SHOULD: 各ファイルがどの層に属するかを明確にすべきである。方法はプロジェクトの規模やツールチェーンに応じて選択してよい。
+- MUST: `layer-order.css` を最初に読み込み、その後層順にファイルをインポートしなければならない
+- SHOULD: 各ファイルがどの層に属するかを明確にすべきである。方法はプロジェクトの規模やツールチェーンに応じて選択してよい
 
 | 方式 | 説明 |
 |---|---|
@@ -820,7 +821,7 @@ Container Queries の層責任（`container-type` / `container-name` / `@contain
 
 ### Container Queries の単位
 
-> **注記（Informative）**: Container Queries 内のサイズ指定には `cqi` がコンテナ基準として整合的である。`vw` はビューポート基準のため、コンテナ幅との乖離が生じうる。
+> **注記（Informative）**: Container Queries 内のサイズ指定には `cqi` がコンテナ基準として整合的である。ビューポート単位（`vw` / `vi` 等）はコンテナ幅との乖離が生じうる。
 
 > **Example:**
 
@@ -839,7 +840,7 @@ Container Queries の層責任（`container-type` / `container-name` / `@contain
 | メディア特性 | 用途 |
 |---|---|
 | `scripting` | JS 有効/無効の判定（2 ガード原則） |
-| `prefers-reduced-motion` | モーション軽減の判定（2 ガード原則） |
+| `prefers-reduced-motion` | モーション軽減の判定（2 ガード原則、機能的トランジションの `transform` ガード） |
 
 ---
 
@@ -859,7 +860,7 @@ Container Queries の層責任（`container-type` / `container-name` / `@contain
 | **プライベートカスタムプロパティ** | `--_` プレフィックスを持つ変数。Block 内部でのみ使用し、外部からの参照・設定を想定しない（初出: §7） |
 | **先制宣言** | `layer-order.css` における `@layer` による層間の優先順位宣言。全スタイル定義に先行して記述される（初出: §4） |
 | **装飾的アニメーション** | 視覚演出としての動き。無効化しても機能に影響しない。Animation 層に分離し、2 ガード原則を適用する（初出: §5.7） |
-| **機能的トランジション** | インタラクションフィードバックとしての動き。ユーザー操作に対する応答であり、対象の Block が属する層（Component または Project）に記述する（初出: §5.7） |
+| **機能的トランジション** | インタラクションフィードバックとしての動き。ユーザー操作に対する応答であり、対象の Block が属する層（Component または Project）に記述する。`transform` を含む場合は `prefers-reduced-motion` ガードを適用する（初出: §5.7） |
 | **2 ガード原則** | Animation 層で `prefers-reduced-motion` と `scripting` の 2 条件を考慮すること。推奨は `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガード（初出: §5.7） |
 | **統合ガード** | 2 ガード原則の推奨実装パターン。`@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` で Animation 層のスタイル全体をラップし、条件を満たさない場合にブロック全体を不適用にする方式（初出: §5.7） |
 | **Utility Test** | 「このスタイルは特定の Block に帰属せず、単一プロパティ（または密接に関連する最小プロパティセット）で完結するか？」— Utility 層の適用可否を判定する検証問い（初出: §5.8） |
