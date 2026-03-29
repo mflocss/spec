@@ -325,6 +325,14 @@ SHOULD: base / form の 2 ファイルに分割すべきである。form を独�
 
 **プレフィックス**: `l-`
 
+**Layout 層の責任:**
+
+1. **ページの骨格（ストラクチャ）**: ヘッダー、メインコンテンツ、セクション、フッターなど、ページ全体の構造を定義する
+2. **空間の確保**: セクション間の余白（`padding-block`）、コンテンツ幅の制約（`max-inline-size`）
+3. **配置制御**: `position: sticky` / `z-index` などの構造的な配置
+4. **Container Queries の基盤**: `container-type` / `container-name` の宣言
+5. **公開 API の提供**: カスタムプロパティで上位層（Project）に値の設定を委ねる
+
 - SHOULD NOT: 見た目に関するプロパティ（`color`, `font-size`, `background-color`, `border`, `text-align` 等の視覚的プロパティ）を宣言すべきでない
 
 SHOULD: `container-type: inline-size` を宣言し、Container Queries の基盤を提供すべきである。Container Queries を使用しないプロジェクトではこの限りではない。
