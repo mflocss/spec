@@ -357,6 +357,11 @@ MAY: `container-name` を併用し、名前付きコンテナを定義してよ�
     container-type: inline-size;
   }
 
+  .l-main {
+    container-name: main;
+    container-type: inline-size;
+  }
+
   .l-section {
     --section-padding-min: 3.75rem;
     --section-padding-max: 6.25rem;
@@ -675,6 +680,11 @@ MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライ�
     inset-block-start: 0;
     z-index: var(--z-header);
     container-name: header;
+    container-type: inline-size;
+  }
+
+  .l-main {
+    container-name: main;
     container-type: inline-size;
   }
 
