@@ -41,7 +41,7 @@ mFLOCSS は以下の 4 原則に基づく。層数が変わってもこれらは
 
 不変原則を支える構造的制約。層数が変わっても維持される。
 
-1. **一方向依存** — 上位層（番号が大きい層）は下位層を参照してよいが、逆方向の参照は禁止する（MUST NOT、§3 参照）。詳細ルールは §3 を参照
+1. **一方向依存** — 上位層（番号が大きい層）は下位層を参照してよい（MAY）が、逆方向の参照は禁止する（MUST NOT、§3 参照）。詳細ルールは §3 を参照
 
 ---
 
@@ -93,7 +93,7 @@ mFLOCSS は 8 つの層で構成される。
 
 ### 層間の依存方向
 
-上位層（番号が大きい層）は下位層を参照してよい。逆方向の参照は禁止する。
+MAY: 上位層（番号が大きい層）は下位層を参照してよい。逆方向の参照は禁止する。
 
 - MUST NOT: 下位層から上位層のクラスやカスタムプロパティを参照してはならない
 - 例: Component 層が Project 層のクラスに依存してはならない
@@ -219,7 +219,7 @@ SHOULD: コンテキスト依存の値（ダークモード切替等）を持つ
 
 | 分類 | 性質 | 例 |
 |------|------|-----|
-| プリミティブ変数 | 生の値の定義 | `--_slate-600`, `--font-ja`, `--ease-out-cubic` |
+| プリミティブ変数 | 生の値の定義 | `--_sage-600`, `--font-family`, `--ease-out-cubic` |
 | セマンティック変数 | 意味を持つマッピング | `--color-main`, `--color-surface` |
 | グローバルトークン | 多くのプロジェクトで共通して使える値 | `--ease-out-cubic`, `--z-header` |
 
@@ -233,9 +233,9 @@ SHOULD: `light-dark()` 関数を使用すべきである。
 
 | 種別 | パターン | 例 |
 |------|----------|-----|
-| プリミティブ（color） | `--_{カテゴリ}-{名前}` | `--_slate-600` |
+| プリミティブ（color） | `--_{カテゴリ}-{名前}` | `--_sage-600` |
 | セマンティック（color） | `--color-{役割}` | `--color-main` |
-| その他のカテゴリ | `--{カテゴリ}-{名前}` | `--font-ja`, `--space-m` |
+| その他のカテゴリ | `--{カテゴリ}-{名前}` | `--font-family`, `--space-md` |
 
 > **Example:**
 
@@ -243,19 +243,19 @@ SHOULD: `light-dark()` 関数を使用すべきである。
 @layer token {
   :root {
     /* プリミティブ（color） */
-    --_slate-600: #4a5568;
-    --_slate-900: #1a202c;
-    --_slate-100: #f1f5f9;
-    --_white: #fff;
+    --_sage-400: oklch(65% 0.08 150deg);
+    --_sage-600: oklch(45% 0.1 150deg);
+    --_neutral-50: oklch(98% 0.005 70deg);
+    --_neutral-900: oklch(17% 0.008 70deg);
+    --_white: oklch(100% 0 0deg);
 
     /* セマンティック（color） */
     color-scheme: light dark;
-    --color-main: light-dark(var(--_slate-900), var(--_slate-100));
-    --color-surface: light-dark(var(--_white), var(--_slate-900));
+    --color-main: light-dark(var(--_sage-600), var(--_sage-400));
+    --color-surface: light-dark(var(--_white), var(--_neutral-900));
 
     /* typography */
-    --font-ja: "Noto Sans JP", sans-serif;
-    --font-body: var(--font-ja);
+    --font-family: 'Noto Sans JP', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', meiryo, sans-serif;
 
     /* global */
     --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
@@ -264,17 +264,19 @@ SHOULD: `light-dark()` 関数を使用すべきである。
 }
 ```
 
-SHOULD: カテゴリ別にファイルを分割すべきである（color / typography / space / ease / z）。
+SHOULD: カテゴリ別にファイルを分割すべきである（color / typography / space / structure / ease / z）。
+
+> **注記（Informative）**: 単位変換ヘルパー（例: `--px` による `rem` 変換関数）のような補助的カスタムプロパティも Token 層に配置できる。これらはデザイントークンそのものではないが、トークン定義の基盤として `:root` で定義される性質上、Token 層が適切な配置先となる。
 
 ### 5.2 Reset
 
 **責任**: ブラウザデフォルトの正規化（外部リセット CSS の取り込み）
 
 - MAY: Reset 層の使用は任意である
-- MUST: Reset 層を使用する場合、外部リセット CSS の取り込みに限定しなければならない
+- MUST: Reset 層を使用する場合、ブラウザデフォルトの正規化に限定しなければならない（自作・外部を問わない）
 - SHOULD: Reset 層を使用する場合、プロジェクトに適したリセット CSS を選定し、この層に配置すべきである
 
-> **注記（Informative）**: リセット CSS はアタッチメント方式とする。リファレンス実装が参考を提供するが、各プロジェクトに適したリセットを選定・適用すること。リセット CSS の内部実装は本仕様の準拠対象外とする。`:where()` を使用していない外部リセット CSS でも、独立層として隔離されるため、Foundation 以降の層との詳細度競合を防止できる。
+> **注記（Informative）**: リセット CSS は自作でも外部ライブラリでもよい。リファレンス実装が参考を提供するが、各プロジェクトに適したリセットを選定・適用すること。リセット CSS の内部実装は本仕様の準拠対象外とする。`:where()` を使用していない外部リセット CSS でも、独立層として隔離されるため、Foundation 以降の層との詳細度競合を防止できる。
 
 > **Example:**
 
@@ -299,7 +301,7 @@ SHOULD: カテゴリ別にファイルを分割すべきである（color / typo
 /* foundation/base.css — 自作ベーススタイル */
 @layer foundation {
   :where(body) {
-    font-family: var(--font-body);
+    font-family: var(--font-family);
     color: var(--color-main);
     background-color: var(--color-surface);
     line-height: 1.5;
@@ -385,7 +387,7 @@ SHOULD: Component と Project の判断に迷った場合は Component とすべ
 - SHOULD NOT: Portability Test（§3）に合格するスタイルを Project 層に記述すべきでない。該当するスタイルは Component 層（§5.5）に記述する
 - Component や Layout を内包し、ページやセクションに合わせた配置・装飾を担う
 
-SHOULD: サイト固有のデザイン要件があるセクションには、セクションルートに Project Block を付与し、セクション内の要素は Element として構築すべきである。サイト固有のスタイリングが不要なセクションは Layout と Component のみで構成してよい。
+SHOULD: サイト固有のデザイン要件があるセクションには、セクションルートに Project Block を付与し、セクション内の要素は Element として構築すべきである。サイト固有のスタイリングが不要なセクションは Layout と Component のみで構成してよい（MAY）。
 - インラインスタイルについては §7 Custom Properties を参照
 
 SHOULD: ページ単位または機能単位でファイルを分割すべきである。
@@ -440,7 +442,7 @@ MAY: Project が内包する Component や Layout の要素に、現時点で固
 
 **責任**: 動きの分離管理
 
-> **注記（Informative）**: Animation を独立層とする理由は、装飾的アニメーションに対するアクセシビリティガード（prefers-reduced-motion + scripting の2ガード原則）を一元管理するためである。機能的トランジション（ホバーフィードバック等）は Component/Project 層に記述してよい。
+> **注記（Informative）**: Animation を独立層とする理由は、装飾的アニメーションに対するアクセシビリティガード（prefers-reduced-motion + scripting の2ガード原則）を一元管理するためである。機能的トランジション（ホバーフィードバック等）は Component/Project 層に記述してよい（MAY）。
 
 **セレクタ**: `data-animate` 属性および `data-stagger` 属性
 
@@ -462,7 +464,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 | 装飾的アニメーション | 視覚演出。なくても機能に影響しない | fade-in, slide-up, stagger, parallax | Animation |
 | 機能的トランジション | インタラクションフィードバック。ユーザー操作に対する応答 | hover の色変化, ボタンの translate, フォーカスリングの遷移 | Component / Project |
 
-SHOULD: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである。機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい。
+SHOULD: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである。MAY: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい。
 
 判断基準: 「その動きを無効化しても、インタラクションの意味が伝わるか？」 — Yes（なくても伝わる）→ 装飾的 → Animation。No（ないと操作感が損なわれる）→ 機能的 → Component/Project。
 
@@ -536,16 +538,16 @@ SHOULD: `@keyframes` を使用する場合、`@keyframes` 名は対応する `da
 
 ```css
 @layer utility {
-  .u-visually-hidden {
+  .u-visually-hidden:not(:focus, :active, :focus-within) {
     position: absolute !important;
     inline-size: 1px !important;
     block-size: 1px !important;
     padding: 0 !important;
     margin: -1px !important;
     overflow: hidden !important;
-    clip-path: inset(50%) !important;
     white-space: nowrap !important;
     border: 0 !important;
+    clip-path: inset(50%) !important;
   }
 }
 ```
@@ -608,9 +610,9 @@ SHOULD: ファイル名は主要クラス名と一致させるべきである �
 
 | 層 | パターン | 例 |
 |---|---|---|
-| Token（プリミティブ / color） | `--_{カテゴリ}-{名前}` | `--_slate-600` |
+| Token（プリミティブ / color） | `--_{カテゴリ}-{名前}` | `--_sage-600` |
 | Token（セマンティック / color） | `--color-{役割}` | `--color-main` |
-| Token（その他カテゴリ） | `--{カテゴリ}-{名前}` | `--font-ja`, `--space-m` |
+| Token（その他カテゴリ） | `--{カテゴリ}-{名前}` | `--font-family`, `--space-md` |
 | 公開 API | `--{対象}-{名前}` | `--section-padding-min`, `--badge-bg` |
 | Private | `--_{名前}` | `--_font-size-min` |
 
@@ -684,7 +686,7 @@ MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライ�
 
 ### インラインスタイル
 
-MUST NOT: HTML マークアップに静的なインラインスタイルを記述してはならない。インラインスタイルはどの `@layer` にも属さず、mFLOCSS の「どこに何を書くか」を追跡可能にする設計思想と矛盾する。
+MUST NOT: HTML マークアップに静的なインラインスタイルを記述してはならない。インラインスタイルはどの `@layer` にも属さない unlayered CSS として扱われ、全ての layered CSS より優先されるため、層構造による優先順位制御を破壊する。
 
 > **注記（Informative）**: 本規定は開発者が意図的に記述するスタイルに適用される。CMS やライブラリが自動生成するインラインスタイルは適用対象外とする。
 
@@ -812,6 +814,8 @@ SHOULD: Container Queries 内のサイズ指定には `cqi`（container query in
 | **装飾的アニメーション** | 視覚演出としての動き。無効化しても機能に影響しない。Animation 層に分離し、2 ガード原則を適用する（初出: §5.7） |
 | **機能的トランジション** | インタラクションフィードバックとしての動き。ユーザー操作に対する応答であり、対象の Block が属する層（Component または Project）に記述する（初出: §5.7） |
 | **2 ガード原則** | Animation 層で `prefers-reduced-motion` と `scripting` の 2 条件を考慮すること。推奨は `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガード（初出: §5.7） |
+| **統合ガード** | 2 ガード原則の推奨実装パターン。`@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` で Animation 層のスタイル全体をラップし、条件を満たさない場合にブロック全体を不適用にする方式（初出: §5.7） |
+| **Utility Test** | 「このスタイルは特定の Block に帰属せず、単一プロパティ（または密接に関連する最小プロパティセット）で完結するか？」— Utility 層の適用可否を判定する検証問い（初出: §5.8） |
 | **Block** | BEM における独立した意味のあるエンティティ。プレフィックス付きクラス名（`.c-card`, `.p-hero` 等）で表現する（初出: §6） |
 | **Element（`__element`）** | Block の一部。命名は `.__{element}` の形式。Block なしでの使用禁止等の規範的定義は §6 を参照（初出: §6） |
 | **Modifier（`.-xxx`）** | 静的なバリエーション。Component 層と Project 層で使用する（SHOULD）。HTML に記述し、原則として変化しない（初出: §6） |
