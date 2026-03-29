@@ -154,7 +154,7 @@ Step 6: 局所的な単一目的の微調整か？
 
 #### よくある誤りパターン
 
-**A. 機能近接バイアス**: 「テーブルのスクロールラッパー → Component」と判断する誤り。スクロール制御は使う側のコンテナの制約であり、テーブルパーツ自体の責任ではない。正しくは Project の Element。
+**A. 機能近接バイアス（思い込み）**: 「テーブルのスクロールラッパー → Component」と判断する誤り。スクロール制御は使う側のコンテナの制約であり、テーブルパーツ自体の責任ではない。正しくは Project の Element。
 
 **B. Layout への過干渉**: `l-section` に `text-align: center` を追加する誤り。テキスト整列は視覚的プロパティであり、Layout の責任（配置と空間）を超えている。正しくは Project。
 
@@ -168,7 +168,7 @@ Step 6: 局所的な単一目的の微調整か？
 
 ### 先制宣言
 
-MUST: CSS Cascading and Inheritance Level 5 [CSS-CASCADE-5] に定義される `@layer` による層間の優先順位宣言をエントリポイント CSS の先頭で、全ての `@import` に先行して行わなければならない。
+MUST: CSS Cascading and Inheritance Level 5 [CSS-CASCADE-5] に定義される `@layer` による層間の優先順位宣言を起点ファイル（エントリポイント）CSS の先頭で、全ての `@import` に先行して行わなければならない。
 
 > **Example:**
 
@@ -469,7 +469,7 @@ SHOULD: 装飾的アニメーションは Animation 層に分離し、2 ガー�
 
 判断基準: 「その動きを無効化しても、インタラクションの意味が伝わるか？」 — Yes（なくても伝わる）→ 装飾的 → Animation。No（ないと操作感が損なわれる）→ 機能的 → Component/Project。
 
-SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用すべきである。条件を満たさない場合にブロック全体が不適用になり、フォールバック安全性が高い。
+SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用すべきである。条件を満たさない場合にブロック全体が不適用になり、フォールバック（代替値）安全性が高い。
 
 上記の統合ガードパターン（SHOULD）に従えば、この MUST は自動的に満たされる。統合ガードを使用しない場合は、`prefers-reduced-motion: reduce` でアニメーション関連プロパティが初期値に解決されること、`scripting: none` で要素の可視性が維持されることを個別に検証する。
 
@@ -693,7 +693,7 @@ MUST NOT: HTML マークアップに静的なインラインスタイルを記�
 
 > **注記（Informative）**: 本規定は開発者が意図的に記述するスタイルに適用される。CMS やライブラリが自動生成するインラインスタイルは適用対象外とする。
 
-MAY: JS から公開 API のカスタムプロパティの値を動的に注入してよい。CSS が「何をするか」を定義し、JS が「いつ・どの値で」を決める疎結合パターンとして許容する。
+MAY: JS から公開 API のカスタムプロパティの値を動的に注入してよい。CSS が「何をするか」を定義し、JS が「いつ・どの値で」を決める互いに依存しない連携パターンとして許容する。
 
 ---
 
