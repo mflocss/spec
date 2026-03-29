@@ -217,6 +217,8 @@ MUST: 外部 CSS は `@import url() layer()` または npm + バンドラーを�
 3. **ブランドトークンとグローバルトークンの分離**: プロジェクト固有の値と汎用的な値を区別する
 4. **カテゴリ別のファイル分割**: color / typography / space / structure / ease / z-index
 
+**要求レベル:**
+
 - MUST: `:root` セレクタのみを使用しなければならない
 - MUST NOT: 他の層のカスタムプロパティを参照してはならない
 
@@ -276,6 +278,8 @@ SHOULD: カテゴリ別にファイルを分割すべきである（color / typo
 
 **責任**: ブラウザデフォルトの正規化（外部リセット CSS の取り込み）
 
+**要求レベル:**
+
 - MAY: Reset 層の使用は任意である
 - MUST: Reset 層を使用する場合、ブラウザデフォルトの初期化に限定しなければならない（自作・外部を問わない）。プロジェクト固有のスタイルを Reset 層に記述してはならない
 - SHOULD: Reset 層を使用する場合、プロジェクトに適したリセット CSS を選定し、この層に配置すべきである
@@ -299,7 +303,12 @@ SHOULD: カテゴリ別にファイルを分割すべきである（color / typo
 2. **フォーム要素の正規化**: ブラウザ間の差異を吸収する基本スタイル
 3. **詳細度ゼロの維持**: `:where()` で詳細度を抑え、上位層からの上書きを妨げない
 
-**検証問い（Foundation Test）**: 「このスタイルは、要素の基本スタイルの定義か？」 — Yes なら Foundation。No（特定のコンテキストに依存する）なら上位層。
+**検証問い（Foundation Test）**: 「このスタイルは、要素の基本スタイルの定義か？」
+
+- Yes → Foundation
+- No（特定のコンテキストに依存する）→ 上位層
+
+**要求レベル:**
 
 - MUST: 要素型セレクタのみを使用しなければならない（クラスセレクタ・ID セレクタ禁止）
 - SHOULD: 属性セレクタ、擬似クラスは、`:where()` 内で要素型セレクタと組み合わせて使用すべきである。擬似要素は `:where()` の引数に使用できないため、外に記述する（例: `:where(p)::before`）
@@ -346,6 +355,8 @@ SHOULD: カテゴリ別にファイルを分割すべきである（color / typo
 
 - 「このスタイルは、要素の配置・寸法・空間の確保を担っているか？」 — Yes なら Layout
 - 「中身の見た目（色・文字・装飾・影・透明度）が変わるか？」 — Yes なら Layout ではない
+
+**要求レベル:**
 
 - SHOULD NOT: 見た目に関するプロパティ（`color`, `font-size`, `background-color`, `border`, `text-align` 等の視覚的プロパティ）を宣言すべきでない
 - SHOULD: `container-type: inline-size` を宣言し、Container Queries の基盤を提供すべきである。Container Queries を使用しないプロジェクトではこの限りではない
@@ -398,6 +409,8 @@ SHOULD: カテゴリ別にファイルを分割すべきである（color / typo
 3. **外部レイアウトの排除**: ルート要素に margin / position: fixed 等を持たない
 4. **公開 API の提供**: カスタムプロパティで上位層に値の設定を委ねる
 
+**要求レベル:**
+
 - SHOULD: Portability Test に合格すべきである（「別サイトにそのまま持っていけるか？」）
 - SHOULD NOT: 特定のサイトでしか使えない見た目にすべきでない
 - SHOULD: ブランドトークンについては Token 層のセマンティック変数のみを参照すべきである（グローバルトークンの直接参照は許容 — Token 層のトークン分類を参照）
@@ -448,6 +461,8 @@ SHOULD: カテゴリ別にファイルを分割すべきである（color / typo
 1. **サイト固有のパーツとデザイン要件**: ページ / セクション単位の固有スタイル
 2. **Component / Layout の上書き**: CSS 変数経由 / 直接プロパティ / Modifier の 3 パターン
 3. **セクションルートの管理**: ページ内の各セクションに Project Block を付与
+
+**要求レベル:**
 
 - SHOULD NOT: Portability Test（§3）に合格するスタイルを Project 層に記述すべきでない。該当するスタイルは Component 層（§5.5）に記述する
 - MAY: Project は HTML 上で任意の層の要素を内包してよい。Component・Layout・他の Project を内包し、ページやセクションに合わせた配置・装飾を担う（例: ページ単位の `.p-home` の中にセクション単位の `.p-hero`、`.l-section`、`.c-button` を配置する）
@@ -513,7 +528,12 @@ MAY: Project が内包する Component や Layout の要素に、現時点で固
 
 > **設計根拠**: Animation 層のスタイルは JS（IntersectionObserver 等）と連動する。JS からの要素取得には `data-*` 属性を使用する（§6 JS 連携）ため、`data-animate` 属性セレクタを採用する。
 
-**検証問い（Animation Test）**: 「その動きを無効化しても、インタラクションの意味が伝わるか？」 — Yes（なくても伝わる）→ 装飾的 → Animation。No（ないと操作感が損なわれる）→ 機能的 → Component/Project。
+**検証問い（Animation Test）**: 「その動きを無効化しても、インタラクションの意味が伝わるか？」
+
+- Yes（なくても伝わる）→ 装飾的 → Animation
+- No（ないと操作感が損なわれる）→ 機能的 → Component/Project
+
+**要求レベル:**
 
 - MUST: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装としなければならない
 
@@ -567,7 +587,12 @@ SHOULD: `@keyframes` を使用する場合、`@keyframes` 名は対応する `da
 2. **最終上書きの保証**: `!important` による全層に対する優先
 3. **Block に帰属しないグローバルな補助**: 特定の Component に属さない汎用的なスタイル
 
-**検証問い（Utility Test）**: 「このスタイルは特定の Block に帰属せず、単一プロパティ（または密接に関連する最小プロパティセット）で完結するか？」 — Yes なら Utility。No なら Component / Project。
+**検証問い（Utility Test）**: 「このスタイルは特定の Block に帰属せず、単一プロパティ（または密接に関連する最小プロパティセット）で完結するか？」
+
+- Yes → Utility
+- No → Component / Project
+
+**要求レベル:**
 
 - MUST: `!important` を付与しなければならない
 - SHOULD NOT: 特定の Block や Element に帰属できるスタイルを Utility に書くべきでない — Utility は特定の Block に帰属しない横断的かつ局所的な単一目的のスタイルに限る
