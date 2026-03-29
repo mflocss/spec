@@ -349,6 +349,14 @@ MAY: `container-name` を併用し、名前付きコンテナを定義してよ�
 
 ```css
 @layer layout {
+  .l-header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--z-header);
+    container-name: header;
+    container-type: inline-size;
+  }
+
   .l-section {
     --section-padding-min: 3.75rem;
     --section-padding-max: 6.25rem;
@@ -356,6 +364,11 @@ MAY: `container-name` を併用し、名前付きコンテナを定義してよ�
     container-type: inline-size;
     container-name: section;
     padding-block: clamp(var(--section-padding-min), 8vi, var(--section-padding-max));
+  }
+
+  .l-footer {
+    container-name: footer;
+    container-type: inline-size;
   }
 }
 ```
@@ -607,7 +620,7 @@ SHOULD NOT: Element を 2 階層以上ネストすべきではない（`__elemen
 
 SHOULD: ファイル名は主要クラス名と一致させるべきである — `{prefix}-{name}.css`。1 ファイルに関連クラスをグループ化する場合は、代表クラス名をファイル名とする（例: `u-hidden.css`）。Animation 層は `{種別}.css`（例: `fade-in.css`）とし、`data-animate` の値に対応させる（`animation/` ディレクトリが層を識別するため、ファイル名にプレフィックスは不要）。
 
-例: `.c-button` → `c-button.css`, `.l-section` → `l-section.css`, `[data-animate="fade-in"]` → `animation/fade-in.css`
+例: `.c-button` → `c-button.css`, `.l-header` → `l-header.css`, `.l-section` → `l-section.css`, `[data-animate="fade-in"]` → `animation/fade-in.css`
 
 ### カスタムプロパティ命名まとめ
 
@@ -657,11 +670,24 @@ MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライ�
 ```css
 /* Layout 層で公開 API を定義 */
 @layer layout {
+  .l-header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--z-header);
+    container-name: header;
+    container-type: inline-size;
+  }
+
   .l-section {
     --section-padding-min: 3.75rem;
     --section-padding-max: 6.25rem;
 
     padding-block: clamp(var(--section-padding-min), 8vi, var(--section-padding-max));
+  }
+
+  .l-footer {
+    container-name: footer;
+    container-type: inline-size;
   }
 }
 ```
