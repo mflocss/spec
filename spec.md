@@ -653,7 +653,7 @@ SHOULD: 上位層（Project 等）から値を設定する変数、または JS 
 
 MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライベートカスタムプロパティ（`--_xxx`）を定義してよい。プライベートカスタムプロパティは外部から参照・設定されることを想定しない内部実装である。
 
-Layout 層での公開 API 定義は §5.4 の `.l-section` を参照。上位層（Project 等）から公開 API の値を設定し、Layout や Component の振る舞いをページやセクションに合わせて変える。これは §5.6 の CSS 変数経由上書きパターンの基盤となる。
+上位層（Project 等）から公開 API の値を設定し、Layout や Component の振る舞いをページやセクションに合わせて変える。これは §5.6 の CSS 変数経由上書きパターンの基盤となる。
 
 > **注記（Informative）**: 上位層（Project）が下位層（Layout, Component）の公開 API 変数の値を設定することは、正しい依存方向（上位→下位）に沿った操作であり、§3 の MUST NOT（下位→上位の参照禁止）に抵触しない。
 
