@@ -349,6 +349,7 @@ MAY: `container-name` を併用し、名前付きコンテナを定義してよ�
 
 ```css
 @layer layout {
+  /* ストラクチャパターン: 配置・重なり・コンテナ定義 */
   .l-header {
     position: sticky;
     inset-block-start: 0;
@@ -357,11 +358,7 @@ MAY: `container-name` を併用し、名前付きコンテナを定義してよ�
     container-type: inline-size;
   }
 
-  .l-main {
-    container-name: main;
-    container-type: inline-size;
-  }
-
+  /* 公開 API パターン: カスタムプロパティで上位層に余白制御を公開 */
   .l-section {
     --section-padding-min: 3.75rem;
     --section-padding-max: 6.25rem;
@@ -369,11 +366,6 @@ MAY: `container-name` を併用し、名前付きコンテナを定義してよ�
     container-type: inline-size;
     container-name: section;
     padding-block: clamp(var(--section-padding-min), 8vi, var(--section-padding-max));
-  }
-
-  .l-footer {
-    container-name: footer;
-    container-type: inline-size;
   }
 }
 ```
@@ -500,16 +492,7 @@ SHOULD: `@keyframes` を使用する場合、`@keyframes` 名は対応する `da
 ```css
 @layer animation {
   @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
-    /* transition ベース（@keyframes 不要） */
-    [data-animate="fade-in"] {
-      opacity: 0;
-      transition: opacity 0.4s var(--ease-out-cubic);
-    }
-    [data-animate="fade-in"].is-active {
-      opacity: 1;
-    }
-
-    /* @keyframes ベース（即時再生） */
+    /* @keyframes 即時再生: 統合ガード + data-animate */
     @keyframes fade-in-slide-up {
       from { opacity: 0; translate: 0 1.25rem; }
     }
@@ -517,7 +500,7 @@ SHOULD: `@keyframes` を使用する場合、`@keyframes` 名は対応する `da
       animation: fade-in-slide-up 0.6s var(--ease-out-cubic) both;
     }
 
-    /* @keyframes ベース（play-state 制御 — JS が .is-visible 付与で再生開始） */
+    /* @keyframes play-state 制御: JS が .is-visible 付与で再生開始 */
     [data-animate="scale-in"] {
       animation: scale-in 0.8s var(--ease-out-quart) both;
       animation-play-state: paused;
@@ -670,55 +653,34 @@ SHOULD: 上位層（Project 等）から値を設定する変数、または JS 
 
 MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライベートカスタムプロパティ（`--_xxx`）を定義してよい。プライベートカスタムプロパティは外部から参照・設定されることを想定しない内部実装である。
 
-> **Example:**
-
-```css
-/* Layout 層で公開 API を定義 */
-@layer layout {
-  .l-header {
-    position: sticky;
-    inset-block-start: 0;
-    z-index: var(--z-header);
-    container-name: header;
-    container-type: inline-size;
-  }
-
-  .l-main {
-    container-name: main;
-    container-type: inline-size;
-  }
-
-  .l-section {
-    --section-padding-min: 3.75rem;
-    --section-padding-max: 6.25rem;
-
-    padding-block: clamp(var(--section-padding-min), 8vi, var(--section-padding-max));
-  }
-
-  .l-footer {
-    container-name: footer;
-    container-type: inline-size;
-  }
-}
-```
-
-上位層（Project 等）から公開 API の値を設定し、Layout や Component の振る舞いをページやセクションに合わせて変える。これは §5.6 の CSS 変数経由上書きパターンの基盤となる。
+Layout 層での公開 API 定義は §5.4 の `.l-section` を参照。上位層（Project 等）から公開 API の値を設定し、Layout や Component の振る舞いをページやセクションに合わせて変える。これは §5.6 の CSS 変数経由上書きパターンの基盤となる。
 
 > **注記（Informative）**: 上位層（Project）が下位層（Layout, Component）の公開 API 変数の値を設定することは、正しい依存方向（上位→下位）に沿った操作であり、§3 の MUST NOT（下位→上位の参照禁止）に抵触しない。
 
 > **Example:**
 
 ```css
-@layer project {
-  /* Project の Block として公開 API を上書き */
-  .p-about {
-    --section-padding-min: 2.5rem;
-    --section-padding-max: 3.75rem;
-  }
+/* Component でプライベート変数と公開 API を使い分け */
+@layer component {
+  .c-card {
+    /* 公開 API: 上位層から設定可能 */
+    --card-padding: var(--space-md);
 
-  /* Project の Element として l-inner の振る舞いを配置先適応 */
-  .p-about__inner {
-    max-inline-size: 50rem;
+    /* プライベート: Block 内部の計算用 */
+    --_img-ratio: 16 / 9;
+
+    padding: var(--card-padding);
+
+    & .c-card__img {
+      aspect-ratio: var(--_img-ratio);
+    }
+  }
+}
+
+/* 上位層から公開 API を上書き */
+@layer project {
+  .p-about {
+    --card-padding: var(--space-lg);
   }
 }
 ```
