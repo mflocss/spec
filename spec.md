@@ -227,7 +227,7 @@ SHOULD: コンテキスト依存の値（ダークモード切替等）を持つ
 
 SHOULD: ダークモード / テーマ切替は Token 層のセマンティック変数で完結させるべきである。
 
-SHOULD: `light-dark()` 関数を使用すべきである。
+> **注記（Informative）**: ダークモード実装には `light-dark()` 関数が簡潔だが、`prefers-color-scheme` メディアクエリ等の代替手段も使用できる。
 
 **命名規則**:
 
@@ -580,7 +580,9 @@ SHOULD: 層の識別のためにプレフィックス（§3 の層テーブル�
 ### Modifier と State の使い分け
 
 - **Modifier（`.-xxx`）**: 静的なバリエーション。HTML に記述し、原則として変化しない
-- **State（`.is-xxx`）**: 要素自身の動的な状態。JS やユーザー操作により変化する。子要素の状態に基づく親のスタイルは CSS `:has()` 擬似クラスで記述する（SHOULD）
+- **State（`.is-xxx`）**: 要素自身の動的な状態。JS やユーザー操作により変化する
+
+> **注記（Informative）**: 子要素の状態に基づく親のスタイルには CSS `:has()` 擬似クラスが有用である。JS による親クラスの付け替えも代替手段として使用できる。
 
 SHOULD: Modifier は Component 層と Project 層で使用すべきである。SHOULD NOT: Layout 層では使用すべきでない（Layout は配置と空間のみを担当し、バリエーションは上位層で制御する）。SHOULD NOT: Animation 層（`data-animate` 属性セレクタ）と Utility 層は単一目的のスタイルであり、Modifier を使用すべきでない。
 
@@ -646,7 +648,7 @@ Token（プリミティブ → セマンティック）→ Foundation 以降（�
 
 SHOULD: 上位層（Project 等）から値を設定する変数、または JS から値を注入する変数は、`--{対象}-{名前}` の公開 API 命名を使用すべきである。外部からの契約として機能する変数にプライベート命名（`--_`）を使用すると、意図が不明確になる。
 
-SHOULD: 公開 API のカスタムプロパティには `@property` で `inherits: false` を指定し、子孫への意図しない継承を防止すべきである。パフォーマンスの向上にも寄与する。
+> **注記（Informative）**: 公開 API のカスタムプロパティに `@property` で `inherits: false` を指定すると、子孫への意図しない継承を防止でき、パフォーマンスの向上にも寄与する。
 
 MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライベートカスタムプロパティ（`--_xxx`）を定義してよい。プライベートカスタムプロパティは外部から参照・設定されることを想定しない内部実装である。
 
@@ -768,13 +770,13 @@ SP ファースト / PC ファーストはプロジェクトごとに判断す�
 | Media Queries | ビューポート全体の離散的変化 | ナビゲーション切替、カラム数変更 |
 | `clamp()` | 連続的な流体デザイン | フォントサイズ、余白の滑らかな変化 |
 
-SHOULD: コンポーネント単位のレスポンシブデザインには Container Queries を使用すべきである。ビューポート全体の変化には Media Queries、連続的な流体デザインには `clamp()` を使い分ける。
+> **注記（Informative）**: コンポーネント単位のレスポンシブデザインには Container Queries、ビューポート全体の離散的変化には Media Queries、連続的な流体デザインには `clamp()` が適している。上記テーブルを参考に使い分けるとよい。
 
 Container Queries の層責任（`container-type` / `container-name` / `@container` の配置先）は §5.4 Layout を参照。
 
 ### Container Queries の単位
 
-SHOULD: Container Queries 内のサイズ指定には `cqi`（container query inline-size）を使用すべきである。`vw` はビューポート基準であり、コンテナ基準の設計と矛盾する。
+> **注記（Informative）**: Container Queries 内のサイズ指定には `cqi` がコンテナ基準として整合的である。`vw` はビューポート基準のため、コンテナ幅との乖離が生じうる。
 
 > **Example:**
 
