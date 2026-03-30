@@ -217,10 +217,17 @@ MUST: 外部 CSS は `@import url() layer()` または npm + バンドラーを�
 3. **ブランドトークンとグローバルトークンの分離**: プロジェクト固有の値と汎用的な値を区別する
 4. **カテゴリ別のファイル分割**: color / typography / space / structure / ease / z-index
 
+**検証問い（Token Test）**: 「この値はデザイントークン（色の値、フォント名、余白、z-index 等）か？」
+
+- Yes → Token
+- No → 他の層
+
 **要求レベル:**
 
 - MUST: `:root` セレクタのみを使用しなければならない
 - MUST NOT: 他の層のカスタムプロパティを参照してはならない
+
+SHOULD は以下の固有セクション（トークンの分類・命名規則）内で文脈とともに定義する。
 
 **トークンの分類**:
 
@@ -277,6 +284,16 @@ SHOULD: カテゴリ別にファイルを分割すべきである（color / typo
 ### 5.2 Reset
 
 **責任**: ブラウザデフォルトの正規化（外部リセット CSS の取り込み）
+
+**Reset 層の責任:**
+
+1. **ブラウザデフォルトの初期化**: リセットまたはノーマライズによるブラウザ間差異の吸収
+2. **外部リセット CSS の取り込み**: 独立層として隔離し、他層との詳細度競合を防止
+
+**検証問い（Reset Test）**: 「このスタイルはブラウザデフォルトの初期化か？」
+
+- Yes → Reset
+- No → Foundation 以降の層
 
 **要求レベル:**
 
@@ -409,9 +426,14 @@ SHOULD: カテゴリ別にファイルを分割すべきである（color / typo
 3. **外部レイアウトの排除**: ルート要素に margin / position: fixed 等を持たない
 4. **公開 API の提供**: カスタムプロパティで上位層に値の設定を委ねる
 
+**検証問い（Portability Test, §3）**: 「そのパーツを別のサイトにそのまま持っていけるか？」
+
+- Yes → Component
+- No → Project（§5.6）
+
 **要求レベル:**
 
-- SHOULD: Portability Test に合格すべきである（「別サイトにそのまま持っていけるか？」）
+- SHOULD: Portability Test に合格すべきである
 - SHOULD NOT: 特定のサイトでしか使えない見た目にすべきでない
 - SHOULD: ブランドトークンについては Token 層のセマンティック変数のみを参照すべきである（グローバルトークンの直接参照は許容 — Token 層のトークン分類を参照）
 - SHOULD NOT: 外部レイアウトに影響するプロパティ（ルート要素の `margin`, `position: fixed/sticky`, ルート要素の `overflow` 等）を Component のルート要素に含めるべきでない — 配置は使う側の責任（Responsibility Test）である
@@ -461,6 +483,11 @@ SHOULD: カテゴリ別にファイルを分割すべきである（color / typo
 1. **サイト固有のパーツとデザイン要件**: ページ / セクション単位の固有スタイル
 2. **Component / Layout の上書き**: CSS 変数経由 / 直接プロパティ / Modifier の 3 パターン
 3. **セクションルートの管理**: ページ内の各セクションに Project Block を付与
+
+**検証問い（Portability Test, §3）**: 「そのパーツを別のサイトにそのまま持っていけるか？」
+
+- Yes → Component（§5.5）
+- No → Project
 
 **要求レベル:**
 
@@ -519,15 +546,6 @@ MAY: Project が内包する Component や Layout の要素に、現時点で固
 2. **アクセシビリティガードの保証**: 2 ガード原則（prefers-reduced-motion + scripting）
 3. **状態遷移の制御**: `data-animate` + `.is-visible` / `.is-active` による表示制御
 
-> **注記（Informative）**: Animation を独立層とする理由は、装飾的アニメーションに対するアクセシビリティガード（prefers-reduced-motion + scripting の2ガード原則）を一元管理するためである。機能的トランジション（ホバーフィードバック等）は Component/Project 層に記述してよい（MAY）。
-
-**セレクタ**: `data-animate` 属性および `data-stagger` 属性
-
-- `[data-animate="{種別}"]` — 要素自体のアニメーション種別を指定する（例: `data-animate="fade-in"`, `data-animate="slide-up"`）
-- `[data-stagger="{種別}"]` — 子要素に段階的な遅延を適用するコンテナ。値はアニメーション種別で、`data-animate` と同じ `@keyframes` を共有する（例: `data-stagger="fade-in-slide-up"`）。JS が各子要素に `--stagger-delay` を設定する
-
-> **設計根拠**: Animation 層のスタイルは JS（IntersectionObserver 等）と連動する。JS からの要素取得には `data-*` 属性を使用する（§6 JS 連携）ため、`data-animate` 属性セレクタを採用する。
-
 **検証問い（Animation Test）**: 「その動きを無効化しても、インタラクションの意味が伝わるか？」
 
 - Yes（なくても伝わる）→ 装飾的 → Animation
@@ -536,15 +554,23 @@ MAY: Project が内包する Component や Layout の要素に、現時点で固
 **要求レベル:**
 
 - MUST: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装としなければならない
-
-この `prefers-reduced-motion` と `scripting` の 2 条件の考慮を **2 ガード原則** と呼ぶ。
-
 - SHOULD: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである
 - MAY: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
 - SHOULD: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale`）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。前庭障害のトリガーになりうるためである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
 - SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用すべきである。条件を満たさない場合にブロック全体が不適用になり、フォールバック（代替値）安全性が高い
 
-上記の統合ガードパターン（SHOULD）に従えば、2 ガード原則の MUST（`prefers-reduced-motion: reduce` でのアニメーション無効化と `scripting: none` での可視性維持）は自動的に満たされる。統合ガードを使用しない場合は、`prefers-reduced-motion: reduce` でアニメーション関連プロパティが初期値に解決されること、`scripting: none` で要素の可視性が維持されることを個別に検証する。
+> **注記（Informative）**: Animation を独立層とする理由は、装飾的アニメーションに対するアクセシビリティガード（prefers-reduced-motion + scripting の2ガード原則）を一元管理するためである。機能的トランジション（ホバーフィードバック等）は Component/Project 層に記述してよい（MAY）。
+
+この `prefers-reduced-motion` と `scripting` の 2 条件の考慮を **2 ガード原則** と呼ぶ。上記の統合ガードパターン（SHOULD）に従えば、2 ガード原則の MUST は自動的に満たされる。統合ガードを使用しない場合は、`prefers-reduced-motion: reduce` でアニメーション関連プロパティが初期値に解決されること、`scripting: none` で要素の可視性が維持されることを個別に検証する。
+
+#### セレクタ
+
+`data-animate` 属性および `data-stagger` 属性を使用する。
+
+- `[data-animate="{種別}"]` — 要素自体のアニメーション種別を指定する（例: `data-animate="fade-in"`, `data-animate="slide-up"`）
+- `[data-stagger="{種別}"]` — 子要素に段階的な遅延を適用するコンテナ。値はアニメーション種別で、`data-animate` と同じ `@keyframes` を共有する（例: `data-stagger="fade-in-slide-up"`）。JS が各子要素に `--stagger-delay` を設定する
+
+> **設計根拠**: Animation 層のスタイルは JS（IntersectionObserver 等）と連動する。JS からの要素取得には `data-*` 属性を使用する（§6 JS 連携）ため、`data-animate` 属性セレクタを採用する。
 
 #### 動きの分類
 
@@ -874,6 +900,8 @@ Container Queries の層責任（`container-type` / `container-name` / `@contain
 
 | 用語 | 定義 |
 |---|---|
+| **Token Test** | 「この値はデザイントークン（色の値、フォント名、余白、z-index 等）か？」— Token 層の適用可否を判定する検証問い（初出: §5.1） |
+| **Reset Test** | 「このスタイルはブラウザデフォルトの初期化か？」— Reset 層の適用可否を判定する検証問い（初出: §5.2） |
 | **Portability Test** | 「そのパーツを別のサイトにそのまま持っていけるか？」— Component と Project の境界を判定する基準テスト（初出: §3） |
 | **Foundation Test** | 「このスタイルは、要素の基本スタイルの定義か？」— Foundation 層の適用可否を判定する検証問い（初出: §5.3） |
 | **Layout Test** | 「このスタイルは、要素の配置・寸法・空間の確保を担っているか？」— Layout 層の責任範囲を判定する検証問い。補助テスト:「中身の見た目（色・文字・装飾・影・透明度）が変わるか？」— Yes なら Layout ではない（初出: §5.4） |
