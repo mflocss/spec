@@ -102,24 +102,6 @@ mFLOCSS は 8 つの層で構成される。本章以降で使用する Block・
 
 依存方向ルールは **CSS の参照方向** に適用される。HTML の入れ子構造はこのルールの対象外である。Component の中に Project を配置し、その中に Component を置く構造（例: `.c-modal` > `.p-login-form` > `.c-button`）は、CSS で他の層のクラスを参照しない限り違反にならない。
 
-### Portability Test
-
-Component 層と Project 層の境界を判定する基準テスト。
-
-> 「そのパーツを別のサイトにそのまま持っていけるか？」
-
-- Yes → Component
-- No → Project
-
-### Responsibility Test
-
-Component と Project の境界を補助的に判定するテスト。Portability Test が明確に Yes または No を返す場合、Responsibility Test の結果に関わらずその判定に従う。Portability Test で判断が曖昧な場合にのみ Responsibility Test を使用する。
-
-> 「このスタイルは、パーツ自身の視覚的責任か？」
-
-- Yes → Component: ボタンの背景色、カードの角丸
-- No（使う側のデザイン要件）→ Project: ヒーロー内のボタンのサイズ変更、カードの配置間隔
-
 ### Layer Judgment Flowchart
 
 > **注記（Informative）**: このフローチャートは層判断の参考ガイドであり、規範的ルールではない。
@@ -140,7 +122,7 @@ Step 3: 配置と空間だけか？（色・文字・装飾に触れないか？
 Step 4: 別のサイトにそのまま持っていけるか？
   ├─ Yes → Component
   └─ No → Project
-  ※ 判断が曖昧な場合は、§3 の補助テストを使用する。
+  ※ 判断が曖昧な場合は、§5.5 の補助テストを使用する。
 
 ※ Step 5-6 は Step 1-4 の判定結果とは独立して評価する。
   1つのスタイルが Step 4 で Component と判定され、かつ Step 5 で
@@ -417,14 +399,21 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 **Component 層の責任:**
 
 1. **再利用可能なパーツの定義**: 配置先に依存しない、自己完結した UI パーツ
-2. **Portability Test による判断**: 「別のサイトにそのまま持っていけるか？」で Component か Project かを判定
+2. **Portability Test**: 「別のサイトにそのまま持っていけるか？」で Component か Project かを判定
 3. **外部レイアウトの排除**: ルート要素に margin / position: fixed 等を持たない
 4. **公開 API の提供**: カスタムプロパティで上位層に値の設定を委ねる
 
-**検証問い（Portability Test, §3）**: 「そのパーツを別のサイトにそのまま持っていけるか？」
+**検証問い（Portability Test）**: 「そのパーツを別のサイトにそのまま持っていけるか？」
 
 - Yes → Component
 - No → Project（§5.6）
+
+**補助テスト（Responsibility Test）**: Portability Test で判断が曖昧な場合にのみ使用する。Portability Test が明確に Yes または No を返す場合、Responsibility Test の結果に関わらずその判定に従う。
+
+> 「このスタイルは、パーツ自身の視覚的責任か？」
+
+- Yes → Component: ボタンの背景色、カードの角丸
+- No（使う側のデザイン要件）→ Project: ヒーロー内のボタンのサイズ変更、カードの配置間隔
 
 **要求レベル:**
 
@@ -478,14 +467,14 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 2. **Component / Layout の上書き**: CSS 変数経由 / 直接プロパティ / Modifier の 3 パターン
 3. **セクションルートの管理**: ページ内の各セクションに Project Block を付与
 
-**検証問い（Portability Test, §3）**: 「そのパーツを別のサイトにそのまま持っていけるか？」
+**検証問い（Portability Test, §5.5）**: 「そのパーツを別のサイトにそのまま持っていけるか？」
 
 - Yes → Component（§5.5）
 - No → Project
 
 **要求レベル:**
 
-- SHOULD NOT: Portability Test（§3）に合格するスタイルを Project 層に記述すべきでない。該当するスタイルは Component 層（§5.5）に記述する
+- SHOULD NOT: Portability Test（§5.5）に合格するスタイルを Project 層に記述すべきでない。該当するスタイルは Component 層（§5.5）に記述する
 - SHOULD: サイト固有のデザイン要件があるセクションには、セクションルートに Project Block を付与し、セクション内の要素は Element として構築すべきである。インラインスタイルについては §7 Custom Properties を参照
 - SHOULD: 直接プロパティ上書きと CSS 変数経由のどちらも使用できる場合は、CSS 変数経由を優先すべきである（上書きパターンを参照）
 - SHOULD: ページ単位または機能単位でファイルを分割すべきである
@@ -895,10 +884,10 @@ Container Queries の層責任（`container-type` / `container-name` / `@contain
 |---|---|
 | **Token Test** | 「この値はデザイントークン（色の値、フォント名、余白、z-index 等）か？」— Token 層の適用可否を判定する検証問い（初出: §5.1） |
 | **Reset Test** | 「このスタイルはブラウザデフォルトの初期化か？」— Reset 層の適用可否を判定する検証問い（初出: §5.2） |
-| **Portability Test** | 「そのパーツを別のサイトにそのまま持っていけるか？」— Component と Project の境界を判定する基準テスト（初出: §3） |
+| **Portability Test** | 「そのパーツを別のサイトにそのまま持っていけるか？」— Component と Project の境界を判定する基準テスト（初出: §5.5） |
 | **Foundation Test** | 「このスタイルは、要素の基本スタイルの定義か？」— Foundation 層の適用可否を判定する検証問い（初出: §5.3） |
 | **Layout Test** | 「このスタイルは、要素の配置・寸法・空間の確保を担っているか？」— Layout 層の責任範囲を判定する検証問い。補助テスト:「中身の見た目（色・文字・装飾・影・透明度）が変わるか？」— Yes なら Layout ではない（初出: §5.4） |
-| **Responsibility Test** | 「このスタイルは、パーツ自身の視覚的責任か？」— Component と Project の境界を補助的に判定するテスト。優先順位は §3 を参照（初出: §3） |
+| **Responsibility Test** | 「このスタイルは、パーツ自身の視覚的責任か？」— Component と Project の境界を補助的に判定するテスト。Portability Test が曖昧な場合にのみ使用（初出: §5.5） |
 | **ブランドトークン** | プロジェクトごとに変わるデザイン値（color, typography, structure）。参照ルールは §5.1 および §7 を参照（初出: §5.1） |
 | **グローバルトークン** | 多くのプロジェクトで共通して使える値（ease, z-index, font-weight）。参照ルールは §5.1 および §7 を参照（初出: §5.1） |
 | **参照チェーン** | Token（プリミティブ → セマンティック）→ Foundation 以降（使用）。カスタムプロパティの参照パスを規定する（初出: §7） |
