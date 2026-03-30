@@ -491,6 +491,8 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 - SHOULD: サイト固有のデザイン要件があるセクションには、セクションルートに Project Block を付与し、セクション内の要素は Element として構築すべきである。インラインスタイルについては §7 Custom Properties を参照
 - MAY: サイト固有のスタイリングが不要なセクションは Layout と Component のみで構成してよい
 - SHOULD: ページ単位または機能単位でファイルを分割すべきである
+- SHOULD: 直接プロパティ上書きと CSS 変数経由のどちらも使用できる場合は、CSS 変数経由を優先すべきである（上書きパターンを参照）
+- MAY: Project が内包する Component や Layout の要素に、現時点で固有スタイルがなくても Project の Element クラスを付与してよい（例: `class="c-section-heading p-about__heading"`）。拡張点��して機能する
 
 #### 上書きパターン
 
@@ -502,13 +504,11 @@ Project 層は上位層として、Component のスタイルをページやセ�
 | CSS 変数経由 | Component/Layout が公開する公開 API カスタムプロパティの値を設定 | `.p-about { --section-padding: 2.5rem; }` |
 | Modifier（Component 層 / Project 層で定義） | 汎用バリエーション | `.c-button.-primary` |
 
-SHOULD: 直接プロパティ上書きと CSS 変数経由のどちらも使用できる場合は、CSS 変数経由を優先すべきである。CSS 変数経由は Component/Layout の内部構造に依存しないため保守性が高い。
+CSS 変数経由は Component/Layout の内部構造に依存しないため保守性が高い。
 
 Modifier は Component に内包される再利用可能なバリエーション。Project 上書きはサイト固有のデザイン要件に基づき Component のスタイルを調整するもの。
 
 Layout や Component の振る舞いをページやセクションに合わせて変えたい場合は、Project の Block または Element として定義する（例: `class="l-section p-about"`, `class="c-button p-about__cta"`）。
-
-MAY: Project が内包する Component や Layout の要素に、現時点で固有スタイルがなくても Project の Element クラスを付与してよい（例: `class="c-section-heading p-about__heading"`）。カスタマイズ時に CSS の追加だけで対応できる拡張点として機能する。
 
 > **Example:**
 
@@ -553,6 +553,7 @@ MAY: Project が内包する Component や Layout の要素に、現時点で固
 - MAY: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
 - SHOULD: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale`）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。前庭障害のトリガーになりうるためである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
 - SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用すべきである。条件を満たさない場合にブロック全体が不適用になり、フォールバック（代替値）安全性が高い
+- SHOULD: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（@keyframes 命名を参照）
 
 > **注記（Informative）**: Animation を独立層とする理由は、装飾的アニメーションに対するアクセシビリティガード（prefers-reduced-motion + scripting の2ガード原則）を一元管理するためである。機能的トランジション（ホバーフィードバック等）は Component/Project 層に記述してよい（MAY）。
 
@@ -578,7 +579,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 
 #### @keyframes 命名
 
-SHOULD: `@keyframes` を使用する場合、`@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（例: `data-animate="scale-in"` → `@keyframes scale-in`）。`data-animate` と `data-stagger` は同じ種別値を持つ場合、同じ `@keyframes` を共有する。`@layer` は `@keyframes` 名のスコープを分離しないため、属性値との対応関係を明確にすることで名前衝突のリスクを低減する。
+`@keyframes` 名は対応する `data-*` 属性の値と一致させる（例: `data-animate="scale-in"` → `@keyframes scale-in`）。`data-animate` と `data-stagger` は同じ種別値を持つ場合、同じ `@keyframes` を共有する。`@layer` は `@keyframes` 名のスコープを分離しないため、属性値との対応関係を明確にすることで名前衝突のリスクを低減する。
 
 > **Example:**
 
