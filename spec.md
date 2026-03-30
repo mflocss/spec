@@ -195,7 +195,7 @@ MUST: 外部 CSS は `@import url() layer()` または npm + バンドラーを�
 1. **デザイントークンの定義**: プリミティブ値（生の値）とセマンティック変数（意味を持つマッピング）の管理
 2. **ダークモード / テーマ切替の完結**: `color-scheme` とセマンティック変数でテーマを Token 層内に閉じ込める
 3. **ブランドトークンとグローバルトークンの分離**: プロジェクト固有の値と汎用的な値を区別する
-4. **カテゴリ別のファイル分割**: color / typography / space / structure / ease / z-index
+4. **カテゴリ別のファイル分割**: color / typography / space / structure / ease / z-index 等
 
 **検証問い（Token Test）**: 「この値はデザイントークン（色の値、フォント名、余白、z-index 等）か？」
 
@@ -208,7 +208,7 @@ MUST: 外部 CSS は `@import url() layer()` または npm + バンドラーを�
 - MUST NOT: 他の層のカスタムプロパティを参照してはならない
 - SHOULD: コンテキスト依存の値を持つカテゴリは、プリミティブ変数とセマンティック変数を同一ファイル内で分離すべきである（トークンの分類を参照）
 - SHOULD: ダークモード / テーマ切替は Token 層のセマンティック変数で完結させるべきである
-- MAY: カテゴリ別にファイルを分割してよい（color / typography / space / structure / ease / z-index）
+- MAY: カテゴリ別にファイルを分割してよい（color / typography / space / structure / ease / z-index 等）
 
 **トークンの分類**:
 
@@ -567,6 +567,10 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
     }
     [data-animate="fade-in"] {
       animation: fade-in 0.6s var(--ease-out-cubic) both;
+      animation-play-state: paused;
+    }
+    [data-animate="fade-in"].is-visible {
+      animation-play-state: running;
     }
   }
 }
