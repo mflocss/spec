@@ -120,7 +120,7 @@ Step 3: 配置と空間だけか？（色・文字・装飾に触れないか？
 Step 4: 別のサイトにそのまま持っていけるか？
   ├─ Yes → Component
   └─ No → Project
-  ※ 判断が曖昧な場合は、§5.5 の補助テストを使用する。
+  ※ 判断が曖昧な場合は、§5.5 の補助テスト（Responsibility Test）を使用する。
 
 ※ Step 5-6 は Step 1-4 の判定結果とは独立して評価する。
   1つのスタイルが Step 4 で Component と判定され、かつ Step 5 で
@@ -527,8 +527,8 @@ Layout や Component の振る舞いをページやセクションに合わせ�
 - SHOULD: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである
 - SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用すべきである。条件を満たさない場合にブロック全体が不適用になり、フォールバック（代替値）安全性が高い
 - SHOULD: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale`）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。前庭障害のトリガーになりうるためである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
-- MAY: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
 - SHOULD: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（@keyframes 命名を参照）
+- MAY: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
 
 この `prefers-reduced-motion` と `scripting` の 2 条件の考慮を **2 ガード原則** と呼ぶ。統合ガードを使用しない場合は、`prefers-reduced-motion: reduce` でアニメーション関連プロパティが初期値に解決されること、`scripting: none` で要素の可視性が維持されることを個別に検証する。
 
