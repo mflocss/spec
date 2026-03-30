@@ -137,10 +137,10 @@ Step 2: ブラウザデフォルトの正規化か？要素の基本スタイル
 Step 3: 配置と空間だけか？（色・文字・装飾に触れないか？）
   └─ Yes → Layout
 
-Step 4: 別のサイトにそのまま持っていけるか？（Portability Test）
+Step 4: 別のサイトにそのまま持っていけるか？
   ├─ Yes → Component
   └─ No → Project
-  ※ Portability Test で判断が曖昧な場合は、Responsibility Test（§3）を補助的に使用する。
+  ※ 判断が曖昧な場合は、§3 の補助テストを使用する。
 
 ※ Step 5-6 は Step 1-4 の判定結果とは独立して評価する。
   1つのスタイルが Step 4 で Component と判定され、かつ Step 5 で
