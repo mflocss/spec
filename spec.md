@@ -483,6 +483,8 @@ CSS 変数経由は Component/Layout の内部構造に依存しないため保�
 
 Modifier は Component に内包される再利用可能なバリエーション。Project 上書きはサイト固有のデザイン要件に基づき Component のスタイルを調整するもの。
 
+**境界事例**: 特定ページでしか使わないボタンサイズの変更は Modifier か Project 上書きか？ — 他のページでも再利用しうるなら Modifier（`.-large`）、そのページ固有なら Project 上書き（`.p-hero > .c-button { font-size: ... }`）。判断基準は Portability Test と同じ「他でも使うか？」。
+
 Layout や Component の振る舞いをページやセクションに合わせて変えたい場合は、Project の Block または Element として定義する（例: `class="l-section p-about"`, `class="c-button p-about__cta"`）。
 
 > **Example:**
@@ -726,27 +728,26 @@ Token（プリミティブ → セマンティック）→ Foundation 以降（�
 
 > **注記（Informative）**: 上位層（Project）が下位層（Layout, Component）の公開 API 変数の値を設定することは、正しい依存方向（上位→下位）に沿った操作であり、§3 の MUST NOT（下位→上位の参照禁止）に抵触しない。
 
-> **Example:**
+> **Example（Token → Component → Project の参照チェーン）:**
 
 ```css
-/* Component でプライベート変数と公開 API を使い分け */
-@layer component {
-  .c-card {
-    /* 公開 API: 上位層から設定可能 */
-    --card-padding: var(--space-md);
-
-    /* プライベート: Block 内部の計算用 */
-    --_img-ratio: 16 / 9;
-
-    padding: var(--card-padding);
-
-    & .c-card__img {
-      aspect-ratio: var(--_img-ratio);
-    }
+/* Token: セマンティック変数を定義 */
+@layer token {
+  :root {
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
   }
 }
 
-/* 上位層から公開 API を上書き */
+/* Component: Token を参照し、公開 API を定義 */
+@layer component {
+  .c-card {
+    --card-padding: var(--space-md);
+    padding: var(--card-padding);
+  }
+}
+
+/* Project: Component の公開 API を上書き */
 @layer project {
   .p-about {
     --card-padding: var(--space-lg);
