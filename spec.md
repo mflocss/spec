@@ -601,6 +601,18 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 
 ```css
 @layer utility {
+  .u-visually-hidden:not(:focus, :active, :focus-within) {
+    position: absolute !important;
+    inline-size: 1px !important;
+    block-size: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+    clip-path: inset(50%) !important;
+  }
+
   .u-hidden-sp {
     @media (width < 768px) {
       display: none !important;
