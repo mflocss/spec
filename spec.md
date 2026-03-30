@@ -16,8 +16,6 @@ mFLOCSS は、CSS の設計判断を体系化する思考フレームワーク�
 
 本仕様はその判断基準を厳密に定義する。
 
-MUST は設計の構造的整合性を保証するルール（`@layer` による層順序の固定・層の分離・命名規則の一貫性等）に適用し、設計判断の推奨は SHOULD で表現する。
-
 #### 対象範囲
 
 - フレームワーク非依存（素の CSS を対象とする）
@@ -226,13 +224,7 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 > **注記（Informative）**: ダークモード実装には `light-dark()` 関数が簡潔だが、`prefers-color-scheme` メディアクエリ等の代替手段も使用できる。
 
-**命名規則**:
-
-| 種別 | パターン | 例 |
-|------|----------|-----|
-| プリミティブ（color） | `--_{カテゴリ}-{名前}` | `--_slate-600` |
-| セマンティック（color） | `--color-{役割}` | `--color-main` |
-| その他のカテゴリ | `--{カテゴリ}-{名前}` | `--font-family`, `--space-md` |
+命名規則は §6 カスタムプロパティ命名まとめを参照。
 
 > **注記（Informative）**: 単位変換ヘルパー（例: `--px` による `rem` 変換関数）のような補助的カスタムプロパティも Token 層に配置できる。これらはデザイントークンそのものではないが、トークン定義の基盤として `:root` で定義される性質上、Token 層が適切な配置先となる。
 
@@ -307,7 +299,7 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 - MUST: 要素型セレクタのみを使用しなければならない（クラスセレクタ・ID セレクタ禁止）
 - SHOULD: 属性セレクタ、擬似クラスは、`:where()` 内で要素型セレクタと組み合わせて使用すべきである。擬似要素は `:where()` の引数に使用できないため、外に記述する（例: `:where(p)::before`）
 - SHOULD: `:where()` で詳細度をゼロに保つべきである。`@layer` による層順序制御が詳細度の予測可能性を構造的に担保するため、`:where()` は推奨とする
-- SHOULD: ブランドトークンについては Token 層のセマンティック変数を参照すべきである（グローバルトークンの直接参照は許容 — Token 層のトークン分類を参照）
+- SHOULD: トークン参照は §7 に従う
 - SHOULD: base と form を分離すべきである。form を独立させる理由は、フォーム要素（input, select, textarea, button）はブラウザ間のデフォルトスタイル差異が大きく、正規化のコード量が多くなるためである。
 
 > **Example:**
@@ -400,8 +392,7 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 1. **再利用可能なパーツの定義**: 配置先に依存しない、自己完結した UI パーツ
 2. **Portability Test**: 「別のサイトにそのまま持っていけるか？」で Component か Project かを判定
-3. **外部レイアウトの排除**: ルート要素に margin / position: fixed 等を持たない
-4. **公開 API の提供**: カスタムプロパティで上位層に値の設定を委ねる
+3. **公開 API の提供**: カスタムプロパティで上位層に値の設定を委ねる
 
 **検証問い（Portability Test）**: 「そのパーツを別のサイトにそのまま持っていけるか？」
 
@@ -420,10 +411,9 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 - SHOULD: Portability Test に合格すべきである
 - SHOULD NOT: 特定のサイトでしか使えない見た目にすべきでない
 - SHOULD: Component と Project の判断に迷った場合は Component とすべきである。Project で上書き可能だが、逆（Project → Component への汎化）は困難であるため。Portability Test で明確に No と判断できる場合はこの限りではない
-- SHOULD: ブランドトークンについては Token 層のセマンティック変数のみを参照すべきである（グローバルトークンの直接参照は許容 — Token 層のトークン分類を参照）
+- SHOULD: トークン参照は §7 に従う
 - SHOULD NOT: 外部レイアウトに影響するプロパティ（ルート要素の `margin`, `position: fixed/sticky`, ルート要素の `overflow` 等）を Component のルート要素に含めるべきでない — 配置は使う側の責任（Responsibility Test）である
-- MAY: 1 コンポーネント 1 ファイルとしてよい（§8 の 1 Block = 1 ファイルも参照）
-- MAY: Component は HTML 上で任意の層の要素を内包してよい（例: `.c-card` の中に `.c-button`、`.c-modal` の中に `.l-section` や `.p-login-form` を配置する）。HTML の入れ子構造は層間の依存方向（§3）の対象外である。内包しても Portability Test に合格するなら Component のままである
+- MAY: HTML 上で任意の層の要素を内包してよい（§3 依存方向を参照）。内包しても Portability Test に合格するなら Component のままである
 
 > **注記（Informative）**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 SHOULD NOT の対象外である。これらは Component 自身の視覚的責任に該当する
 
@@ -467,10 +457,7 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 2. **Component / Layout の上書き**: CSS 変数経由 / 直接プロパティ / Modifier の 3 パターン
 3. **セクションルートの管理**: ページ内の各セクションに Project Block を付与
 
-**検証問い（Portability Test, §5.5）**: 「そのパーツを別のサイトにそのまま持っていけるか？」
-
-- Yes → Component（§5.5）
-- No → Project
+**検証問い**: Portability Test（§5.5）で No → Project
 
 **要求レベル:**
 
@@ -478,7 +465,7 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 - SHOULD: サイト固有のデザイン要件があるセクションには、セクションルートに Project Block を付与し、セクション内の要素は Element として構築すべきである。インラインスタイルについては §7 Custom Properties を参照
 - SHOULD: 直接プロパティ上書きと CSS 変数経由のどちらも使用できる場合は、CSS 変数経由を優先すべきである（上書きパターンを参照）
 - SHOULD: ページ単位または機能単位でファイルを分割すべきである
-- MAY: Project は HTML 上で任意の層の要素を内包してよい。Component・Layout・他の Project を内包し、ページやセクションに合わせた配置・装飾を担う（例: ページ単位の `.p-home` の中にセクション単位の `.p-hero`、`.l-section`、`.c-button` を配置する）
+- MAY: HTML 上で任意の層の要素を内包してよい（§3 依存方向を参照）
 - MAY: サイト固有のスタイリングが不要なセクションは Layout と Component のみで構成してよい
 - MAY: Project が内包する Component や Layout の要素に、現時点で固有スタイルがなくても Project の Element クラスを付与してよい（例: `class="c-section-heading p-about__heading"`）。拡張点として機能する
 
@@ -543,9 +530,7 @@ Layout や Component の振る舞いをページやセクションに合わせ�
 - MAY: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
 - SHOULD: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（@keyframes 命名を参照）
 
-> **注記（Informative）**: Animation を独立層とする理由は、装飾的アニメーションに対するアクセシビリティガード（prefers-reduced-motion + scripting の2ガード原則）を一元管理するためである。機能的トランジション（ホバーフィードバック等）は Component/Project 層に記述してよい（MAY）。
-
-この `prefers-reduced-motion` と `scripting` の 2 条件の考慮を **2 ガード原則** と呼ぶ。上記の統合ガードパターン（SHOULD）に従えば、2 ガード原則の MUST は自動的に満たされる。統合ガードを使用しない場合は、`prefers-reduced-motion: reduce` でアニメーション関連プロパティが初期値に解決されること、`scripting: none` で要素の可視性が維持されることを個別に検証する。
+この `prefers-reduced-motion` と `scripting` の 2 条件の考慮を **2 ガード原則** と呼ぶ。統合ガードを使用しない場合は、`prefers-reduced-motion: reduce` でアニメーション関連プロパティが初期値に解決されること、`scripting: none` で要素の可視性が維持されることを個別に検証する。
 
 #### セレクタ
 
@@ -567,7 +552,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 
 #### @keyframes 命名
 
-`@keyframes` 名は対応する `data-*` 属性の値と一致させる（例: `data-animate="scale-in"` → `@keyframes scale-in`）。`data-animate` と `data-stagger` は同じ種別値を持つ場合、同じ `@keyframes` を共有する。`@layer` は `@keyframes` 名のスコープを分離しないため、属性値との対応関係を明確にすることで名前衝突のリスクを低減する。
+`@layer` は `@keyframes` 名のスコープを分離しないため、属性値との対応関係を明確にすることで名前衝突のリスクを低減する（例: `data-animate="scale-in"` → `@keyframes scale-in`）。
 
 > **Example:**
 
@@ -882,12 +867,12 @@ Container Queries の層責任（`container-type` / `container-name` / `@contain
 
 | 用語 | 定義 |
 |---|---|
-| **Token Test** | 「この値はデザイントークン（色の値、フォント名、余白、z-index 等）か？」— Token 層の適用可否を判定する検証問い（初出: §5.1） |
-| **Reset Test** | 「このスタイルはブラウザデフォルトの初期化か？」— Reset 層の適用可否を判定する検証問い（初出: §5.2） |
-| **Portability Test** | 「そのパーツを別のサイトにそのまま持っていけるか？」— Component と Project の境界を判定する基準テスト（初出: §5.5） |
-| **Foundation Test** | 「このスタイルは、要素の基本スタイルの定義か？」— Foundation 層の適用可否を判定する検証問い（初出: §5.3） |
-| **Layout Test** | 「このスタイルは、要素の配置・寸法・空間の確保を担っているか？」— Layout 層の責任範囲を判定する検証問い。補助テスト:「中身の見た目（色・文字・装飾・影・透明度）が変わるか？」— Yes なら Layout ではない（初出: §5.4） |
-| **Responsibility Test** | 「このスタイルは、パーツ自身の視覚的責任か？」— Component と Project の境界を補助的に判定するテスト。Portability Test が曖昧な場合にのみ使用（初出: §5.5） |
+| **Token Test** | Token 層の適用可否を判定する検証問い（§5.1） |
+| **Reset Test** | Reset 層の適用可否を判定する検証問い（§5.2） |
+| **Portability Test** | Component と Project の境界を判定する基準テスト（§5.5） |
+| **Foundation Test** | Foundation 層の適用可否を判定する検証問い（§5.3） |
+| **Layout Test** | Layout 層の責任範囲を判定する検証問い（§5.4） |
+| **Responsibility Test** | Portability Test の補助テスト。判断が曖昧な場合にのみ使用（§5.5） |
 | **ブランドトークン** | プロジェクトごとに変わるデザイン値（color, typography, structure）。参照ルールは §5.1 および §7 を参照（初出: §5.1） |
 | **グローバルトークン** | 多くのプロジェクトで共通して使える値（ease, z-index, font-weight）。参照ルールは §5.1 および §7 を参照（初出: §5.1） |
 | **参照チェーン** | Token（プリミティブ → セマンティック）→ Foundation 以降（使用）。カスタムプロパティの参照パスを規定する（初出: §7） |
@@ -898,10 +883,10 @@ Container Queries の層責任（`container-type` / `container-name` / `@contain
 | **機能的トランジション** | インタラクションフィードバックとしての動き。ユーザー操作に対する応答であり、対象の Block が属する層（Component または Project）に記述する。`transform` を含む場合は `prefers-reduced-motion` ガードを適用する（初出: §5.7） |
 | **2 ガード原則** | Animation 層で `prefers-reduced-motion` と `scripting` の 2 条件を考慮すること。推奨は `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガード（初出: §5.7） |
 | **統合ガード** | 2 ガード原則の推奨実装パターン。`@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` で Animation 層のスタイル全体をラップし、条件を満たさない場合にブロック全体を不適用にする方式（初出: §5.7） |
-| **Utility Test** | 「このスタイルは特定の Block に帰属せず、単一プロパティ（または密接に関連する最小プロパティセット）で完結するか？」— Utility 層の適用可否を判定する検証問い（初出: §5.8） |
+| **Utility Test** | Utility 層の適用可否を判定する検証問い（§5.8） |
 | **Block** | BEM における独立した意味のあるエンティティ。プレフィックス付きクラス名（`.c-card`, `.p-hero` 等）で表現する（初出: §6） |
 | **Element（`__element`）** | Block の一部。命名は `.__{element}` の形式。Block なしでの使用禁止等の規範的定義は §6 を参照（初出: §6） |
-| **Modifier（`.-xxx`）** | 静的なバリエーション。Block または Element と併用する。HTML に記述し、原則として変化しない（初出: §6） |
+| **Modifier（`.-xxx`）** | 静的なバリエーション。定義は §6 を参照（初出: §6） |
 
 ---
 
