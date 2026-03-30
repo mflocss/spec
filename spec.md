@@ -613,11 +613,6 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
     clip-path: inset(50%) !important;
   }
 
-  .u-hidden-sp {
-    @media (width < 768px) {
-      display: none !important;
-    }
-  }
 }
 ```
 
