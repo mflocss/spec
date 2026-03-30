@@ -617,13 +617,12 @@ SHOULD: `@keyframes` を使用する場合、`@keyframes` 名は対応する `da
 
 - MUST: `!important` を付与しなければならない
 - SHOULD NOT: 特定の Block や Element に帰属できるスタイルを Utility に書くべきでない — Utility は特定の Block に帰属しない横断的かつ局所的な単一目的のスタイルに限る
+- MAY: セマンティックな意味でファイルをグループ化してよい（例: `u-hidden.css` に `u-visually-hidden` と `u-hidden-sp` をまとめる）
 - `!important` の使用制限については §4 を参照
 
 **適切な用途**: アクセシビリティ非表示（`u-visually-hidden`）、レスポンシブ表示制御
 
 **不適切な用途**: 色の定義、レイアウトの組み立て、コンポーネントの装飾
-
-**ファイル構成**: MAY: セマンティックな意味でグループ化してよい。関連するユーティリティをまとめる（例: `u-hidden.css` に `u-visually-hidden` と `u-hidden-sp` をまとめる）。Utility は最小限に留まるため、ファイル数も最小で済む。
 
 > **Example:**
 
