@@ -867,18 +867,15 @@ Container Queries の層責任（`container-type` / `container-name` / `@contain
 
 | 用語 | 定義 |
 |---|---|
+| **先制宣言** | `layer-order.css` における `@layer` による層間の優先順位宣言。全スタイル定義に先行して記述される（初出: §4） |
 | **Token Test** | Token 層の適用可否を判定する検証問い（§5.1） |
-| **Reset Test** | Reset 層の適用可否を判定する検証問い（§5.2） |
-| **Portability Test** | Component と Project の境界を判定する基準テスト（§5.5） |
-| **Foundation Test** | Foundation 層の適用可否を判定する検証問い（§5.3） |
-| **Layout Test** | Layout 層の責任範囲を判定する検証問い（§5.4） |
-| **Responsibility Test** | Portability Test の補助テスト。判断が曖昧な場合にのみ使用（§5.5） |
 | **ブランドトークン** | プロジェクトごとに変わるデザイン値（color, typography, structure）。参照ルールは §5.1 および §7 を参照（初出: §5.1） |
 | **グローバルトークン** | 多くのプロジェクトで共通して使える値（ease, z-index, font-weight）。参照ルールは §5.1 および §7 を参照（初出: §5.1） |
-| **参照チェーン** | Token（プリミティブ → セマンティック）→ Foundation 以降（使用）。カスタムプロパティの参照パスを規定する（初出: §7） |
-| **公開 API（カスタムプロパティ）** | `--{対象}-{名前}` 形式の変数。上位層または JS から上書きされることを想定する外部インターフェース（初出: §7） |
-| **プライベートカスタムプロパティ** | `--_` プレフィックスを持つ変数。Block 内部でのみ使用し、外部からの参照・設定を想定しない（初出: §7） |
-| **先制宣言** | `layer-order.css` における `@layer` による層間の優先順位宣言。全スタイル定義に先行して記述される（初出: §4） |
+| **Reset Test** | Reset 層の適用可否を判定する検証問い（§5.2） |
+| **Foundation Test** | Foundation 層の適用可否を判定する検証問い（§5.3） |
+| **Layout Test** | Layout 層の責任範囲を判定する検証問い（§5.4） |
+| **Portability Test** | Component と Project の境界を判定する基準テスト（§5.5） |
+| **Responsibility Test** | Portability Test の補助テスト。判断が曖昧な場合にのみ使用（§5.5） |
 | **装飾的アニメーション** | 視覚演出としての動き。無効化しても機能に影響しない。Animation 層に分離し、2 ガード原則を適用する（初出: §5.7） |
 | **機能的トランジション** | インタラクションフィードバックとしての動き。ユーザー操作に対する応答であり、対象の Block が属する層（Component または Project）に記述する。`transform` を含む場合は `prefers-reduced-motion` ガードを適用する（初出: §5.7） |
 | **2 ガード原則** | Animation 層で `prefers-reduced-motion` と `scripting` の 2 条件を考慮すること。推奨は `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガード（初出: §5.7） |
@@ -887,6 +884,9 @@ Container Queries の層責任（`container-type` / `container-name` / `@contain
 | **Block** | BEM における独立した意味のあるエンティティ。プレフィックス付きクラス名（`.c-card`, `.p-hero` 等）で表現する（初出: §6） |
 | **Element（`__element`）** | Block の一部。命名は `.__{element}` の形式。Block なしでの使用禁止等の規範的定義は §6 を参照（初出: §6） |
 | **Modifier（`.-xxx`）** | 静的なバリエーション。定義は §6 を参照（初出: §6） |
+| **参照チェーン** | Token（プリミティブ → セマンティック）→ Foundation 以降（使用）。カスタムプロパティの参照パスを規定する（初出: §7） |
+| **公開 API（カスタムプロパティ）** | `--{対象}-{名前}` 形式の変数。上位層または JS から上書きされることを想定する外部インターフェース（初出: §7） |
+| **プライベートカスタムプロパティ** | `--_` プレフィックスを持つ変数。Block 内部でのみ使用し、外部からの参照・設定を想定しない（初出: §7） |
 
 ---
 
