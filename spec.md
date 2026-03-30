@@ -430,14 +430,13 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 - SHOULD: Portability Test に合格すべきである
 - SHOULD NOT: 特定のサイトでしか使えない見た目にすべきでない
+- SHOULD: Component と Project の判断に迷った場合は Component とすべきである。Project で上書き可能だが、逆（Project → Component への汎化）は困難であるため。Portability Test で明確に No と判断できる場合はこの限りではない
 - SHOULD: ブランドトークンについては Token 層のセマンティック変数のみを参照すべきである（グローバルトークンの直接参照は許容 — Token 層のトークン分類を参照）
 - SHOULD NOT: 外部レイアウトに影響するプロパティ（ルート要素の `margin`, `position: fixed/sticky`, ルート要素の `overflow` 等）を Component のルート要素に含めるべきでない — 配置は使う側の責任（Responsibility Test）である
-
-> **注記（Informative）**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 SHOULD NOT の対象外である。これらは Component 自身の視覚的責任に該当する
-
 - MAY: 1 コンポーネント 1 ファイルとしてよい（§8 の 1 Block = 1 ファイルも参照）
 - MAY: Component は HTML 上で任意の層の要素を内包してよい（例: `.c-card` の中に `.c-button`、`.c-modal` の中に `.l-section` や `.p-login-form` を配置する）。HTML の入れ子構造は層間の依存方向（§3）の対象外である。内包しても Portability Test に合格するなら Component のままである
-- SHOULD: Component と Project の判断に迷った場合は Component とすべきである。Project で上書き可能だが、逆（Project → Component への汎化）は困難であるため。Portability Test で明確に No と判断できる場合はこの限りではない
+
+> **注記（Informative）**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 SHOULD NOT の対象外である。これらは Component 自身の視覚的責任に該当する
 
 > **Example:**
 
@@ -487,11 +486,11 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 **要求レベル:**
 
 - SHOULD NOT: Portability Test（§3）に合格するスタイルを Project 層に記述すべきでない。該当するスタイルは Component 層（§5.5）に記述する
-- MAY: Project は HTML 上で任意の層の要素を内包してよい。Component・Layout・他の Project を内包し、ページやセクションに合わせた配置・装飾を担う（例: ページ単位の `.p-home` の中にセクション単位の `.p-hero`、`.l-section`、`.c-button` を配置する）
 - SHOULD: サイト固有のデザイン要件があるセクションには、セクションルートに Project Block を付与し、セクション内の要素は Element として構築すべきである。インラインスタイルについては §7 Custom Properties を参照
-- MAY: サイト固有のスタイリングが不要なセクションは Layout と Component のみで構成してよい
-- SHOULD: ページ単位または機能単位でファイルを分割すべきである
 - SHOULD: 直接プロパティ上書きと CSS 変数経由のどちらも使用できる場合は、CSS 変数経由を優先すべきである（上書きパターンを参照）
+- SHOULD: ページ単位または機能単位でファイルを分割すべきである
+- MAY: Project は HTML 上で任意の層の要素を内包してよい。Component・Layout・他の Project を内包し、ページやセクションに合わせた配置・装飾を担う（例: ページ単位の `.p-home` の中にセクション単位の `.p-hero`、`.l-section`、`.c-button` を配置する）
+- MAY: サイト固有のスタイリングが不要なセクションは Layout と Component のみで構成してよい
 - MAY: Project が内包する Component や Layout の要素に、現時点で固有スタイルがなくても Project の Element クラスを付与してよい（例: `class="c-section-heading p-about__heading"`）。拡張点として機能する
 
 #### 上書きパターン
@@ -550,9 +549,9 @@ Layout や Component の振る舞いをページやセクションに合わせ�
 
 - MUST: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装としなければならない
 - SHOULD: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである
-- MAY: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
-- SHOULD: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale`）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。前庭障害のトリガーになりうるためである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
 - SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用すべきである。条件を満たさない場合にブロック全体が不適用になり、フォールバック（代替値）安全性が高い
+- SHOULD: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale`）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。前庭障害のトリガーになりうるためである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
+- MAY: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
 - SHOULD: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（@keyframes 命名を参照）
 
 > **注記（Informative）**: Animation を独立層とする理由は、装飾的アニメーションに対するアクセシビリティガード（prefers-reduced-motion + scripting の2ガード原則）を一元管理するためである。機能的トランジション（ホバーフィードバック等）は Component/Project 層に記述してよい（MAY）。
