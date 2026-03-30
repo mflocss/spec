@@ -226,14 +226,13 @@ MUST: 外部 CSS は `@import url() layer()` または npm + バンドラーを�
 
 - MUST: `:root` セレクタのみを使用しなければならない
 - MUST NOT: 他の層のカスタムプロパティを参照してはならない
-
-SHOULD は以下の固有セクション（トークンの分類・命名規則）内で文脈とともに定義する。
+- SHOULD: コンテキスト依存の値を持つカテゴリは、プリミティブ変数とセマンティック変数を同一ファイル内で分離すべきである（トークンの分類を参照）
+- SHOULD: ダークモード / テーマ切替は Token 層のセマンティック変数で完結させるべきである
+- MAY: カテゴリ別にファイルを分割してよい（color / typography / space / structure / ease / z-index）
 
 **トークンの分類**:
 
-Token 層はプリミティブ変数とセマンティック変数を同一層内で管理する。
-
-SHOULD: コンテキスト依存の値（ダークモード切替等）を持つカテゴリは、プリミティブ変数（`--_` プレフィックス）とセマンティック変数を同一ファイル内で分離すべきである。コンテキスト依存でないカテゴリは値のみを定義する。
+Token 層はプリミティブ変数とセマンティック変数を同一層内で管理する。コンテキスト依存でないカテゴリは値のみを定義する。
 
 | 分類 | 性質 | 例 |
 |------|------|-----|
@@ -242,8 +241,6 @@ SHOULD: コンテキスト依存の値（ダークモード切替等）を持つ
 | グローバルトークン | 多くのプロジェクトで共通して使える値 | `--ease-out-cubic`, `--z-header` |
 
 判断基準: 「ブランドやプロジェクトが変わったとき、この値を変更する必要があるか？」 — Yes ならブランドトークン（プリミティブ + セマンティック）、No ならグローバルトークン。
-
-SHOULD: ダークモード / テーマ切替は Token 層のセマンティック変数で完結させるべきである。
 
 > **注記（Informative）**: ダークモード実装には `light-dark()` 関数が簡潔だが、`prefers-color-scheme` メディアクエリ等の代替手段も使用できる。
 
@@ -254,8 +251,6 @@ SHOULD: ダークモード / テーマ切替は Token 層のセマンティッ�
 | プリミティブ（color） | `--_{カテゴリ}-{名前}` | `--_slate-600` |
 | セマンティック（color） | `--color-{役割}` | `--color-main` |
 | その他のカテゴリ | `--{カテゴリ}-{名前}` | `--font-family`, `--space-md` |
-
-SHOULD: カテゴリ別にファイルを分割すべきである（color / typography / space / structure / ease / z-index）。
 
 > **注記（Informative）**: 単位変換ヘルパー（例: `--px` による `rem` 変換関数）のような補助的カスタムプロパティも Token 層に配置できる。これらはデザイントークンそのものではないが、トークン定義の基盤として `:root` で定義される性質上、Token 層が適切な配置先となる。
 
@@ -376,7 +371,7 @@ SHOULD: カテゴリ別にファイルを分割すべきである（color / typo
 **要求レベル:**
 
 - SHOULD NOT: 見た目に関するプロパティ（`color`, `font-size`, `background-color`, `border`, `text-align` 等の視覚的プロパティ）を宣言すべきでない
-- SHOULD: `container-type: inline-size` を宣言し、Container Queries の基盤を提供すべきである。Container Queries を使用しないプロジェクトではこの限りではない
+- MAY: Container Queries を使用する場合、`container-type: inline-size` を宣言し、Container Queries の基盤を提供してよい
 - MAY: `container-name` を併用し、名前付きコンテナを定義してよい。セクション単位で名前付きコンテナを定義すると、`@container` での参照先を明示できる
 
 #### Container Queries の層責任
@@ -440,7 +435,7 @@ SHOULD: カテゴリ別にファイルを分割すべきである（color / typo
 
 > **注記（Informative）**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 SHOULD NOT の対象外である。これらは Component 自身の視覚的責任に該当する
 
-- SHOULD: 1 コンポーネント 1 ファイルとすべきである
+- MAY: 1 コンポーネント 1 ファイルとしてよい（§8 の 1 Block = 1 ファイルも参照）
 - MAY: Component は HTML 上で任意の層の要素を内包してよい（例: `.c-card` の中に `.c-button`、`.c-modal` の中に `.l-section` や `.p-login-form` を配置する）。HTML の入れ子構造は層間の依存方向（§3）の対象外である。内包しても Portability Test に合格するなら Component のままである
 - SHOULD: Component と Project の判断に迷った場合は Component とすべきである。Project で上書き可能だが、逆（Project → Component への汎化）は困難であるため。Portability Test で明確に No と判断できる場合はこの限りではない
 
@@ -628,7 +623,7 @@ SHOULD: `@keyframes` を使用する場合、`@keyframes` 名は対応する `da
 
 **不適切な用途**: 色の定義、レイアウトの組み立て、コンポーネントの装飾
 
-**ファイル構成**: SHOULD: セマンティックな意味でグループ化する。1 クラス 1 ファイルではなく、関連するユーティリティをまとめる（例: `u-hidden.css` に `u-visually-hidden` と `u-hidden-sp` をまとめる）。Utility は最小限に留まるため、ファイル数も最小で済む。
+**ファイル構成**: MAY: セマンティックな意味でグループ化してよい。関連するユーティリティをまとめる（例: `u-hidden.css` に `u-visually-hidden` と `u-hidden-sp` をまとめる）。Utility は最小限に留まるため、ファイル数も最小で済む。
 
 > **Example:**
 
