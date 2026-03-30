@@ -492,7 +492,7 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 - MAY: サイト固有のスタイリングが不要なセクションは Layout と Component のみで構成してよい
 - SHOULD: ページ単位または機能単位でファイルを分割すべきである
 - SHOULD: 直接プロパティ上書きと CSS 変数経由のどちらも使用できる場合は、CSS 変数経由を優先すべきである（上書きパターンを参照）
-- MAY: Project が内包する Component や Layout の要素に、現時点で固有スタイルがなくても Project の Element クラスを付与してよい（例: `class="c-section-heading p-about__heading"`）。拡張点��して機能する
+- MAY: Project が内包する Component や Layout の要素に、現時点で固有スタイルがなくても Project の Element クラスを付与してよい（例: `class="c-section-heading p-about__heading"`）。拡張点として機能する
 
 #### 上書きパターン
 
@@ -616,10 +616,9 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 
 **要求レベル:**
 
-- MUST: `!important` を付与しなければならない
+- MUST: `!important` を付与しなければならない（使用制限については §4 を参照）
 - SHOULD NOT: 特定の Block や Element に帰属できるスタイルを Utility に書くべきでない — Utility は特定の Block に帰属しない横断的かつ局所的な単一目的のスタイルに限る
 - MAY: セマンティックな意味でファイルをグループ化してよい（例: `u-hidden.css` に `u-visually-hidden` と `u-hidden-sp` をまとめる）
-- `!important` の使用制限については §4 を参照
 
 **適切な用途**: アクセシビリティ非表示（`u-visually-hidden`）、レスポンシブ表示制御
 
