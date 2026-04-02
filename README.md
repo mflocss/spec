@@ -22,6 +22,20 @@ mFLOCSS（Modified FLOCSS）は、CSS の設計判断を体系化する思考フ
 | **Example** | コード例。ルールの具体的な適用方法を示す |
 | **Changes** | バージョン間の変更履歴 |
 
+## v1.0 の変更概要
+
+書籍『そのFLOCSS、なぜそこに書いた？』との整合を目的とした変更。
+
+| 変更 | 内容 |
+|---|---|
+| **State の表現方法** | `.is-{state}` クラスを廃止し、`data-*` 属性または ARIA 属性（`aria-expanded` 等）で状態を表現する |
+| **§9 Responsive Strategy の削除** | Container Queries の責任テーブルを §5.4 Layout に統合し、章として独立させない |
+| **要求レベルへの一言サマリ付与** | 全 MUST / SHOULD / MAY に角括弧で判定基準のラベルを付与（例: `MUST [Block なしの Element 使用禁止]`） |
+| **style.css の MUST を SHOULD に降格** | `style.css` のエントリポイント構成をプロジェクト運用の判断に委ねる SHOULD に変更 |
+| **Modifier の Layout 使用可を明記** | Modifier を使用できる層に Layout を追加（Component / Layout / Project で SHOULD） |
+| **Element 形式の完全化** | Element 命名は `.{prefix}-{name}__{element}` 形式のみとし、Block なし単独使用を MUST で禁止 |
+| **プライベート変数の Element 定義許容** | プライベートカスタムプロパティ（`--_xxx`）を Element スコープで定義できることを明記 |
+
 ## 関連リソース
 
 | リソース | 説明 |
