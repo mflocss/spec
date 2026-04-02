@@ -106,7 +106,15 @@ mFLOCSS は以下の層で構成される。本章以降で使用する Block・
 
 - MUST NOT [逆方向参照の禁止]: 下位層から上位層のクラスやカスタムプロパティを参照してはならない（例: Component 層が Project 層のクラスに依存してはならない）
 
-依存方向ルールは **CSS の参照方向** に適用される。HTML の入れ子構造はこのルールの対象外である。Component の中に Project を配置し、その中に Component を置く構造（例: `.c-modal` > `.p-login-form` > `.c-button`）は、CSS で他の層のクラスを参照しない限り違反にならない。
+依存方向ルールは **CSS の参照方向** に適用される。HTML の入れ子構造はこのルールの対象外である。Component の中に Project を配置し、その中に Component を置く構造は、CSS で他の層のクラスを参照しない限り違反にならない。
+
+```html
+<div class="c-modal">
+  <form class="p-login-form">
+    <button class="c-button">送信</button>
+  </form>
+</div>
+```
 
 ### Layer Judgment Flowchart
 
