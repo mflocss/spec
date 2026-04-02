@@ -155,7 +155,7 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 **要求レベル:**
 
 - MUST [先制宣言の実施]: CSS Cascading and Inheritance Level 5 [CSS-CASCADE-5] に定義される `@layer` による層間の優先順位宣言を起点ファイル（エントリポイント）CSS の先頭で、全ての `@import` に先行して行わなければならない。
-- MUST NOT [!important の使用制限]: Reset 層および Utility 層を除く全層で `!important` を使用してはならない。Reset 層は外部リセット CSS を取り込むため、その内部実装における `!important` の有無は本仕様の準拠対象外とする（§5.2 注記参照）。この制約により優先度逆転の複雑性を回避する。
+- MUST NOT [!important の使用制限]: Reset 層および Utility 層を除く全層で `!important` を使用してはならない。Reset 層は外部リセット CSS を取り込むため、その内部実装における `!important` の有無は本仕様の準拠対象外とする。この制約により優先度逆転の複雑性を回避する。
 - MUST [外部 CSS の層取り込み]: 外部 CSS は `@import url() layer()` または npm + バンドラーを使用し、いずれかの層に取り込まなければならない。
 
 ### 先制宣言
@@ -165,19 +165,6 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 ```css
 @layer token, reset, foundation, layout, component, project, animation, utility;
 ```
-
-### !important の優先度逆転
-
-> **注記（Informative）**: `@layer` 内で `!important` を使用した場合、通常とは逆順で優先される（先に宣言された層が勝つ）。MUST NOT [!important の使用制限] によりこの優先度逆転の複雑性を回避する。
-
-### 外部 CSS の層配置
-
-> **注記（Informative）**: `@layer` に属さない CSS（unlayered CSS）は全ての layered CSS より優先される。外部ライブラリの CSS を `<link>` タグ等で直接読み込むと、mFLOCSS の層構造を貫通し、意図しない上書きが発生する。外部 CSS の層配置は自作 CSS と同じ判断基準で決定する。出自（外部 / 自作）による特別扱いは行わない。
-
-| 外部 CSS の種類 | 配置先 |
-|---|---|
-| リセット系ライブラリ | `layer(reset)` |
-| UI コンポーネント系ライブラリ | `layer(component)` |
 
 ---
 
@@ -262,8 +249,6 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 - MAY [Reset 層の使用任意]: Reset 層の使用は任意である
 - SHOULD [Reset 層の責任限定]: Reset 層を使用する場合、ブラウザデフォルトの初期化に限定すべきである（自作・外部を問わない）。プロジェクト固有のスタイルを Reset 層に記述すべきでない
 - SHOULD [適切なリセット CSS の配置]: Reset 層を使用する場合、プロジェクトに適したリセット CSS を選定し、この層に配置すべきである
-
-> **注記（Informative）**: リセット CSS は自作でも外部ライブラリでもよい。リファレンス実装が参考を提供するが、各プロジェクトに適したリセットを選定・適用すること。リセット CSS の内部実装は本仕様の準拠対象外とする。`:where()` を使用していない外部リセット CSS でも、独立層として隔離されるため、Foundation 以降の層との詳細度競合を防止できる。
 
 > **Example（SHOULD [適切なリセット CSS の配置]）:**
 
@@ -680,10 +665,6 @@ BEM の `--` ではなく `.-modifier` を採用する。
 
 `js-` プレフィックスは設けない。JS からの要素取得には `data-*` 属性または ARIA 属性を使用する。
 
-### ファイル名
-
-> **注記（Informative）**: 例: `.c-button` → `c-button.css`, `.l-header` → `l-header.css`, `.l-section` → `l-section.css`, `[data-animate="fade-in"]` → `animation/fade-in.css`
-
 ### カスタムプロパティ命名まとめ
 
 | 層 | パターン | 例 |
@@ -798,8 +779,6 @@ css/
 └── utility/
 ```
 
-> **注記（Informative）**: `layer-order.css` は `@layer` の外で機能する宣言であり、いずれの層にも属さない。`property.css` は `@property` を使用する場合のみ作成する（§4 参照）。いずれも層ディレクトリと同列に配置する。
-
 ### 1 Block = 1 ファイル
 
 > **注記（Informative）**: Utility 層は例外とする。Utility は Block 構造を持たない単一目的のクラスであり、セマンティックな意味でグループ化することが推奨される（§5.8 参照）。
@@ -810,11 +789,9 @@ css/
 
 ### property.css
 
-`@property` 宣言を含む。現行の CSS 仕様 [CSS-PROPERTIES-VALUES-1] において `@layer` 内の `@property` は無視されるため、`@layer` の外に配置する（§4 注記参照）。層ディレクトリには入れない。`@property` を使用しないプロジェクトではこのファイルは不要である。
+`@property` 宣言を含む。現行の CSS 仕様 [CSS-PROPERTIES-VALUES-1] において `@layer` 内の `@property` は無視されるため、`@layer` の外に配置する。層ディレクトリには入れない。`@property` を使用しないプロジェクトではこのファイルは不要である。
 
 ### style.css（エントリポイント）
-
-> **注記（Informative）**: 層帰属の明確化方法はプロジェクトの規模やツールチェーンに応じて選択してよい。
 
 | 方式 | 説明 |
 |---|---|
