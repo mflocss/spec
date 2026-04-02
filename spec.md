@@ -85,7 +85,7 @@ mFLOCSS は 8 つの層で構成される。本章以降で使用する Block・
 | 順序 | 層名 | プレフィックス | 責任 |
 |---|---|---|---|
 | 1 | token | — | デザイントークンの定義（プリミティブ値とセマンティック変数） |
-| 2 | reset | — | ブラウザデフォルトの正規化（外部リセット CSS の取り込み） |
+| 2 | reset | — | ブラウザデフォルトの正規化 |
 | 3 | foundation | — | 要素の基本スタイル |
 | 4 | layout | `l-` | 位置と空間の配置 |
 | 5 | component | `c-` | 配置先に左右されない再利用可能なパーツ |
@@ -215,7 +215,7 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 | 分類 | 性質 | 例 |
 |------|------|-----|
-| プリミティブ変数 | 生の値の定義 | `--_slate-600`, `--font-family`, `--ease-out-cubic` |
+| プリミティブ変数 | 生の値の定義 | `--_slate-600`, `--_slate-900` |
 | セマンティック変数 | 意味を持つマッピング | `--color-main`, `--color-surface` |
 | グローバルトークン | 多くのプロジェクトで共通して使える値 | `--ease-out-cubic`, `--z-header` |
 
@@ -251,12 +251,12 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 ### 5.2 Reset
 
-**責任**: ブラウザデフォルトの正規化（外部リセット CSS の取り込み）
+**責任**: ブラウザデフォルトの正規化
 
 **Reset 層の責任:**
 
 1. **ブラウザデフォルトの初期化**: リセットまたはノーマライズによるブラウザ間差異の吸収
-2. **外部リセット CSS の取り込み**: 独立層として隔離し、他層との詳細度競合を防止
+2. **リセット CSS の隔離**: 独立層として隔離し、他層との詳細度競合を防止
 
 **検証問い（Reset Test）**: 「このスタイルはブラウザデフォルトの初期化か？」
 
@@ -274,7 +274,7 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 > **Example:**
 
 ```css
-/* reset/index.css */
+/* reset/reset.css */
 @import url("modern-normalize.css") layer(reset);
 ```
 
@@ -474,7 +474,7 @@ Project 層は上位層として、Component のスタイルをページやセ�
 
 | パターン | 用途 | 例 |
 |---|---|---|
-| 直接プロパティ上書き | 特定の配置先でパーツのスタイルを変更 | `.p-hero > .c-button { font-size: ... }` |
+| 直接プロパティ上書き | 特定の配置先でパーツのスタイルを変更 | `.p-hero .c-button { font-size: ... }` |
 | CSS 変数経由 | Component/Layout が公開する公開 API カスタムプロパティの値を設定 | `.p-about { --section-padding: 2.5rem; }` |
 | Modifier（Component 層 / Project 層で定義） | 汎用バリエーション | `.c-button.-primary` |
 
@@ -527,7 +527,7 @@ Layout や Component の振る舞いをページやセクションに合わせ�
 - MUST: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装としなければならない
 - SHOULD: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである
 - SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用すべきである。条件を満たさない場合にブロック全体が不適用になり、フォールバック（代替値）安全性が高い
-- SHOULD: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale`）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。前庭障害のトリガーになりうるためである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
+- SHOULD: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale` など）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。前庭障害のトリガーになりうるためである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
 - SHOULD: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（@keyframes 命名を参照）
 - MAY: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
 
