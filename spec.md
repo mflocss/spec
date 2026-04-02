@@ -515,7 +515,7 @@ Layout や Component の振る舞いをページやセクションに合わせ�
 
 1. **装飾的アニメーションの分離管理**: Component / Project から動きを分離し一元管理
 2. **アクセシビリティガードの保証**: 2 ガード原則（prefers-reduced-motion + scripting）
-3. **状態遷移の制御**: `data-animate` + `.is-visible` / `.is-active` による表示制御
+3. **状態遷移の制御**: `data-animate` + `data-*` 属性による表示制御
 
 **検証問い（Animation Test）**: 「その動きを無効化しても、インタラクションの意味が伝わるか？」
 
@@ -568,7 +568,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
       animation: fade-in 0.6s var(--ease-out-cubic) both;
       animation-play-state: paused;
     }
-    [data-animate="fade-in"].is-visible {
+    [data-animate="fade-in"][data-visible] {
       animation-play-state: running;
     }
   }
@@ -639,7 +639,8 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 | Block | `.{prefix}-{name}` | `.c-button`, `.l-section` |
 | Element | `.{prefix}-{name}__{element}` | `.c-card__title` |
 | Modifier | `.-{modifier}` | `.c-button.-primary`, `.l-section.-wide` |
-| State | `.is-{state}` | `.is-active`, `.is-open`, `.is-loading` |
+| State（data-*） | `[data-{state}]` | `[data-active]`, `[data-loading]`, `[data-visible]` |
+| State（ARIA） | `[aria-{prop}="..."]` | `[aria-expanded="true"]`, `[aria-current="page"]` |
 
 - MUST: Element（`__element`）は、対応する Block クラスが HTML 上に存在しなければならない。Block なしの Element は使用してはならない。CSS にルールセットがなくても、HTML 上に Block クラスが付与されていれば MUST 違反にはならない。BEM の「Element は常に Block の一部であり、Block から分離して使用してはならない」に基づく
 
@@ -648,9 +649,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 ### Modifier と State の使い分け
 
 - **Modifier（`.-xxx`）**: 静的なバリエーション。Block または Element と併用する。HTML に記述し、原則として変化しない
-- **State（`.is-xxx`）**: 要素自身の動的な状態。Block、Element、または Animation の属性セレクタと併用する。JS やユーザー操作により変化する
-
-> **注記（Informative）**: 子要素の状態に基づく親のスタイルには CSS `:has()` 擬似クラスが有用である。JS による親クラスの付け替えも代替手段として使用できる。
+- **State**: 要素の動的な状態。`data-*` 属性または ARIA 属性（`aria-expanded`, `aria-current` 等）で表現する。JS やユーザー操作により変化する。Block・Element いずれとも組み合わせて使用できる（例: `.c-button[data-loading]`、`.c-card__title[data-active]`）
 
 ### Modifier に `-` を採用する理由
 
