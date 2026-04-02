@@ -711,7 +711,8 @@ BEM の `--` ではなく `.-modifier` を採用する。
 |---|---|---|
 | Token（プリミティブ） | `--_{カテゴリ}-{名前}` | `--_slate-600` |
 | Token（セマンティック） | `--{カテゴリ}-{役割}` | `--color-main`, `--font-size-body` |
-| Token（その他カテゴリ） | `--{カテゴリ}-{名前}` | `--space-md`, `--ease-out-cubic` |
+| Token（グローバルトークン） | `--{カテゴリ}-{名前}` | `--ease-out-cubic`, `--z-header` |
+| Token（計算ヘルパー） | `--{名前}` | `--px` |
 | 公開 API | `--{対象}-{名前}` | `--section-padding`, `--badge-bg` |
 | プライベートカスタムプロパティ | `--_{名前}` | `--_font-size-min` |
 
