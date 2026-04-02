@@ -16,7 +16,7 @@ mFLOCSS は、CSS の記述を層に分類する思考フレームワークで�
 
 本文書は mFLOCSS 仕様書のドラフト版である。v1.0 で正式版となる予定であり、v1.0 リリース以前は仕様の内容が変更される可能性がある。
 
-**最終更新**: 2026-03-28  
+**最終更新**: 2026-04-03  
 **著者**: shunei
 
 ---
@@ -191,7 +191,9 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 1. **デザイントークンの定義**: プリミティブ値（生の値）とセマンティック変数（意味を持つマッピング）の管理
 2. **ブランドトークンとグローバルトークンの分離**: プロジェクト固有の値と汎用的な値を区別する
 
-**検証問い（Token Test）**: 「この値はデザイントークン（色の値、フォント名、余白、z-index 等）か？または計算ヘルパー（単位変換・計算のためのユーティリティ変数。`--px` 等）か？」
+**検証問い（Token Test）:**
+
+「この値はデザイントークン（色の値、フォント名、余白、z-index 等）か？または計算ヘルパー（単位変換・計算のためのユーティリティ変数。`--px` 等）か？」
 
 - Yes → Token
 - No → 他の層
@@ -201,7 +203,7 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 - SHOULD [:root セレクタ限定]: `:root` セレクタのみを使用すべきである
 - MAY [テーマ切替の Token 完結]: ダークモード / テーマ切替は Token 層のセマンティック変数で完結させてよい
 
-**トークンの分類**:
+**トークンの分類:**
 
 Token 層はプリミティブ変数とセマンティック変数を同一層内で管理する。コンテキスト依存でないカテゴリは値のみを定義する。
 
@@ -212,7 +214,7 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 | グローバルトークン | 多くのプロジェクトで共通して使える値 | `--ease-out-cubic`, `--z-header` |
 | 計算ヘルパー | 単位変換・計算のためのユーティリティ変数 | `--px: calc(1rem / 16)`（`calc(数値 * var(--px))` で rem に変換） |
 
-判断基準: 「ブランドやプロジェクトが変わったとき、この値を変更する必要があるか？」 — Yes ならブランドトークン（プリミティブ + セマンティック）、No ならグローバルトークン。計算ヘルパーはブランドに依存しないユーティリティ変数として Token 層に配置する。
+> **注記（Informative）**: 「ブランドやプロジェクトが変わったとき、この値を変更する必要があるか？」 — Yes ならブランドトークン（プリミティブ + セマンティック）、No ならグローバルトークン。計算ヘルパーはブランドに依存しないユーティリティ変数として Token 層に配置する。
 
 命名規則は §6 カスタムプロパティ命名まとめを参照。
 
@@ -242,7 +244,9 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 1. **ブラウザデフォルトの初期化**: リセットまたはノーマライズによるブラウザ間差異の吸収
 
-**検証問い（Reset Test）**: 「このスタイルはブラウザデフォルトの初期化か？」
+**検証問い（Reset Test）:**
+
+「このスタイルはブラウザデフォルトの初期化か？」
 
 - Yes → Reset
 - No → Foundation 以降の層
@@ -258,7 +262,9 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 1. **要素の基本スタイル**: 全ページ共通のタイポグラフィ、行間、色の初期設定
 
-**検証問い（Foundation Test）**: 「このスタイルは、要素の基本スタイルの定義か？」
+**検証問い（Foundation Test）:**
+
+「このスタイルは、要素の基本スタイルの定義か？」
 
 - Yes → Foundation
 - No（特定のコンテキストに依存する）→ 上位層
@@ -296,7 +302,7 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 2. **空間の確保**: セクション間の余白（`padding-block`）、コンテンツ幅の制約（`max-inline-size`）
 3. **配置制御**: `position: sticky` / `z-index` などの構造的な配置
 
-**検証問い（Layout Test）**:
+**検証問い（Layout Test）:**
 
 - 「このスタイルは、要素の配置・寸法・空間の確保を担っているか？」 — Yes なら Layout
 - 「中身の見た目（色・文字・装飾・影・透明度）が変わるか？」 — Yes なら Layout ではない
@@ -346,12 +352,16 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 1. **再利用可能なパーツの定義**: 配置先に依存しない、自己完結した UI パーツ
 
-**検証問い（Portability Test）**: 「そのパーツを別のサイトにそのまま持っていけるか？」
+**検証問い（Portability Test）:**
+
+「そのパーツを別のサイトにそのまま持っていけるか？」
 
 - Yes → Component
 - No → Project（§5.6）
 
-**補助テスト（Responsibility Test）**: Portability Test で判断が曖昧な場合にのみ使用する。Portability Test が明確に Yes または No を返す場合、Responsibility Test の結果に関わらずその判定に従う。
+**補助テスト（Responsibility Test）:**
+
+Portability Test で判断が曖昧な場合にのみ使用する。Portability Test が明確に Yes または No を返す場合、Responsibility Test の結果に関わらずその判定に従う。
 
 > 「このスタイルは、パーツ自身の視覚的責任か？」
 
@@ -403,7 +413,9 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 2. **セクションルートの管理**: ページ内の各セクションに Project Block を付与
 3. **Component / Layout の上書き**: CSS 変数経由 / 直接プロパティ / Modifier の 3 パターン
 
-**検証問い**: Portability Test（§5.5）で No → Project
+**検証問い:**
+
+Portability Test（§5.5）で No → Project
 
 **要求レベル:**
 
@@ -425,11 +437,11 @@ Project 層は上位層として、Component のスタイルをページやセ�
 
 CSS 変数経由は Component/Layout の内部構造に依存しないため保守性が高い。
 
-Modifier は Component に内包される再利用可能なバリエーション。Project 上書きはサイト固有のデザイン要件に基づき Component のスタイルを調整するもの。
+> **注記（Informative）**: Modifier は Component に内包される再利用可能なバリエーション。Project 上書きはサイト固有のデザイン要件に基づき Component のスタイルを調整するもの。
 
-**境界事例**: 特定ページでしか使わないボタンサイズの変更は Modifier か Project 上書きか？ — 他のページでも再利用しうるなら Modifier（`.-large`）、そのページ固有なら Project 上書き（`.p-hero > .c-button { font-size: ... }`）。判断基準は Portability Test と同じ「他でも使うか？」。
-
-Layout や Component の振る舞いをページやセクションに合わせて変えたい場合は、Project の Block または Element として定義する（例: `class="l-section p-about"`, `class="c-button p-about__cta"`）。
+> **注記（Informative）**: 特定ページでしか使わないボタンサイズの変更は Modifier か Project 上書きか？ — 他のページでも再利用しうるなら Modifier（`.-large`）、そのページ固有なら Project 上書き（`.p-hero > .c-button { font-size: ... }`）。判断基準は Portability Test と同じ「他でも使うか？」。
+>
+> Layout や Component の振る舞いをページやセクションに合わせて変えたい場合は、Project の Block または Element として定義する（例: `class="l-section p-about"`, `class="c-button p-about__cta"`）。
 
 > **Example（SHOULD [セクションルートへの Project Block 付与]）:**
 
@@ -459,7 +471,9 @@ Layout や Component の振る舞いをページやセクションに合わせ�
 1. **装飾的アニメーションの分離管理**: Component / Project から動きを分離し一元管理
 2. **状態遷移の制御**: `data-animate` + `data-*` 属性による表示制御
 
-**検証問い（Animation Test）**: 「その動きを無効化しても、インタラクションの意味が伝わるか？」
+**検証問い（Animation Test）:**
+
+「その動きを無効化しても、インタラクションの意味が伝わるか？」
 
 - Yes（なくても伝わる）→ 装飾的 → Animation
 - No（ないと操作感が損なわれる）→ 機能的 → Component/Project
@@ -482,7 +496,7 @@ Layout や Component の振る舞いをページやセクションに合わせ�
 - `[data-animate="{種別}"]` — 要素自体のアニメーション種別を指定する（例: `data-animate="fade-in"`, `data-animate="slide-up"`）
 - `[data-stagger="{種別}"]` — 子要素に段階的な遅延を適用するコンテナ。値はアニメーション種別で、`data-animate` と同じ `@keyframes` を共有する（例: `data-stagger="fade-in-slide-up"`）。JS が各子要素に `--stagger-delay` を設定する
 
-> **設計根拠**: Animation 層のスタイルは JS（IntersectionObserver 等）と連動する。JS からの要素取得には `data-*` 属性を使用する（§6 JS 連携）ため、`data-animate` 属性セレクタを採用する。
+> **注記（Informative）**: Animation 層のスタイルは JS（IntersectionObserver 等）と連動する。JS からの要素取得には `data-*` 属性を使用する（§6 JS 連携）ため、`data-animate` 属性セレクタを採用する。
 
 #### 動きの分類
 
@@ -525,7 +539,9 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 2. **Block に帰属しないグローバルな補助**: 特定の Component に属さない汎用的なスタイル
 3. **最終上書きの保証**: `!important` による全層に対する優先
 
-**検証問い（Utility Test）**: 「このスタイルは特定の Block に帰属せず、単一プロパティ（または密接に関連する最小プロパティセット）で完結するか？」
+**検証問い（Utility Test）:**
+
+「このスタイルは特定の Block に帰属せず、単一プロパティ（または密接に関連する最小プロパティセット）で完結するか？」
 
 - Yes → Utility
 - No → Component / Project
@@ -536,9 +552,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 - SHOULD NOT [Block 帰属スタイルの Utility 記述禁止]: 特定の Block や Element に帰属できるスタイルを Utility に書くべきでない — Utility は特定の Block に帰属しない横断的かつ局所的な単一目的のスタイルに限る
 - MAY [セマンティックなファイルグループ化]: セマンティックな意味でファイルをグループ化してよい（例: `u-hidden.css` に `u-visually-hidden` と `u-hidden-sp` をまとめる）
 
-**適切な用途**: アクセシビリティ非表示（`u-visually-hidden`）、レスポンシブ表示制御
-
-**不適切な用途**: 色の定義、レイアウトの組み立て、コンポーネントの装飾
+> **注記（Informative）**: 適切な用途 — アクセシビリティ非表示（`u-visually-hidden`）、レスポンシブ表示制御。不適切な用途 — 色の定義、レイアウトの組み立て、コンポーネントの装飾
 
 > **Example（MUST [!important の付与]、SHOULD NOT [Block 帰属スタイルの Utility 記述禁止]）:**
 
@@ -570,7 +584,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 **要求レベル:**
 
 - SHOULD NOT [Block なし Element の回避]: Element（`__element`）は、対応する Block クラスが HTML 上に存在すべきである。Block なしの Element は使用すべきでない。CSS にルールセットがなくても、HTML 上に Block クラスが付与されていれば違反にはならない。BEM の「Element は常に Block の一部であり、Block から分離して使用してはならない」に基づく
-- SHOULD [層識別プレフィックスの使用]: 層の識別のためにプレフィックス（§3 の層テーブルを参照）を使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-animate` 属性セレクタを使用するため（§5.7 設計根拠を参照）、プレフィックスの対象外とする
+- SHOULD [層識別プレフィックスの使用]: 層の識別のためにプレフィックスを使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-animate` 属性セレクタを使用するため（§5.7 セレクタを参照）、プレフィックスの対象外とする
 - SHOULD NOT [Element の深いネスト禁止]: Element を 2 階層以上ネストすべきではない。Element が深くなる場合はコンポーネントの分離を検討する。
 - SHOULD [Modifier の使用可能層]: Modifier は Component / Layout / Project で使用すべきである
 - SHOULD NOT [Animation・Utility での Modifier 使用禁止]: Animation 層および Utility 層では Modifier を使用すべきではない
@@ -832,8 +846,8 @@ css/
 |---|---|---|
 | §3 | MUST NOT [逆方向参照の禁止] | §3 層間の依存方向 |
 | §4 | MUST [先制宣言の実施] | §4 要求レベル |
-| §4 | MUST NOT [!important の使用制限] | §4 要求レベル |
 | §4 | MUST [外部 CSS の層取り込み] | §4 要求レベル |
+| §4 | MUST NOT [!important の使用制限] | §4 要求レベル |
 | §5.8 | MUST [!important の付与] | §5.8 要求レベル |
 | §7 | MUST NOT [静的インラインスタイルの禁止] | §7 要求レベル |
 
