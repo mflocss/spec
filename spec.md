@@ -199,9 +199,7 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 **要求レベル:**
 
 - SHOULD [:root セレクタ限定]: `:root` セレクタのみを使用すべきである
-- MAY [プリミティブとセマンティックの分離]: コンテキスト依存の値を持つカテゴリは、プリミティブ変数とセマンティック変数を同一ファイル内で分離してよい（トークンの分類を参照）
 - MAY [テーマ切替の Token 完結]: ダークモード / テーマ切替は Token 層のセマンティック変数で完結させてよい
-- MAY [カテゴリ別ファイル分割]: カテゴリ別にファイルを分割してよい（color / typography / space / structure / ease / z-index 等）
 
 **トークンの分類**:
 
@@ -218,7 +216,7 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 命名規則は §6 カスタムプロパティ命名まとめを参照。
 
-> **Example（SHOULD [:root セレクタ限定]、MAY [プリミティブとセマンティックの分離]）:**
+> **Example（SHOULD [:root セレクタ限定]）:**
 
 ```css
 @layer token {
@@ -252,16 +250,8 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 **要求レベル:**
 
-- MAY [Reset 層の使用任意]: Reset 層の使用は任意である
 - SHOULD [Reset 層の責任限定]: Reset 層を使用する場合、ブラウザデフォルトの初期化に限定すべきである（自作・外部を問わない）。プロジェクト固有のスタイルを Reset 層に記述すべきでない
-- SHOULD [適切なリセット CSS の配置]: Reset 層を使用する場合、プロジェクトに適したリセット CSS を選定し、この層に配置すべきである
-
-> **Example（SHOULD [適切なリセット CSS の配置]）:**
-
-```css
-/* reset/reset.css */
-@import url("modern-normalize.css") layer(reset);
-```
+- MAY [Reset 層の使用任意]: Reset 層の使用は任意である
 
 ### 5.3 Foundation
 
@@ -279,12 +269,8 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 **要求レベル:**
 
 - SHOULD NOT [クラスセレクタ・ID セレクタの回避]: クラスセレクタ・ID セレクタを使用すべきでない。Foundation 層は要素型セレクタのみを使用し、全ページ共通の基本スタイルを定義する
-- SHOULD [属性セレクタの :where() 内使用]: 属性セレクタ、擬似クラスは、`:where()` 内で要素型セレクタと組み合わせて使用すべきである。擬似要素は `:where()` の引数に使用できないため、外に記述する（例: `:where(p)::before`）
-- SHOULD [:where() による詳細度ゼロ]: `:where()` で詳細度をゼロに保つべきである。`@layer` による層順序制御が詳細度の予測可能性を構造的に担保するため、`:where()` は推奨とする
-- SHOULD [トークン参照の規則遵守]: トークン参照は §7 に従う
-- SHOULD [base と form の分離]: base と form を分離すべきである。form を独立させる理由は、フォーム要素（input, select, textarea, button）はブラウザ間のデフォルトスタイル差異が大きく、正規化のコード量が多くなるためである。
 
-> **Example（SHOULD NOT [クラスセレクタ・ID セレクタの回避]、SHOULD [:where() による詳細度ゼロ]、SHOULD [base と form の分離]）:**
+> **Example（SHOULD NOT [クラスセレクタ・ID セレクタの回避]）:**
 
 ```css
 /* foundation/base.css — 自作ベーススタイル */
@@ -324,7 +310,6 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 - SHOULD NOT [視覚プロパティの排除]: 見た目に関するプロパティ（`color`, `font-size`, `background-color`, `border`, `text-align` 等の視覚的プロパティ）を宣言すべきでない
 - MAY [Container Queries 基盤の宣言]: Container Queries を使用する場合、`container-type: inline-size` を宣言し、Container Queries の基盤を提供してよい
-- MAY [名前付きコンテナの定義]: `container-name` を併用し、名前付きコンテナを定義してよい。セクション単位で名前付きコンテナを定義すると、`@container` での参照先を明示できる
 
 #### Container Queries の層責任
 
@@ -333,12 +318,12 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 | 責任 | 層 |
 |---|---|
 | `container-type` の宣言 | Layout |
-| `container-name` の定義 | Layout（MAY） |
+| `container-name` の定義 | Layout |
 | `@container` によるスタイル切替 | Component / Project |
 
 プライベートカスタムプロパティ（`--_xxx`）の使用については §7 Custom Properties を参照。
 
-> **Example（MAY [Container Queries 基盤の宣言]、MAY [名前付きコンテナの定義]）:**
+> **Example（MAY [Container Queries 基盤の宣言]）:**
 
 ```css
 @layer layout {
@@ -383,15 +368,13 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 **要求レベル:**
 
 - SHOULD [Portability Test の合格]: Portability Test に合格すべきである
-- SHOULD NOT [サイト固有スタイルの排除]: 特定のサイトでしか使えない見た目にすべきでない
 - SHOULD [迷ったら Component 優先]: Component と Project の判断に迷った場合は Component とすべきである。Project で上書き可能だが、逆（Project → Component への汎化）は困難であるため。Portability Test で明確に No と判断できる場合はこの限りではない
-- SHOULD [トークン参照の規則遵守]: トークン参照は §7 に従う
 - SHOULD NOT [外部レイアウト影響プロパティの排除]: 外部レイアウトに影響するプロパティ（ルート要素の `margin`, `position: fixed/sticky`, ルート要素の `overflow` 等）を Component のルート要素に含めるべきでない — 配置は使う側の責任（Responsibility Test）である
 - MAY [他層要素の内包]: HTML 上で任意の層の要素を内包してよい（§3 依存方向を参照）。内包しても Portability Test に合格するなら Component のままである
 
 > **注記（Informative）**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 SHOULD NOT の対象外である。これらは Component 自身の視覚的責任に該当する
 
-> **Example（SHOULD [Portability Test の合格]、SHOULD [トークン参照の規則遵守]）:**
+> **Example（SHOULD [Portability Test の合格]）:**
 
 ```css
 @layer component {
@@ -433,8 +416,6 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 - SHOULD NOT [Component 相当スタイルの Project 記述禁止]: Portability Test（§5.5）に合格するスタイルを Project 層に記述すべきでない。該当するスタイルは Component 層（§5.5）に記述する
 - SHOULD [セクションルートへの Project Block 付与]: サイト固有のデザイン要件があるセクションには、セクションルートに Project Block を付与し、セクション内の要素は Element として構築すべきである。インラインスタイルについては §7 Custom Properties を参照
-- SHOULD [CSS 変数経由上書きの優先]: 直接プロパティ上書きと CSS 変数経由のどちらも使用できる場合は、CSS 変数経由を優先すべきである（上書きパターンを参照）
-- SHOULD [ページ・機能単位のファイル分割]: ページ単位または機能単位でファイルを分割すべきである
 - MAY [他層要素の内包]: HTML 上で任意の層の要素を内包してよい（§3 依存方向を参照）
 - MAY [Layout と Component のみの構成]: サイト固有のスタイリングが不要なセクションは Layout と Component のみで構成してよい
 - MAY [拡張用 Element クラスの先行付与]: Project が内包する Component や Layout の要素に、現時点で固有スタイルがなくても Project の Element クラスを付与してよい（例: `class="c-section-heading p-about__heading"`）。拡張点として機能する
@@ -457,7 +438,7 @@ Modifier は Component に内包される再利用可能なバリエーション
 
 Layout や Component の振る舞いをページやセクションに合わせて変えたい場合は、Project の Block または Element として定義する（例: `class="l-section p-about"`, `class="c-button p-about__cta"`）。
 
-> **Example（SHOULD [CSS 変数経由上書きの優先]、SHOULD [セクションルートへの Project Block 付与]）:**
+> **Example（SHOULD [セクションルートへの Project Block 付与]）:**
 
 ```css
 @layer project {
@@ -495,7 +476,6 @@ Layout や Component の振る舞いをページやセクションに合わせ�
 
 - SHOULD [2 ガード原則の実装]: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装とすべきである
 - SHOULD [装飾的アニメーションの Animation 層分離]: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである
-- SHOULD [統合ガードの使用]: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用すべきである。条件を満たさない場合にブロック全体が不適用になり、フォールバック（代替値）安全性が高い
 - SHOULD [transform を含む機能的トランジションのガード]: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale` など）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。前庭障害のトリガーになりうるためである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
 - SHOULD [@keyframes 名と data-* 属性値の一致]: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（@keyframes 命名を参照）
 - MAY [機能的トランジションの所属層への記述]: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
@@ -525,7 +505,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 
 `@layer` は `@keyframes` 名のスコープを分離しないため、属性値との対応関係を明確にすることで名前衝突のリスクを低減する（例: `data-animate="scale-in"` → `@keyframes scale-in`）。
 
-> **Example（SHOULD [2 ガード原則の実装]、SHOULD [統合ガードの使用]、SHOULD [@keyframes 名と data-* 属性値の一致]）:**
+> **Example（SHOULD [2 ガード原則の実装]、SHOULD [@keyframes 名と data-* 属性値の一致]）:**
 
 ```css
 @layer animation {
@@ -602,7 +582,6 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 - SHOULD NOT [Element の深いネスト禁止]: Element を 2 階層以上ネストすべきではない。Element が深くなる場合はコンポーネントの分離を検討する。
 - SHOULD [Modifier の使用可能層]: Modifier は Component / Layout / Project で使用すべきである
 - SHOULD NOT [Animation・Utility での Modifier 使用禁止]: Animation 層および Utility 層では Modifier を使用すべきではない
-- SHOULD [ファイル名と主要クラス名の一致]: ファイル名は主要クラス名と一致させるべきである — `{prefix}-{name}.css`。1 ファイルに関連クラスをグループ化する場合は、代表クラス名をファイル名とする（例: `u-hidden.css`）。Animation 層は `{種別}.css`（例: `fade-in.css`）とし、`data-animate` の値に対応させる（`animation/` ディレクトリが層を識別するため、ファイル名にプレフィックスは不要）。
 
 ### クラス名
 
@@ -872,25 +851,15 @@ css/
 |---|---|---|
 | §5.1 | SHOULD [:root セレクタ限定] | §5.1 要求レベル |
 | §5.2 | SHOULD [Reset 層の責任限定] | §5.2 要求レベル |
-| §5.2 | SHOULD [適切なリセット CSS の配置] | §5.2 要求レベル |
 | §5.3 | SHOULD NOT [クラスセレクタ・ID セレクタの回避] | §5.3 要求レベル |
-| §5.3 | SHOULD [属性セレクタの :where() 内使用] | §5.3 要求レベル |
-| §5.3 | SHOULD [:where() による詳細度ゼロ] | §5.3 要求レベル |
-| §5.3 | SHOULD [トークン参照の規則遵守] | §5.3 要求レベル |
-| §5.3 | SHOULD [base と form の分離] | §5.3 要求レベル |
 | §5.4 | SHOULD NOT [視覚プロパティの排除] | §5.4 要求レベル |
 | §5.5 | SHOULD [Portability Test の合格] | §5.5 要求レベル |
-| §5.5 | SHOULD NOT [サイト固有スタイルの排除] | §5.5 要求レベル |
 | §5.5 | SHOULD [迷ったら Component 優先] | §5.5 要求レベル |
-| §5.5 | SHOULD [トークン参照の規則遵守] | §5.5 要求レベル |
 | §5.5 | SHOULD NOT [外部レイアウト影響プロパティの排除] | §5.5 要求レベル |
 | §5.6 | SHOULD NOT [Component 相当スタイルの Project 記述禁止] | §5.6 要求レベル |
 | §5.6 | SHOULD [セクションルートへの Project Block 付与] | §5.6 要求レベル |
-| §5.6 | SHOULD [CSS 変数経由上書きの優先] | §5.6 要求レベル |
-| §5.6 | SHOULD [ページ・機能単位のファイル分割] | §5.6 要求レベル |
 | §5.7 | SHOULD [2 ガード原則の実装] | §5.7 要求レベル |
 | §5.7 | SHOULD [装飾的アニメーションの Animation 層分離] | §5.7 要求レベル |
-| §5.7 | SHOULD [統合ガードの使用] | §5.7 要求レベル |
 | §5.7 | SHOULD [transform を含む機能的トランジションのガード] | §5.7 要求レベル |
 | §5.7 | SHOULD [@keyframes 名と data-* 属性値の一致] | §5.7 要求レベル |
 | §5.8 | SHOULD NOT [Block 帰属スタイルの Utility 記述禁止] | §5.8 要求レベル |
@@ -899,7 +868,6 @@ css/
 | §6 | SHOULD NOT [Element の深いネスト禁止] | §6 要求レベル |
 | §6 | SHOULD [Modifier の使用可能層] | §6 要求レベル |
 | §6 | SHOULD NOT [Animation・Utility での Modifier 使用禁止] | §6 要求レベル |
-| §6 | SHOULD [ファイル名と主要クラス名の一致] | §6 要求レベル |
 | §7 | SHOULD [セマンティック変数経由の参照] | §7 要求レベル |
 | §7 | SHOULD NOT [プリミティブ変数の直接参照禁止] | §7 要求レベル |
 | §7 | SHOULD [公開 API 変数の命名規則遵守] | §7 要求レベル |
@@ -911,12 +879,9 @@ css/
 
 | § | 一言サマリ | 全文参照 |
 |---|---|---|
-| §5.1 | MAY [プリミティブとセマンティックの分離] | §5.1 要求レベル |
 | §5.1 | MAY [テーマ切替の Token 完結] | §5.1 要求レベル |
-| §5.1 | MAY [カテゴリ別ファイル分割] | §5.1 要求レベル |
 | §5.2 | MAY [Reset 層の使用任意] | §5.2 要求レベル |
 | §5.4 | MAY [Container Queries 基盤の宣言] | §5.4 要求レベル |
-| §5.4 | MAY [名前付きコンテナの定義] | §5.4 要求レベル |
 | §5.5 | MAY [他層要素の内包] | §5.5 要求レベル |
 | §5.6 | MAY [他層要素の内包] | §5.6 要求レベル |
 | §5.6 | MAY [Layout と Component のみの構成] | §5.6 要求レベル |
