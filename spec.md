@@ -163,7 +163,6 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 > **Example（MUST [先制宣言の実施]）:**
 
 ```css
-/* layer-order.css */
 @layer token, reset, foundation, layout, component, project, animation, utility;
 ```
 
