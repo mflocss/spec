@@ -95,8 +95,8 @@ mFLOCSS は 8 つの層で構成される。本章以降で使用する Block・
 
 ### 層間の依存方向
 
-- MAY: 上位層（番号が大きい層）は下位層を参照してよい
-- MUST NOT: 下位層から上位層のクラスやカスタムプロパティを参照してはならない（例: Component 層が Project 層のクラスに依存してはならない）
+- MAY [下位参照の許可]: 上位層（番号が大きい層）は下位層を参照してよい
+- MUST NOT [逆方向参照の禁止]: 下位層から上位層のクラスやカスタムプロパティを参照してはならない（例: Component 層が Project 層のクラスに依存してはならない）
 
 依存方向ルールは **CSS の参照方向** に適用される。HTML の入れ子構造はこのルールの対象外である。Component の中に Project を配置し、その中に Component を置く構造（例: `.c-modal` > `.p-login-form` > `.c-button`）は、CSS で他の層のクラスを参照しない限り違反にならない。
 
@@ -148,7 +148,7 @@ Step 6: 局所的な単一目的の微調整か？
 
 ### 先制宣言
 
-MUST: CSS Cascading and Inheritance Level 5 [CSS-CASCADE-5] に定義される `@layer` による層間の優先順位宣言を起点ファイル（エントリポイント）CSS の先頭で、全ての `@import` に先行して行わなければならない。
+MUST [先制宣言の実施]: CSS Cascading and Inheritance Level 5 [CSS-CASCADE-5] に定義される `@layer` による層間の優先順位宣言を起点ファイル（エントリポイント）CSS の先頭で、全ての `@import` に先行して行わなければならない。
 
 > **Example:**
 
@@ -159,19 +159,19 @@ MUST: CSS Cascading and Inheritance Level 5 [CSS-CASCADE-5] に定義される `
 
 ### @layer と @property
 
-MUST: `@property` を使用する場合は `@layer` の外に配置しなければならない。現行の CSS 仕様 [CSS-PROPERTIES-VALUES-1] において、`@layer` 内の `@property` は無視される。`@property` 自体の使用は任意である。
+MUST [@property のレイヤー外配置]: `@property` を使用する場合は `@layer` の外に配置しなければならない。現行の CSS 仕様 [CSS-PROPERTIES-VALUES-1] において、`@layer` 内の `@property` は無視される。`@property` 自体の使用は任意である。
 
 ### !important の優先度逆転
 
 `@layer` 内で `!important` を使用した場合、通常とは逆順で優先される（先に宣言された層が勝つ）。
 
-MUST NOT: Reset 層および Utility 層を除く全層で `!important` を使用してはならない。Reset 層は外部リセット CSS を取り込むため、その内部実装における `!important` の有無は本仕様の準拠対象外とする（§5.2 注記参照）。この制約により優先度逆転の複雑性を回避する。
+MUST NOT [!important の使用制限]: Reset 層および Utility 層を除く全層で `!important` を使用してはならない。Reset 層は外部リセット CSS を取り込むため、その内部実装における `!important` の有無は本仕様の準拠対象外とする（§5.2 注記参照）。この制約により優先度逆転の複雑性を回避する。
 
 ### 外部 CSS の層配置
 
 `@layer` に属さない CSS（unlayered CSS）は全ての layered CSS より優先される。外部ライブラリの CSS を `<link>` タグ等で直接読み込むと、mFLOCSS の層構造を貫通し、意図しない上書きが発生する。
 
-MUST: 外部 CSS は `@import url() layer()` または npm + バンドラーを使用し、いずれかの層に取り込まなければならない。
+MUST [外部 CSS の層取り込み]: 外部 CSS は `@import url() layer()` または npm + バンドラーを使用し、いずれかの層に取り込まなければならない。
 
 外部 CSS の層配置は、自作 CSS と同じ判断基準で決定する。出自（外部 / 自作）による特別扱いは行わない。
 
@@ -203,11 +203,11 @@ MUST: 外部 CSS は `@import url() layer()` または npm + バンドラーを�
 
 **要求レベル:**
 
-- MUST: `:root` セレクタのみを使用しなければならない
-- MUST NOT: 他の層のカスタムプロパティを参照してはならない
-- SHOULD: コンテキスト依存の値を持つカテゴリは、プリミティブ変数とセマンティック変数を同一ファイル内で分離すべきである（トークンの分類を参照）
-- SHOULD: ダークモード / テーマ切替は Token 層のセマンティック変数で完結させるべきである
-- MAY: カテゴリ別にファイルを分割してよい（color / typography / space / structure / ease / z-index 等）
+- MUST [:root セレクタ限定]: `:root` セレクタのみを使用しなければならない
+- MUST NOT [他層カスタムプロパティ参照禁止]: 他の層のカスタムプロパティを参照してはならない
+- SHOULD [プリミティブとセマンティックの分離]: コンテキスト依存の値を持つカテゴリは、プリミティブ変数とセマンティック変数を同一ファイル内で分離すべきである（トークンの分類を参照）
+- SHOULD [テーマ切替の Token 完結]: ダークモード / テーマ切替は Token 層のセマンティック変数で完結させるべきである
+- MAY [カテゴリ別ファイル分割]: カテゴリ別にファイルを分割してよい（color / typography / space / structure / ease / z-index 等）
 
 **トークンの分類**:
 
@@ -259,9 +259,9 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 **要求レベル:**
 
-- MAY: Reset 層の使用は任意である
-- MUST: Reset 層を使用する場合、ブラウザデフォルトの初期化に限定しなければならない（自作・外部を問わない）。プロジェクト固有のスタイルを Reset 層に記述してはならない
-- SHOULD: Reset 層を使用する場合、プロジェクトに適したリセット CSS を選定し、この層に配置すべきである
+- MAY [Reset 層の使用任意]: Reset 層の使用は任意である
+- MUST [Reset 層の責任限定]: Reset 層を使用する場合、ブラウザデフォルトの初期化に限定しなければならない（自作・外部を問わない）。プロジェクト固有のスタイルを Reset 層に記述してはならない
+- SHOULD [適切なリセット CSS の配置]: Reset 層を使用する場合、プロジェクトに適したリセット CSS を選定し、この層に配置すべきである
 
 > **注記（Informative）**: リセット CSS は自作でも外部ライブラリでもよい。リファレンス実装が参考を提供するが、各プロジェクトに適したリセットを選定・適用すること。リセット CSS の内部実装は本仕様の準拠対象外とする。`:where()` を使用していない外部リセット CSS でも、独立層として隔離されるため、Foundation 以降の層との詳細度競合を防止できる。
 
@@ -289,11 +289,11 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 **要求レベル:**
 
-- MUST: 要素型セレクタのみを使用しなければならない（クラスセレクタ・ID セレクタ禁止）
-- SHOULD: 属性セレクタ、擬似クラスは、`:where()` 内で要素型セレクタと組み合わせて使用すべきである。擬似要素は `:where()` の引数に使用できないため、外に記述する（例: `:where(p)::before`）
-- SHOULD: `:where()` で詳細度をゼロに保つべきである。`@layer` による層順序制御が詳細度の予測可能性を構造的に担保するため、`:where()` は推奨とする
-- SHOULD: トークン参照は §7 に従う
-- SHOULD: base と form を分離すべきである。form を独立させる理由は、フォーム要素（input, select, textarea, button）はブラウザ間のデフォルトスタイル差異が大きく、正規化のコード量が多くなるためである。
+- MUST [要素型セレクタ限定]: 要素型セレクタのみを使用しなければならない（クラスセレクタ・ID セレクタ禁止）
+- SHOULD [属性セレクタの :where() 内使用]: 属性セレクタ、擬似クラスは、`:where()` 内で要素型セレクタと組み合わせて使用すべきである。擬似要素は `:where()` の引数に使用できないため、外に記述する（例: `:where(p)::before`）
+- SHOULD [:where() による詳細度ゼロ]: `:where()` で詳細度をゼロに保つべきである。`@layer` による層順序制御が詳細度の予測可能性を構造的に担保するため、`:where()` は推奨とする
+- SHOULD [トークン参照の規則遵守]: トークン参照は §7 に従う
+- SHOULD [base と form の分離]: base と form を分離すべきである。form を独立させる理由は、フォーム要素（input, select, textarea, button）はブラウザ間のデフォルトスタイル差異が大きく、正規化のコード量が多くなるためである。
 
 > **Example:**
 
@@ -337,9 +337,9 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 **要求レベル:**
 
-- SHOULD NOT: 見た目に関するプロパティ（`color`, `font-size`, `background-color`, `border`, `text-align` 等の視覚的プロパティ）を宣言すべきでない
-- MAY: Container Queries を使用する場合、`container-type: inline-size` を宣言し、Container Queries の基盤を提供してよい
-- MAY: `container-name` を併用し、名前付きコンテナを定義してよい。セクション単位で名前付きコンテナを定義すると、`@container` での参照先を明示できる
+- SHOULD NOT [視覚プロパティの排除]: 見た目に関するプロパティ（`color`, `font-size`, `background-color`, `border`, `text-align` 等の視覚的プロパティ）を宣言すべきでない
+- MAY [Container Queries 基盤の宣言]: Container Queries を使用する場合、`container-type: inline-size` を宣言し、Container Queries の基盤を提供してよい
+- MAY [名前付きコンテナの定義]: `container-name` を併用し、名前付きコンテナを定義してよい。セクション単位で名前付きコンテナを定義すると、`@container` での参照先を明示できる
 
 #### Container Queries の層責任
 
@@ -401,12 +401,12 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 **要求レベル:**
 
-- SHOULD: Portability Test に合格すべきである
-- SHOULD NOT: 特定のサイトでしか使えない見た目にすべきでない
-- SHOULD: Component と Project の判断に迷った場合は Component とすべきである。Project で上書き可能だが、逆（Project → Component への汎化）は困難であるため。Portability Test で明確に No と判断できる場合はこの限りではない
-- SHOULD: トークン参照は §7 に従う
-- SHOULD NOT: 外部レイアウトに影響するプロパティ（ルート要素の `margin`, `position: fixed/sticky`, ルート要素の `overflow` 等）を Component のルート要素に含めるべきでない — 配置は使う側の責任（Responsibility Test）である
-- MAY: HTML 上で任意の層の要素を内包してよい（§3 依存方向を参照）。内包しても Portability Test に合格するなら Component のままである
+- SHOULD [Portability Test の合格]: Portability Test に合格すべきである
+- SHOULD NOT [サイト固有スタイルの排除]: 特定のサイトでしか使えない見た目にすべきでない
+- SHOULD [迷ったら Component 優先]: Component と Project の判断に迷った場合は Component とすべきである。Project で上書き可能だが、逆（Project → Component への汎化）は困難であるため。Portability Test で明確に No と判断できる場合はこの限りではない
+- SHOULD [トークン参照の規則遵守]: トークン参照は §7 に従う
+- SHOULD NOT [外部レイアウト影響プロパティの排除]: 外部レイアウトに影響するプロパティ（ルート要素の `margin`, `position: fixed/sticky`, ルート要素の `overflow` 等）を Component のルート要素に含めるべきでない — 配置は使う側の責任（Responsibility Test）である
+- MAY [他層要素の内包]: HTML 上で任意の層の要素を内包してよい（§3 依存方向を参照）。内包しても Portability Test に合格するなら Component のままである
 
 > **注記（Informative）**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 SHOULD NOT の対象外である。これらは Component 自身の視覚的責任に該当する
 
@@ -454,13 +454,13 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 **要求レベル:**
 
-- SHOULD NOT: Portability Test（§5.5）に合格するスタイルを Project 層に記述すべきでない。該当するスタイルは Component 層（§5.5）に記述する
-- SHOULD: サイト固有のデザイン要件があるセクションには、セクションルートに Project Block を付与し、セクション内の要素は Element として構築すべきである。インラインスタイルについては §7 Custom Properties を参照
-- SHOULD: 直接プロパティ上書きと CSS 変数経由のどちらも使用できる場合は、CSS 変数経由を優先すべきである（上書きパターンを参照）
-- SHOULD: ページ単位または機能単位でファイルを分割すべきである
-- MAY: HTML 上で任意の層の要素を内包してよい（§3 依存方向を参照）
-- MAY: サイト固有のスタイリングが不要なセクションは Layout と Component のみで構成してよい
-- MAY: Project が内包する Component や Layout の要素に、現時点で固有スタイルがなくても Project の Element クラスを付与してよい（例: `class="c-section-heading p-about__heading"`）。拡張点として機能する
+- SHOULD NOT [Component 相当スタイルの Project 記述禁止]: Portability Test（§5.5）に合格するスタイルを Project 層に記述すべきでない。該当するスタイルは Component 層（§5.5）に記述する
+- SHOULD [セクションルートへの Project Block 付与]: サイト固有のデザイン要件があるセクションには、セクションルートに Project Block を付与し、セクション内の要素は Element として構築すべきである。インラインスタイルについては §7 Custom Properties を参照
+- SHOULD [CSS 変数経由上書きの優先]: 直接プロパティ上書きと CSS 変数経由のどちらも使用できる場合は、CSS 変数経由を優先すべきである（上書きパターンを参照）
+- SHOULD [ページ・機能単位のファイル分割]: ページ単位または機能単位でファイルを分割すべきである
+- MAY [他層要素の内包]: HTML 上で任意の層の要素を内包してよい（§3 依存方向を参照）
+- MAY [Layout と Component のみの構成]: サイト固有のスタイリングが不要なセクションは Layout と Component のみで構成してよい
+- MAY [拡張用 Element クラスの先行付与]: Project が内包する Component や Layout の要素に、現時点で固有スタイルがなくても Project の Element クラスを付与してよい（例: `class="c-section-heading p-about__heading"`）。拡張点として機能する
 
 #### 上書きパターン
 
@@ -518,12 +518,12 @@ Layout や Component の振る舞いをページやセクションに合わせ�
 
 **要求レベル:**
 
-- MUST: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装としなければならない
-- SHOULD: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである
-- SHOULD: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用すべきである。条件を満たさない場合にブロック全体が不適用になり、フォールバック（代替値）安全性が高い
-- SHOULD: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale` など）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。前庭障害のトリガーになりうるためである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
-- SHOULD: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（@keyframes 命名を参照）
-- MAY: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
+- MUST [2 ガード原則の実装]: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装としなければならない
+- SHOULD [装飾的アニメーションの Animation 層分離]: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである
+- SHOULD [統合ガードの使用]: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用すべきである。条件を満たさない場合にブロック全体が不適用になり、フォールバック（代替値）安全性が高い
+- SHOULD [transform を含む機能的トランジションのガード]: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale` など）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。前庭障害のトリガーになりうるためである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
+- SHOULD [@keyframes 名と data-* 属性値の一致]: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（@keyframes 命名を参照）
+- MAY [機能的トランジションの所属層への記述]: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
 
 この `prefers-reduced-motion` と `scripting` の 2 条件の考慮を **2 ガード原則** と呼ぶ。統合ガードを使用しない場合は、`prefers-reduced-motion: reduce` でアニメーション関連プロパティが初期値に解決されること、`scripting: none` で要素の可視性が維持されることを個別に検証する。
 
@@ -588,9 +588,9 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 
 **要求レベル:**
 
-- MUST: `!important` を付与しなければならない（使用制限については §4 を参照）
-- SHOULD NOT: 特定の Block や Element に帰属できるスタイルを Utility に書くべきでない — Utility は特定の Block に帰属しない横断的かつ局所的な単一目的のスタイルに限る
-- MAY: セマンティックな意味でファイルをグループ化してよい（例: `u-hidden.css` に `u-visually-hidden` と `u-hidden-sp` をまとめる）
+- MUST [!important の付与]: `!important` を付与しなければならない（使用制限については §4 を参照）
+- SHOULD NOT [Block 帰属スタイルの Utility 記述禁止]: 特定の Block や Element に帰属できるスタイルを Utility に書くべきでない — Utility は特定の Block に帰属しない横断的かつ局所的な単一目的のスタイルに限る
+- MAY [セマンティックなファイルグループ化]: セマンティックな意味でファイルをグループ化してよい（例: `u-hidden.css` に `u-visually-hidden` と `u-hidden-sp` をまとめる）
 
 **適切な用途**: アクセシビリティ非表示（`u-visually-hidden`）、レスポンシブ表示制御
 
@@ -636,9 +636,9 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 | State（data-*） | `[data-{state}]` | `[data-active]`, `[data-loading]`, `[data-visible]` |
 | State（ARIA） | `[aria-{prop}="..."]` | `[aria-expanded="true"]`, `[aria-current="page"]` |
 
-- MUST: Element（`__element`）は、対応する Block クラスが HTML 上に存在しなければならない。Block なしの Element は使用してはならない。CSS にルールセットがなくても、HTML 上に Block クラスが付与されていれば MUST 違反にはならない。BEM の「Element は常に Block の一部であり、Block から分離して使用してはならない」に基づく
+- MUST [Block なし Element の使用禁止]: Element（`__element`）は、対応する Block クラスが HTML 上に存在しなければならない。Block なしの Element は使用してはならない。CSS にルールセットがなくても、HTML 上に Block クラスが付与されていれば MUST 違反にはならない。BEM の「Element は常に Block の一部であり、Block から分離して使用してはならない」に基づく
 
-- SHOULD: 層の識別のためにプレフィックス（§3 の層テーブルを参照）を使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-animate` 属性セレクタを使用するため（§5.7 設計根拠を参照）、プレフィックスの対象外とする
+- SHOULD [層識別プレフィックスの使用]: 層の識別のためにプレフィックス（§3 の層テーブルを参照）を使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-animate` 属性セレクタを使用するため（§5.7 設計根拠を参照）、プレフィックスの対象外とする
 
 ### Modifier と State の使い分け
 
@@ -654,7 +654,7 @@ BEM の `--` ではなく `.-modifier` を採用する。
 
 ### Element の深さ
 
-SHOULD NOT: Element を 2 階層以上ネストすべきではない。Element が深くなる場合はコンポーネントの分離を検討する。
+SHOULD NOT [Element の深いネスト禁止]: Element を 2 階層以上ネストすべきではない。Element が深くなる場合はコンポーネントの分離を検討する。
 
 ```
 /* 非推奨: Element のネスト */
@@ -674,7 +674,7 @@ SHOULD NOT: Element を 2 階層以上ネストすべきではない。Element �
 
 ### ファイル名
 
-SHOULD: ファイル名は主要クラス名と一致させるべきである — `{prefix}-{name}.css`。1 ファイルに関連クラスをグループ化する場合は、代表クラス名をファイル名とする（例: `u-hidden.css`）。Animation 層は `{種別}.css`（例: `fade-in.css`）とし、`data-animate` の値に対応させる（`animation/` ディレクトリが層を識別するため、ファイル名にプレフィックスは不要）。
+SHOULD [ファイル名と主要クラス名の一致]: ファイル名は主要クラス名と一致させるべきである — `{prefix}-{name}.css`。1 ファイルに関連クラスをグループ化する場合は、代表クラス名をファイル名とする（例: `u-hidden.css`）。Animation 層は `{種別}.css`（例: `fade-in.css`）とし、`data-animate` の値に対応させる（`animation/` ディレクトリが層を識別するため、ファイル名にプレフィックスは不要）。
 
 例: `.c-button` → `c-button.css`, `.l-header` → `l-header.css`, `.l-section` → `l-section.css`, `[data-animate="fade-in"]` → `animation/fade-in.css`
 
@@ -702,9 +702,9 @@ SHOULD: ファイル名は主要クラス名と一致させるべきである �
 Token（プリミティブ → セマンティック）→ Foundation 以降（使用）
 ```
 
-- SHOULD: Foundation 以降の層はブランドトークンについて Token 層のセマンティック変数を参照すべきである
-- SHOULD NOT: Foundation 以降の層がプリミティブ変数（`--_` プレフィックス）を直接参照すべきでない（セマンティック変数を経由する）
-- MAY: グローバルトークン（ease, z-index 等）は Foundation 以降の層から直接参照してよい（Token 層のトークン分類を参照）
+- SHOULD [セマンティック変数経由の参照]: Foundation 以降の層はブランドトークンについて Token 層のセマンティック変数を参照すべきである
+- SHOULD NOT [プリミティブ変数の直接参照禁止]: Foundation 以降の層がプリミティブ変数（`--_` プレフィックス）を直接参照すべきでない（セマンティック変数を経由する）
+- MAY [グローバルトークンの直接参照]: グローバルトークン（ease, z-index 等）は Foundation 以降の層から直接参照してよい（Token 層のトークン分類を参照）
 
 ### 公開 API / プライベート命名規則
 
@@ -715,8 +715,8 @@ Token（プリミティブ → セマンティック）→ Foundation 以降（�
 | 公開 API | `--{対象}-{名前}` | 上位層または JS から上書きされる変数 | `--section-padding`, `--badge-bg`, `--stagger-delay` |
 | プライベート | `--_` | Block または Element 内部でのみ使用する変数 | `--_font-size-min`, `--_delay` |
 
-- SHOULD: 上位層（Project 等）から値を設定する変数、または JS から値を注入する変数は、`--{対象}-{名前}` の公開 API 命名を使用すべきである。外部からの契約として機能する変数にプライベート命名（`--_`）を使用すると、意図が不明確になる
-- MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライベートカスタムプロパティ（`--_xxx`）を定義してよい。プライベートカスタムプロパティは外部から参照・設定されることを想定しない内部実装である
+- SHOULD [公開 API 変数の命名規則遵守]: 上位層（Project 等）から値を設定する変数、または JS から値を注入する変数は、`--{対象}-{名前}` の公開 API 命名を使用すべきである。外部からの契約として機能する変数にプライベート命名（`--_`）を使用すると、意図が不明確になる
+- MAY [プライベートカスタムプロパティの定義]: Layout 以降の層（Layout, Component, Project, Animation）でプライベートカスタムプロパティ（`--_xxx`）を定義してよい。プライベートカスタムプロパティは外部から参照・設定されることを想定しない内部実装である
 
 上位層（Project 等）から公開 API の値を設定し、Layout や Component の振る舞いをページやセクションに合わせて変える。これは §5.6 の CSS 変数経由上書きパターンの基盤となる。
 
@@ -751,8 +751,8 @@ Token（プリミティブ → セマンティック）→ Foundation 以降（�
 
 ### インラインスタイル
 
-- MUST NOT: HTML マークアップに静的なインラインスタイルを記述してはならない。インラインスタイルはどの `@layer` にも属さない unlayered CSS として扱われ、全ての layered CSS より優先されるため、層構造による優先順位制御を破壊する
-- MAY: JS から公開 API のカスタムプロパティの値を動的に注入してよい。CSS が「何をするか」を定義し、JS が「いつ・どの値で」を決める互いに依存しない連携パターンとして許容する
+- MUST NOT [静的インラインスタイルの禁止]: HTML マークアップに静的なインラインスタイルを記述してはならない。インラインスタイルはどの `@layer` にも属さない unlayered CSS として扱われ、全ての layered CSS より優先されるため、層構造による優先順位制御を破壊する
+- MAY [JS からの動的カスタムプロパティ注入]: JS から公開 API のカスタムプロパティの値を動的に注入してよい。CSS が「何をするか」を定義し、JS が「いつ・どの値で」を決める互いに依存しない連携パターンとして許容する
 
 > **注記（Informative）**: 上記 MUST NOT は開発者が意図的に記述するスタイルに適用される。CMS やライブラリが自動生成するインラインスタイルは適用対象外とする。
 
@@ -764,7 +764,7 @@ Token（プリミティブ → セマンティック）→ Foundation 以降（�
 
 ### ディレクトリ構造
 
-MUST: ディレクトリ名は層名と一致させなければならない。
+MUST [ディレクトリ名の層名一致]: ディレクトリ名は層名と一致させなければならない。
 
 ```
 css/
@@ -789,7 +789,7 @@ css/
 
 ### 1 Block = 1 ファイル
 
-SHOULD: 1 つの CSS ファイルには 1 つの Block を定義すべきである。複数の独立した Block を 1 ファイルに含めると、ファイル名と Block の対応が崩れる。
+SHOULD [1 Block = 1 ファイルの維持]: 1 つの CSS ファイルには 1 つの Block を定義すべきである。複数の独立した Block を 1 ファイルに含めると、ファイル名と Block の対応が崩れる。
 
 ただし Utility 層は例外とする。Utility は Block 構造を持たない単一目的のクラスであり、セマンティックな意味でグループ化することが推奨される（§5.8 参照）。
 
@@ -803,8 +803,8 @@ SHOULD: 1 つの CSS ファイルには 1 つの Block を定義すべきであ�
 
 ### style.css（エントリポイント）
 
-- SHOULD: `layer-order.css` を最初に読み込み、その後層順にファイルをインポートすべきである
-- SHOULD: 各ファイルがどの層に属するかを明確にすべきである。方法はプロジェクトの規模やツールチェーンに応じて選択してよい
+- SHOULD [layer-order.css の先頭読み込み]: `layer-order.css` を最初に読み込み、その後層順にファイルをインポートすべきである
+- SHOULD [層帰属の明確化]: 各ファイルがどの層に属するかを明確にすべきである。方法はプロジェクトの規模やツールチェーンに応じて選択してよい
 
 | 方式 | 説明 |
 |---|---|
