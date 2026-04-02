@@ -46,4 +46,6 @@ CSS の進化に応じて、以下の変更を検討する。
 
 ## ライセンス
 
+[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
+
 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) — 著作者表示と同一ライセンスでの配布を条件に、商用利用・改変が可能です。
