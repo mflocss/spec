@@ -87,7 +87,7 @@ MUST は `@layer` の構造的整合性・アクセシビリティ・命名体�
 
 *This section is normative.*
 
-mFLOCSS は 8 つの層で構成される。本章以降で使用する Block・Element 等の命名規則は §6 で定義する。
+mFLOCSS は以下の層で構成される。本章以降で使用する Block・Element 等の命名規則は §6 で定義する。
 
 | 順序 | 層名 | プレフィックス | 責任 |
 |---|---|---|---|
