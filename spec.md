@@ -172,8 +172,6 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 @import url("vendor/reset.css") layer(reset);
 ```
 
-### 先制宣言
-
 > **Example（MUST [先制宣言の実施]）:**
 
 ```css
