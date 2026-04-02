@@ -73,7 +73,7 @@ mFLOCSS は以下の 4 原則に基づく。層数が変わってもこれらは
 
 mFLOCSS に準拠するとは、本仕様の全 MUST / MUST NOT ルールに違反しないことを意味する。
 
-MUST は `@layer` の構造的整合性・アクセシビリティ・命名体系の維持に限定される。
+MUST は `@layer` の構造的整合性の維持に限定される。
 
 設計判断の品質（層の選択・トークン参照チェーン等）は SHOULD で推奨し、遵守するほど設計の一貫性と保守性が向上する。
 
@@ -533,7 +533,7 @@ Layout や Component の振る舞いをページやセクションに合わせ�
 
 **要求レベル:**
 
-- MUST [2 ガード原則の実装]: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装としなければならない
+- SHOULD [2 ガード原則の実装]: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装とすべきである
 - SHOULD [装飾的アニメーションの Animation 層分離]: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである
 - SHOULD [統合ガードの使用]: `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガードを使用すべきである。条件を満たさない場合にブロック全体が不適用になり、フォールバック（代替値）安全性が高い
 - SHOULD [transform を含む機能的トランジションのガード]: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale` など）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。前庭障害のトリガーになりうるためである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
@@ -565,7 +565,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 
 `@layer` は `@keyframes` 名のスコープを分離しないため、属性値との対応関係を明確にすることで名前衝突のリスクを低減する（例: `data-animate="scale-in"` → `@keyframes scale-in`）。
 
-> **Example（MUST [2 ガード原則の実装]、SHOULD [統合ガードの使用]、SHOULD [@keyframes 名と data-* 属性値の一致]）:**
+> **Example（SHOULD [2 ガード原則の実装]、SHOULD [統合ガードの使用]、SHOULD [@keyframes 名と data-* 属性値の一致]）:**
 
 ```css
 @layer animation {
@@ -641,7 +641,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 
 **要求レベル:**
 
-- MUST [Block なし Element の使用禁止]: Element（`__element`）は、対応する Block クラスが HTML 上に存在しなければならない。Block なしの Element は使用してはならない。CSS にルールセットがなくても、HTML 上に Block クラスが付与されていれば MUST 違反にはならない。BEM の「Element は常に Block の一部であり、Block から分離して使用してはならない」に基づく
+- SHOULD NOT [Block なし Element の回避]: Element（`__element`）は、対応する Block クラスが HTML 上に存在すべきである。Block なしの Element は使用すべきでない。CSS にルールセットがなくても、HTML 上に Block クラスが付与されていれば違反にはならない。BEM の「Element は常に Block の一部であり、Block から分離して使用してはならない」に基づく
 - SHOULD [層識別プレフィックスの使用]: 層の識別のためにプレフィックス（§3 の層テーブルを参照）を使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-animate` 属性セレクタを使用するため（§5.7 設計根拠を参照）、プレフィックスの対象外とする
 - SHOULD NOT [Element の深いネスト禁止]: Element を 2 階層以上ネストすべきではない。Element が深くなる場合はコンポーネントの分離を検討する。
 - SHOULD [Modifier の使用可能層]: Modifier は Component / Layout / Project で使用すべきである
@@ -790,13 +790,13 @@ Token（プリミティブ → セマンティック）→ Foundation 以降（�
 
 **要求レベル:**
 
-- MUST [ディレクトリ名の層名一致]: ディレクトリ名は層名と一致させなければならない。
+- SHOULD [ディレクトリ名の層名一致]: ディレクトリ名は層名と一致させるべきである。
 - SHOULD [1 Block = 1 ファイルの維持]: 1 つの CSS ファイルには 1 つの Block を定義すべきである。複数の独立した Block を 1 ファイルに含めると、ファイル名と Block の対応が崩れる。
 - SHOULD [層帰属の明確化]: 各ファイルがどの層に属するかを明確にすべきである。方法はプロジェクトの規模やツールチェーンに応じて選択してよい
 
 ### ディレクトリ構造
 
-> **Example（MUST [ディレクトリ名の層名一致]）:**
+> **Example（SHOULD [ディレクトリ名の層名一致]）:**
 
 ```
 css/
@@ -866,7 +866,7 @@ css/
 | **統合ガード** | 2 ガード原則の推奨実装パターン。`@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` で Animation 層のスタイル全体をラップし、条件を満たさない場合にブロック全体を不適用にする方式（初出: §5.7） |
 | **Utility Test** | Utility 層の適用可否を判定する検証問い（§5.8） |
 | **Block** | BEM における独立した意味のあるエンティティ。プレフィックス付きクラス名（`.c-card`, `.p-hero` 等）で表現する（初出: §6） |
-| **Element（`__element`）** | Block の一部。命名は `.{prefix}-{name}__{element}` の形式。Block なしでの使用禁止等の規範的定義は §6 を参照（初出: §6） |
+| **Element（`__element`）** | Block の一部。命名は `.{prefix}-{name}__{element}` の形式。Block なしでの使用回避等の規範的定義は §6 を参照（初出: §6） |
 | **Modifier（`.-xxx`）** | 静的なバリエーション。定義は §6 を参照（初出: §6） |
 | **参照チェーン** | Token（プリミティブ → セマンティック）→ Foundation 以降（使用）。カスタムプロパティの参照パスを規定する（初出: §7） |
 | **公開 API（カスタムプロパティ）** | `--{対象}-{名前}` 形式の変数。上位層または JS から上書きされることを想定する外部インターフェース（初出: §7） |
@@ -920,11 +920,8 @@ css/
 | §5.1 | MUST NOT [他層カスタムプロパティ参照禁止] | §5.1 要求レベル |
 | §5.2 | MUST [Reset 層の責任限定] | §5.2 要求レベル |
 | §5.3 | MUST NOT [クラスセレクタ・ID セレクタの使用禁止] | §5.3 要求レベル |
-| §5.7 | MUST [2 ガード原則の実装] | §5.7 要求レベル |
 | §5.8 | MUST [!important の付与] | §5.8 要求レベル |
-| §6 | MUST [Block なし Element の使用禁止] | §6 要求レベル |
 | §7 | MUST NOT [静的インラインスタイルの禁止] | §7 要求レベル |
-| §8 | MUST [ディレクトリ名の層名一致] | §8 要求レベル |
 
 ### SHOULD / SHOULD NOT
 
@@ -947,11 +944,13 @@ css/
 | §5.6 | SHOULD [セクションルートへの Project Block 付与] | §5.6 要求レベル |
 | §5.6 | SHOULD [CSS 変数経由上書きの優先] | §5.6 要求レベル |
 | §5.6 | SHOULD [ページ・機能単位のファイル分割] | §5.6 要求レベル |
+| §5.7 | SHOULD [2 ガード原則の実装] | §5.7 要求レベル |
 | §5.7 | SHOULD [装飾的アニメーションの Animation 層分離] | §5.7 要求レベル |
 | §5.7 | SHOULD [統合ガードの使用] | §5.7 要求レベル |
 | §5.7 | SHOULD [transform を含む機能的トランジションのガード] | §5.7 要求レベル |
 | §5.7 | SHOULD [@keyframes 名と data-* 属性値の一致] | §5.7 要求レベル |
 | §5.8 | SHOULD NOT [Block 帰属スタイルの Utility 記述禁止] | §5.8 要求レベル |
+| §6 | SHOULD NOT [Block なし Element の回避] | §6 要求レベル |
 | §6 | SHOULD [層識別プレフィックスの使用] | §6 要求レベル |
 | §6 | SHOULD NOT [Element の深いネスト禁止] | §6 要求レベル |
 | §6 | SHOULD [Modifier の使用可能層] | §6 要求レベル |
@@ -960,6 +959,7 @@ css/
 | §7 | SHOULD [セマンティック変数経由の参照] | §7 要求レベル |
 | §7 | SHOULD NOT [プリミティブ変数の直接参照禁止] | §7 要求レベル |
 | §7 | SHOULD [公開 API 変数の命名規則遵守] | §7 要求レベル |
+| §8 | SHOULD [ディレクトリ名の層名一致] | §8 要求レベル |
 | §8 | SHOULD [1 Block = 1 ファイルの維持] | §8 要求レベル |
 | §8 | SHOULD [層帰属の明確化] | §8 要求レベル |
 
