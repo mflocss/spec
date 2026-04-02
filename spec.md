@@ -132,14 +132,16 @@ Step 2: ブラウザデフォルトの正規化か？要素の基本スタイル
 Step 3: 配置と空間だけか？（色・文字・装飾に触れないか？）
   └─ Yes → Layout
 
-Step 4: 別のサイトにそのまま持っていけるか？
+Step 4: Portability Test — 別のサイトにそのまま持っていけるか？
   ├─ Yes → Component
   └─ No → Project
   ※ 判断が曖昧な場合は、§5.5 の補助テスト（Responsibility Test）を使用する。
 
-※ Step 5-6 は Step 1-4 の判定結果とは独立して評価する。
-  1つのスタイルが Step 4 で Component と判定され、かつ Step 5 で
-  Animation にも該当する場合、動きの部分を Animation 層に分離する。
+※ Step 5-6 は Step 1-4 の判定を覆さない追加チェックである。
+  Step 1-4 で判定した層のスタイルの中に、Animation・Utility の条件を
+  満たす部分があれば、その部分を該当層に分離する。
+  （例: Step 4 で Component と判定したスタイルに装飾的アニメーションが
+  含まれる場合、その動きの部分だけを Animation 層に切り出す）
 
 Step 5: 装飾的アニメーション（視覚演出）か？
   ├─ Yes → Animation（2 ガード原則を適用）
@@ -214,7 +216,7 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 2. **ダークモード / テーマ切替の完結**: `color-scheme` とセマンティック変数でテーマを Token 層内に閉じ込める
 3. **ブランドトークンとグローバルトークンの分離**: プロジェクト固有の値と汎用的な値を区別する
 
-**検証問い（Token Test）**: 「この値はデザイントークン（色の値、フォント名、余白、z-index 等）か？」
+**検証問い（Token Test）**: 「この値はデザイントークン（色の値、フォント名、余白、z-index 等）か？または単位変換・計算のためのユーティリティ変数（`--px` 等）か？」
 
 - Yes → Token
 - No → 他の層
@@ -236,8 +238,9 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 | プリミティブ変数 | 生の値の定義 | `--_slate-600`, `--_slate-900` |
 | セマンティック変数 | 意味を持つマッピング | `--color-main`, `--color-surface`, `--font-size-body` |
 | グローバルトークン | 多くのプロジェクトで共通して使える値 | `--ease-out-cubic`, `--z-header` |
+| 計算ヘルパー | 単位変換・計算のためのユーティリティ変数 | `--px: 1px`（`calc(16 * var(--px))` 等で使用） |
 
-判断基準: 「ブランドやプロジェクトが変わったとき、この値を変更する必要があるか？」 — Yes ならブランドトークン（プリミティブ + セマンティック）、No ならグローバルトークン。
+判断基準: 「ブランドやプロジェクトが変わったとき、この値を変更する必要があるか？」 — Yes ならブランドトークン（プリミティブ + セマンティック）、No ならグローバルトークン。計算ヘルパーはブランドに依存しないユーティリティ変数として Token 層に配置する。
 
 命名規則は §6 カスタムプロパティ命名まとめを参照。
 
@@ -307,13 +310,13 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 **要求レベル:**
 
-- MUST [要素型セレクタ限定]: 要素型セレクタのみを使用しなければならない（クラスセレクタ・ID セレクタ禁止）
+- MUST NOT [クラスセレクタ・ID セレクタの使用禁止]: クラスセレクタ・ID セレクタを使用してはならない。Foundation 層は要素型セレクタのみを使用し、全ページ共通の基本スタイルを定義する
 - SHOULD [属性セレクタの :where() 内使用]: 属性セレクタ、擬似クラスは、`:where()` 内で要素型セレクタと組み合わせて使用すべきである。擬似要素は `:where()` の引数に使用できないため、外に記述する（例: `:where(p)::before`）
 - SHOULD [:where() による詳細度ゼロ]: `:where()` で詳細度をゼロに保つべきである。`@layer` による層順序制御が詳細度の予測可能性を構造的に担保するため、`:where()` は推奨とする
 - SHOULD [トークン参照の規則遵守]: トークン参照は §7 に従う
 - SHOULD [base と form の分離]: base と form を分離すべきである。form を独立させる理由は、フォーム要素（input, select, textarea, button）はブラウザ間のデフォルトスタイル差異が大きく、正規化のコード量が多くなるためである。
 
-> **Example（MUST [要素型セレクタ限定]、SHOULD [:where() による詳細度ゼロ]、SHOULD [base と form の分離]）:**
+> **Example（MUST NOT [クラスセレクタ・ID セレクタの使用禁止]、SHOULD [:where() による詳細度ゼロ]、SHOULD [base と form の分離]）:**
 
 ```css
 /* foundation/base.css — 自作ベーススタイル */
@@ -437,7 +440,7 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
     padding: var(--space-lg);
     background-color: var(--color-surface);
 
-    /* プライベート変数: Block 内部の計算用 */
+    /* プライベートカスタムプロパティ: Block 内部の計算用 */
     --_gap: var(--space-md);
     display: grid;
     gap: var(--_gap);
@@ -708,7 +711,7 @@ BEM の `--` ではなく `.-modifier` を採用する。
 | Token（セマンティック） | `--{カテゴリ}-{役割}` | `--color-main`, `--font-size-body` |
 | Token（その他カテゴリ） | `--{カテゴリ}-{名前}` | `--space-md`, `--ease-out-cubic` |
 | 公開 API | `--{対象}-{名前}` | `--section-padding`, `--badge-bg` |
-| Private | `--_{名前}` | `--_font-size-min` |
+| プライベートカスタムプロパティ | `--_{名前}` | `--_font-size-min` |
 
 ---
 
@@ -743,7 +746,7 @@ Token（プリミティブ → セマンティック）→ Foundation 以降（�
 | 分類 | プレフィックス | 用途 | 例 |
 |---|---|---|---|
 | 公開 API | `--{対象}-{名前}` | 上位層または JS から上書きされる変数 | `--section-padding`, `--badge-bg`, `--stagger-delay` |
-| プライベート | `--_` | Block または Element 内部でのみ使用する変数 | `--_font-size-min`, `--_delay` |
+| プライベートカスタムプロパティ | `--_` | Block または Element 内部でのみ使用する変数 | `--_font-size-min`, `--_delay` |
 
 上位層（Project 等）から公開 API の値を設定し、Layout や Component の振る舞いをページやセクションに合わせて変える。これは §5.6 の CSS 変数経由上書きパターンの基盤となる。
 
@@ -849,7 +852,9 @@ css/
 |---|---|
 | **先制宣言** | `layer-order.css` における `@layer` による層間の優先順位宣言。全スタイル定義に先行して記述される（初出: §4） |
 | **Token Test** | Token 層の適用可否を判定する検証問い（§5.1） |
-| **ブランドトークン** | プロジェクトごとに変わるデザイン値（color, typography, structure）。参照ルールは §5.1 および §7 を参照（初出: §5.1） |
+| **ブランドトークン** | プロジェクトごとに変わるデザイン値（color, typography, structure）。プリミティブ変数とセマンティック変数の総称。参照ルールは §5.1 および §7 を参照（初出: §5.1） |
+| **プリミティブ変数** | `--_` プレフィックスを持つ Token 層の変数。生の値（HEX 色値、px 数値等）を保持する。ブランドトークンの一種（初出: §5.1） |
+| **セマンティック変数** | 意味を持つ Token 層のマッピング変数（`--color-main` 等）。プリミティブ変数を参照し、コンテキスト（ダークモード等）に応じた役割を表現する。ブランドトークンの一種（初出: §5.1） |
 | **グローバルトークン** | 多くのプロジェクトで共通して使える値（ease, z-index, font-weight）。参照ルールは §5.1 および §7 を参照（初出: §5.1） |
 | **Reset Test** | Reset 層の適用可否を判定する検証問い（§5.2） |
 | **Foundation Test** | Foundation 層の適用可否を判定する検証問い（§5.3） |
@@ -867,7 +872,7 @@ css/
 | **Modifier（`.-xxx`）** | 静的なバリエーション。定義は §6 を参照（初出: §6） |
 | **参照チェーン** | Token（プリミティブ → セマンティック）→ Foundation 以降（使用）。カスタムプロパティの参照パスを規定する（初出: §7） |
 | **公開 API（カスタムプロパティ）** | `--{対象}-{名前}` 形式の変数。上位層または JS から上書きされることを想定する外部インターフェース（初出: §7） |
-| **プライベートカスタムプロパティ** | `--_` プレフィックスを持つ変数。Block または Element 内部でのみ使用し、外部からの参照・設定を想定しない（初出: §7） |
+| **プライベートカスタムプロパティ** | `--_` プレフィックスを持つ変数。Block または Element 内部でのみ使用し、外部からの参照・設定を想定しない（初出: §7）。「プライベート変数」は本用語の略称 |
 
 ---
 
@@ -875,11 +880,15 @@ css/
 
 ### Normative References
 
+*This section is normative.*
+
 - **[RFC2119]** Bradner, S., "Key words for use in RFCs to Indicate Requirement Levels", BCP 14, RFC 2119, March 1997.
 - **[CSS-CASCADE-5]** Atkins Jr., T.; Rivoal, F.; Lilley, C., "CSS Cascading and Inheritance Level 5", W3C Candidate Recommendation.
 - **[CSS-PROPERTIES-VALUES-1]** Atkins-Bittner, T.; Stearns, A.; Whitworth, G., "CSS Properties and Values API Level 1", W3C Candidate Recommendation.
 
 ### Informative References
+
+*This section is informative.*
 
 - **[FLOCSS]** Hiloki, "FLOCSS — Foundation Layout Object CSS". https://github.com/hiloki/flocss
 - **[BOOK]** shunei,『そのFLOCSS、なぜそこに書いた？』. https://zenn.dev/shunei/books/mflocss-design
@@ -887,6 +896,8 @@ css/
 ---
 
 ## Appendix C: Changes
+
+*This section is informative.*
 
 変更履歴は [CHANGELOG.md](./CHANGELOG.md) を参照。
 
@@ -910,7 +921,7 @@ css/
 | §5.1 | MUST [:root セレクタ限定] | §5.1 要求レベル |
 | §5.1 | MUST NOT [他層カスタムプロパティ参照禁止] | §5.1 要求レベル |
 | §5.2 | MUST [Reset 層の責任限定] | §5.2 要求レベル |
-| §5.3 | MUST [要素型セレクタ限定] | §5.3 要求レベル |
+| §5.3 | MUST NOT [クラスセレクタ・ID セレクタの使用禁止] | §5.3 要求レベル |
 | §5.7 | MUST [2 ガード原則の実装] | §5.7 要求レベル |
 | §5.8 | MUST [!important の付与] | §5.8 要求レベル |
 | §6 | MUST [Block なし Element の使用禁止] | §6 要求レベル |
