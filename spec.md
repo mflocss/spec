@@ -166,10 +166,6 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 @layer token, reset, foundation, layout, component, project, animation, utility;
 ```
 
-### @layer と @property
-
-> **注記（Informative）**: `@property` はカスタムプロパティの型・初期値・継承を明示的に定義するための CSS 機能。現行の CSS 仕様 [CSS-PROPERTIES-VALUES-1] において、`@layer` 内の `@property` は無視される。`@property` を使用する場合は `@layer` の外（`property.css`）に配置する（§8 参照）。`@property` 自体の使用は任意である。
-
 ### !important の優先度逆転
 
 > **注記（Informative）**: `@layer` 内で `!important` を使用した場合、通常とは逆順で優先される（先に宣言された層が勝つ）。MUST NOT [!important の使用制限] によりこの優先度逆転の複雑性を回避する。
