@@ -238,7 +238,7 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 | プリミティブ変数 | 生の値の定義 | `--_slate-600`, `--_slate-900` |
 | セマンティック変数 | 意味を持つマッピング | `--color-main`, `--color-surface`, `--font-size-body` |
 | グローバルトークン | 多くのプロジェクトで共通して使える値 | `--ease-out-cubic`, `--z-header` |
-| 計算ヘルパー | 単位変換・計算のためのユーティリティ変数 | `--px: 1px`（`calc(16 * var(--px))` 等で使用） |
+| 計算ヘルパー | 単位変換・計算のためのユーティリティ変数 | `--px: calc(1rem / 16)`（`calc(数値 * var(--px))` で rem に変換） |
 
 判断基準: 「ブランドやプロジェクトが変わったとき、この値を変更する必要があるか？」 — Yes ならブランドトークン（プリミティブ + セマンティック）、No ならグローバルトークン。計算ヘルパーはブランドに依存しないユーティリティ変数として Token 層に配置する。
 
@@ -491,7 +491,7 @@ Project 層は上位層として、Component のスタイルをページやセ�
 |---|---|---|
 | 直接プロパティ上書き | 特定の配置先でパーツのスタイルを変更 | `.p-hero .c-button { font-size: ... }` |
 | CSS 変数経由 | Component/Layout が公開する公開 API カスタムプロパティの値を設定 | `.p-about { --section-padding: 2.5rem; }` |
-| Modifier（Component 層 / Project 層で定義） | 汎用バリエーション | `.c-button.-primary` |
+| Modifier（Component 層 / Layout 層 / Project 層で定義） | 汎用バリエーション | `.c-button.-primary` |
 
 CSS 変数経由は Component/Layout の内部構造に依存しないため保守性が高い。
 
@@ -650,6 +650,8 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 - MUST [Block なし Element の使用禁止]: Element（`__element`）は、対応する Block クラスが HTML 上に存在しなければならない。Block なしの Element は使用してはならない。CSS にルールセットがなくても、HTML 上に Block クラスが付与されていれば MUST 違反にはならない。BEM の「Element は常に Block の一部であり、Block から分離して使用してはならない」に基づく
 - SHOULD [層識別プレフィックスの使用]: 層の識別のためにプレフィックス（§3 の層テーブルを参照）を使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-animate` 属性セレクタを使用するため（§5.7 設計根拠を参照）、プレフィックスの対象外とする
 - SHOULD NOT [Element の深いネスト禁止]: Element を 2 階層以上ネストすべきではない。Element が深くなる場合はコンポーネントの分離を検討する。
+- SHOULD [Modifier の使用可能層]: Modifier は Component / Layout / Project で使用すべきである
+- SHOULD NOT [Animation・Utility での Modifier 使用禁止]: Animation 層および Utility 層では Modifier を使用すべきではない
 - SHOULD [ファイル名と主要クラス名の一致]: ファイル名は主要クラス名と一致させるべきである — `{prefix}-{name}.css`。1 ファイルに関連クラスをグループ化する場合は、代表クラス名をファイル名とする（例: `u-hidden.css`）。Animation 層は `{種別}.css`（例: `fade-in.css`）とし、`data-animate` の値に対応させる（`animation/` ディレクトリが層を識別するため、ファイル名にプレフィックスは不要）。
 
 ### クラス名
@@ -856,6 +858,7 @@ css/
 | **プリミティブ変数** | `--_` プレフィックスを持つ Token 層の変数。生の値（HEX 色値、px 数値等）を保持する。ブランドトークンの一種（初出: §5.1） |
 | **セマンティック変数** | 意味を持つ Token 層のマッピング変数（`--color-main` 等）。プリミティブ変数を参照し、コンテキスト（ダークモード等）に応じた役割を表現する。ブランドトークンの一種（初出: §5.1） |
 | **グローバルトークン** | 多くのプロジェクトで共通して使える値（ease, z-index, font-weight）。参照ルールは §5.1 および §7 を参照（初出: §5.1） |
+| **計算ヘルパー** | 単位変換・計算のためのユーティリティ変数。Token 層に配置する（初出: §5.1） |
 | **Reset Test** | Reset 層の適用可否を判定する検証問い（§5.2） |
 | **Foundation Test** | Foundation 層の適用可否を判定する検証問い（§5.3） |
 | **Layout Test** | Layout 層の責任範囲を判定する検証問い（§5.4） |
@@ -956,6 +959,8 @@ css/
 | §5.8 | SHOULD NOT [Block 帰属スタイルの Utility 記述禁止] | §5.8 要求レベル |
 | §6 | SHOULD [層識別プレフィックスの使用] | §6 要求レベル |
 | §6 | SHOULD NOT [Element の深いネスト禁止] | §6 要求レベル |
+| §6 | SHOULD [Modifier の使用可能層] | §6 要求レベル |
+| §6 | SHOULD NOT [Animation・Utility での Modifier 使用禁止] | §6 要求レベル |
 | §6 | SHOULD [ファイル名と主要クラス名の一致] | §6 要求レベル |
 | §7 | SHOULD [セマンティック変数経由の参照] | §7 要求レベル |
 | §7 | SHOULD NOT [プリミティブ変数の直接参照禁止] | §7 要求レベル |
