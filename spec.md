@@ -144,12 +144,6 @@ Step 6: 局所的な単一目的の微調整か？
   └─ Yes → Utility
 ```
 
-#### よくある誤りパターン
-
-**A. 機能近接バイアス（思い込み）**: 「テーブルのスクロールラッパー → Component」と判断する誤り。`overflow-x: auto` 等のスクロール制御は使う側のコンテナの制約であり、テーブルパーツ自体の責任ではない。正しくは `p-xxx__table-wrap` として Project の Element に持たせる。
-
-**B. Layout への過干渉**: `l-section` に `text-align: center` を追加する誤り。テキスト整列は視覚的プロパティであり、Layout の責任（配置と空間）を超えている。正しくは Project。
-
 ---
 
 ## 4. Layer Order Declaration
