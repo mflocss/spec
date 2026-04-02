@@ -216,7 +216,7 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 | 分類 | 性質 | 例 |
 |------|------|-----|
 | プリミティブ変数 | 生の値の定義 | `--_slate-600`, `--_slate-900` |
-| セマンティック変数 | 意味を持つマッピング | `--color-main`, `--color-surface` |
+| セマンティック変数 | 意味を持つマッピング | `--color-main`, `--color-surface`, `--font-size-body` |
 | グローバルトークン | 多くのプロジェクトで共通して使える値 | `--ease-out-cubic`, `--z-header` |
 
 判断基準: 「ブランドやプロジェクトが変わったとき、この値を変更する必要があるか？」 — Yes ならブランドトークン（プリミティブ + セマンティック）、No ならグローバルトークン。
@@ -637,8 +637,8 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 | 要素 | 形式 | 例 |
 |---|---|---|
 | Block | `.{prefix}-{name}` | `.c-button`, `.l-section` |
-| Element | `.__{element}` | `.c-card__title` |
-| Modifier | `.-{modifier}` | `.c-button.-primary` |
+| Element | `.{prefix}-{name}__{element}` | `.c-card__title` |
+| Modifier | `.-{modifier}` | `.c-button.-primary`, `.l-section.-wide` |
 | State | `.is-{state}` | `.is-active`, `.is-open`, `.is-loading` |
 
 - MUST: Element（`__element`）は、対応する Block クラスが HTML 上に存在しなければならない。Block なしの Element は使用してはならない。CSS にルールセットがなくても、HTML 上に Block クラスが付与されていれば MUST 違反にはならない。BEM の「Element は常に Block の一部であり、Block から分離して使用してはならない」に基づく
@@ -689,8 +689,8 @@ SHOULD: ファイル名は主要クラス名と一致させるべきである �
 
 | 層 | パターン | 例 |
 |---|---|---|
-| Token（プリミティブ / color） | `--_{カテゴリ}-{名前}` | `--_slate-600` |
-| Token（セマンティック / color） | `--color-{役割}` | `--color-main` |
+| Token（プリミティブ） | `--_{カテゴリ}-{名前}` | `--_slate-600` |
+| Token（セマンティック） | `--{カテゴリ}-{役割}` | `--color-main`, `--font-size-body` |
 | Token（その他カテゴリ） | `--{カテゴリ}-{名前}` | `--space-md`, `--ease-out-cubic` |
 | 公開 API | `--{対象}-{名前}` | `--section-padding`, `--badge-bg` |
 | Private | `--_{名前}` | `--_font-size-min` |
@@ -720,7 +720,7 @@ Token（プリミティブ → セマンティック）→ Foundation 以降（�
 | 分類 | プレフィックス | 用途 | 例 |
 |---|---|---|---|
 | 公開 API | `--{対象}-{名前}` | 上位層または JS から上書きされる変数 | `--section-padding`, `--badge-bg`, `--stagger-delay` |
-| プライベート | `--_` | Block 内部でのみ使用する変数 | `--_font-size-min`, `--_delay` |
+| プライベート | `--_` | Block または Element 内部でのみ使用する変数 | `--_font-size-min`, `--_delay` |
 
 - SHOULD: 上位層（Project 等）から値を設定する変数、または JS から値を注入する変数は、`--{対象}-{名前}` の公開 API 命名を使用すべきである。外部からの契約として機能する変数にプライベート命名（`--_`）を使用すると、意図が不明確になる
 - MAY: Layout 以降の層（Layout, Component, Project, Animation）でプライベートカスタムプロパティ（`--_xxx`）を定義してよい。プライベートカスタムプロパティは外部から参照・設定されることを想定しない内部実装である
@@ -894,11 +894,11 @@ Container Queries の層責任（`container-type` / `container-name` / `@contain
 | **統合ガード** | 2 ガード原則の推奨実装パターン。`@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` で Animation 層のスタイル全体をラップし、条件を満たさない場合にブロック全体を不適用にする方式（初出: §5.7） |
 | **Utility Test** | Utility 層の適用可否を判定する検証問い（§5.8） |
 | **Block** | BEM における独立した意味のあるエンティティ。プレフィックス付きクラス名（`.c-card`, `.p-hero` 等）で表現する（初出: §6） |
-| **Element（`__element`）** | Block の一部。命名は `.__{element}` の形式。Block なしでの使用禁止等の規範的定義は §6 を参照（初出: §6） |
+| **Element（`__element`）** | Block の一部。命名は `.{prefix}-{name}__{element}` の形式。Block なしでの使用禁止等の規範的定義は §6 を参照（初出: §6） |
 | **Modifier（`.-xxx`）** | 静的なバリエーション。定義は §6 を参照（初出: §6） |
 | **参照チェーン** | Token（プリミティブ → セマンティック）→ Foundation 以降（使用）。カスタムプロパティの参照パスを規定する（初出: §7） |
 | **公開 API（カスタムプロパティ）** | `--{対象}-{名前}` 形式の変数。上位層または JS から上書きされることを想定する外部インターフェース（初出: §7） |
-| **プライベートカスタムプロパティ** | `--_` プレフィックスを持つ変数。Block 内部でのみ使用し、外部からの参照・設定を想定しない（初出: §7） |
+| **プライベートカスタムプロパティ** | `--_` プレフィックスを持つ変数。Block または Element 内部でのみ使用し、外部からの参照・設定を想定しない（初出: §7） |
 
 ---
 
