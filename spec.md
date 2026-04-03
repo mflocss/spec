@@ -409,7 +409,7 @@ Portability Test で判断が曖昧な場合にのみ使用する。Portability 
 
 1. **サイト固有のパーツとデザイン要件**: ページ / セクション単位の固有スタイル
 2. **セクションルートの管理**: ページ内の各セクションに Project Block を付与
-3. **Component / Layout の上書き**: CSS 変数経由 / 直接プロパティ / Modifier の 3 パターン
+3. **Component / Layout の上書き**: ページやセクションに合わせた調整
 
 **プレフィックス:** `p-`
 
@@ -420,28 +420,12 @@ Portability Test（§5.5）で No → Project
 **要求レベル:**
 
 - SHOULD NOT [Component 相当スタイルの Project 記述禁止]: Portability Test（§5.5）に合格するスタイルを Project 層に記述すべきでない。該当するスタイルは Component 層（§5.5）に記述する
-- SHOULD [セクションルートへの Project Block 付与]: サイト固有のデザイン要件があるセクションには、セクションルートに Project Block を付与し、セクション内の要素は Element として構築すべきである。インラインスタイルについては §7 Custom Properties を参照
+- SHOULD [セクションルートへの Project Block 付与]: サイト固有のデザイン要件があるセクションには、セクションルートに Project Block を付与し、セクション内の要素は Element として構築すべきである
 - MAY [他層要素の内包]: HTML 上で任意の層の要素を内包してよい（§3 依存方向を参照）
 - MAY [Layout と Component のみの構成]: サイト固有のスタイリングが不要なセクションは Layout と Component のみで構成してよい
 - MAY [拡張用 Element クラスの先行付与]: Project が内包する Component や Layout の要素に、現時点で固有スタイルがなくても Project の Element クラスを付与してよい（例: `class="c-section-heading p-about__heading"`）。拡張点として機能する
 
-#### 上書きパターン
-
-Project 層は上位層として、Component のスタイルをページやセクションに合わせて上書きできる。
-
-| パターン | 用途 | 例 |
-|---|---|---|
-| 直接プロパティ上書き | 特定の配置先でパーツのスタイルを変更 | `.p-hero .c-button { font-size: ... }` |
-| CSS 変数経由 | Component/Layout が公開する公開 API カスタムプロパティの値を設定 | `.p-about { --section-padding: 2.5rem; }` |
-| Modifier（Component 層 / Layout 層 / Project 層で定義） | 汎用バリエーション | `.c-button.-primary` |
-
-CSS 変数経由は Component/Layout の内部構造に依存しないため保守性が高い。
-
-> **注記（Informative）**: Modifier は Component に内包される再利用可能なバリエーション。Project 上書きはサイト固有のデザイン要件に基づき Component のスタイルを調整するもの。
-
-> **注記（Informative）**: 特定ページでしか使わないボタンサイズの変更は Modifier か Project 上書きか？ — 他のページでも再利用しうるなら Modifier（`.-large`）、そのページ固有なら Project 上書き（`.p-hero > .c-button { font-size: ... }`）。判断基準は Portability Test と同じ「他でも使うか？」。
->
-> Layout や Component の振る舞いをページやセクションに合わせて変えたい場合は、Project の Block または Element として定義する（例: `class="l-section p-about"`, `class="c-button p-about__cta"`）。
+> **注記（Informative）**: Project 層は CSS 変数経由・直接プロパティ・Modifier の方法で Component / Layout を上書きできる。
 
 > **Example（SHOULD [セクションルートへの Project Block 付与]）:**
 
