@@ -666,17 +666,17 @@ BEM [FLOCSS] をベースとし、以下の mFLOCSS 固有の変更を定義す�
 
 ```
 css/
-├── layer-order.css
-├── property.css
-├── style.css
-├── token/
-├── reset/
-├── foundation/
-├── layout/
-├── component/
-├── project/
-├── animation/
-└── utility/
+├── layer-order.css       /* 層の先制宣言（§4） */
+├── property.css          /* @property 宣言（任意） */
+├── style.css             /* エントリポイント */
+├── token/                /* §5.1 Token — デザイントークン */
+├── reset/                /* §5.2 Reset — ブラウザデフォルト初期化 */
+├── foundation/           /* §5.3 Foundation — 要素の基本スタイル */
+├── layout/               /* §5.4 Layout — ページの骨格・配置 */
+├── component/            /* §5.5 Component — 再利用可能なパーツ */
+├── project/              /* §5.6 Project — サイト固有のスタイル */
+├── animation/            /* §5.7 Animation — 装飾的アニメーション */
+└── utility/              /* §5.8 Utility — 単一目的の上書き */
 ```
 
 ### 1 Block = 1 ファイル
