@@ -425,7 +425,7 @@ Portability Test（§5.5）で No → Project
 - MAY [Layout と Component のみの構成]: サイト固有のスタイリングが不要なセクションは Layout と Component のみで構成してよい
 - MAY [拡張用 Element クラスの先行付与]: Project が内包する Component や Layout の要素に、現時点で固有スタイルがなくても Project の Element クラスを付与してよい（例: `class="c-section-heading p-about__heading"`）。拡張点として機能する
 
-> **注記（Informative）**: Project 層は CSS 変数経由・直接プロパティ・Modifier の方法で Component / Layout を上書きできる。
+> **注記（Informative）**: Project 層は CSS 変数経由・直接プロパティ・Modifier などの方法で Component / Layout を上書きできる。
 
 > **Example（SHOULD [セクションルートへの Project Block 付与]）:**
 
@@ -470,17 +470,9 @@ Portability Test（§5.5）で No → Project
 - SHOULD [@keyframes 名と data-* 属性値の一致]: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（@keyframes 命名を参照）
 - MAY [機能的トランジションの所属層への記述]: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
 
-この `prefers-reduced-motion` と `scripting` の 2 条件の考慮を **2 ガード原則** と呼ぶ。統合ガードを使用しない場合は、`prefers-reduced-motion: reduce` でアニメーション関連プロパティが初期値に解決されること、`scripting: none` で要素の可視性が維持されることを個別に検証する。
-
 #### セレクタ
 
-
-`data-animate` 属性および `data-stagger` 属性を使用する。
-
-- `[data-animate="{種別}"]` — 要素自体のアニメーション種別を指定する（例: `data-animate="fade-in"`, `data-animate="slide-up"`）
-- `[data-stagger="{種別}"]` — 子要素に段階的な遅延を適用するコンテナ。値はアニメーション種別で、`data-animate` と同じ `@keyframes` を共有する（例: `data-stagger="fade-in-slide-up"`）。JS が各子要素に `--stagger-delay` を設定する
-
-> **注記（Informative）**: Animation 層のスタイルは JS（IntersectionObserver 等）と連動する。JS からの要素取得には `data-*` 属性を使用する（§6 JS 連携）ため、`data-animate` 属性セレクタを採用する。
+Animation 層は `data-*` 属性セレクタを使用する。
 
 #### 動きの分類
 
@@ -508,6 +500,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
       animation: fade-in 0.6s var(--ease-out-cubic) both;
       animation-play-state: paused;
     }
+    /* JS（IntersectionObserver 等）が data-visible を付与してアニメーション開始 */
     [data-animate="fade-in"][data-visible] {
       animation-play-state: running;
     }
