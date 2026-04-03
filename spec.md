@@ -667,7 +667,7 @@ BEM [FLOCSS] をベースとし、以下の mFLOCSS 固有の変更を定義す�
 ```
 css/
 ├── layer-order.css
-├── property.css          /* 任意（@property を使用する場合のみ） */
+├── property.css
 ├── style.css
 ├── token/
 ├── reset/
