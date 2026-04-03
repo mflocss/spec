@@ -91,16 +91,16 @@ MUST は `@layer` の構造的整合性の維持に限定される。
 
 mFLOCSS は以下の層で構成される。本章以降で使用する Block・Element 等の命名規則は §6 で定義する。
 
-| 順序 | 層名 | 責任 |
-|---|---|---|
-| 1 | token | デザイントークンの定義（プリミティブ値とセマンティック変数） |
-| 2 | reset | ブラウザデフォルトの正規化 |
-| 3 | foundation | 要素の基本スタイル |
-| 4 | layout | 位置と空間の配置 |
-| 5 | component | 配置先に左右されない再利用可能なパーツ |
-| 6 | project | サイト固有のパーツとデザイン要件 |
-| 7 | animation | 動きの分離管理 |
-| 8 | utility | 単一目的のスタイル上書き |
+| 順序 | 層名 | プレフィックス | 責任 |
+|---|---|---|---|
+| 1 | token | — | デザイントークンの定義（プリミティブ値とセマンティック変数） |
+| 2 | reset | — | ブラウザデフォルトの正規化 |
+| 3 | foundation | — | 要素の基本スタイル |
+| 4 | layout | `l-` | 位置と空間の配置 |
+| 5 | component | `c-` | 配置先に左右されない再利用可能なパーツ |
+| 6 | project | `p-` | サイト固有のパーツとデザイン要件 |
+| 7 | animation | — | 動きの分離管理 |
+| 8 | utility | `u-` | 単一目的のスタイル上書き |
 
 ### 層間の依存方向
 
@@ -276,7 +276,6 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 > **Example（SHOULD NOT [クラスセレクタ・ID セレクタの回避]）:**
 
 ```css
-/* foundation/base.css — 自作ベーススタイル */
 @layer foundation {
   :where(body) {
     font-family: var(--font-family);
@@ -284,10 +283,7 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
     background-color: var(--color-surface);
     line-height: 1.5;
   }
-}
 
-/* foundation/form.css — フォーム要素の基本スタイル */
-@layer foundation {
   :where(input, select, textarea, button) {
     font: inherit;
   }
@@ -321,8 +317,6 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 | `container-type` の宣言 | Layout |
 | `container-name` の定義 | Layout |
 | `@container` によるスタイル切替 | Component / Project |
-
-プライベートカスタムプロパティ（`--_xxx`）の使用については §7 Custom Properties を参照。
 
 > **Example（MAY [Container Queries 基盤の宣言]）:**
 
@@ -376,6 +370,8 @@ Portability Test で判断が曖昧な場合にのみ使用する。Portability 
 - MAY [他層要素の内包]: HTML 上で任意の層の要素を内包してよい（§3 依存方向を参照）。内包しても Portability Test に合格するなら Component のままである
 
 > **注記（Informative）**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 SHOULD NOT の対象外である。これらは Component 自身の視覚的責任に該当する
+
+プライベートカスタムプロパティ（`--_xxx`）の使用については §7 Custom Properties を参照。
 
 > **Example（SHOULD [Portability Test の合格]）:**
 
@@ -583,7 +579,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 
 **要求レベル:**
 
-- SHOULD NOT [Block なし Element の回避]: Element（`__element`）は、対応する Block クラスが HTML 上に存在すべきである。Block なしの Element は使用すべきでない。CSS にルールセットがなくても、HTML 上に Block クラスが付与されていれば違反にはならない。BEM の「Element は常に Block の一部であり、Block から分離して使用してはならない」に基づく
+- SHOULD NOT [Block なし Element の回避]: Element（`__element`）は対応する Block クラスが HTML 上に存在するコンテキストで使用すべきである（CSS にルールセットがなくても、HTML 上に Block クラスが付与されていれば違反にはならない）。BEM の「Element は常に Block の一部であり、Block から分離して使用してはならない」に基づく
 - SHOULD [層識別プレフィックスの使用]: 層の識別のためにプレフィックスを使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-animate` 属性セレクタを使用するため（§5.7 セレクタを参照）、プレフィックスの対象外とする
 - SHOULD NOT [Element の深いネスト禁止]: Element を 2 階層以上ネストすべきではない。Element が深くなる場合はコンポーネントの分離を検討する。
 - SHOULD [Modifier の使用可能層]: Modifier は Component / Layout / Project で使用すべきである
@@ -606,15 +602,10 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 
 ### Modifier と State の使い分け
 
-- **Modifier（`.-xxx`）**: 静的なバリエーション。Block または Element と併用する。HTML に記述し、原則として変化しない
+- **Modifier** (`.-xxx`): 静的なバリエーション。Block または Element と併用する。HTML に記述し、原則として変化しない
 - **State**: 要素の動的な状態。`data-*` 属性または ARIA 属性（`aria-expanded`, `aria-current` 等）で表現する。JS やユーザー操作により変化する。Block・Element いずれとも組み合わせて使用できる（例: `.c-button[data-loading]`、`.c-card__title[data-active]`）
 
-### Modifier に `-` を採用する理由
-
-BEM の `--` ではなく `.-modifier` を採用する。
-
-- HTML がコンパクトになる（`class="c-button -primary"` vs `class="c-button c-button--primary"`）
-- CSS Nesting との相性が良い
+> **注記（Informative）**: BEM の `--` ではなく `.-modifier` を採用する理由: HTML がコンパクトになる（`class="c-button -primary"` vs `class="c-button c-button--primary"`）。CSS Nesting との相性が良い。
 
 ### Element の深さ
 
@@ -634,7 +625,7 @@ BEM の `--` ではなく `.-modifier` を採用する。
 
 ### JS 連携
 
-`js-` プレフィックスは設けない。JS からの要素取得には `data-*` 属性または ARIA 属性を使用する。
+> **注記（Informative）**: `js-` プレフィックスは設けない。JS からの要素取得には `data-*` 属性または ARIA 属性を使用する（§5.7 セレクタを参照）。
 
 ### カスタムプロパティ命名まとめ
 
@@ -667,11 +658,7 @@ BEM の `--` ではなく `.-modifier` を採用する。
 
 ### 参照チェーン
 
-カスタムプロパティは以下の経路で使用する。
-
-```
-Token（プリミティブ → セマンティック）→ Foundation 以降（使用）
-```
+> **注記（Informative）**: カスタムプロパティは以下の経路で使用する: Token（プリミティブ → セマンティック）→ Foundation 以降（使用）。
 
 ### 公開 API / プライベート命名規則
 
@@ -682,7 +669,9 @@ Token（プリミティブ → セマンティック）→ Foundation 以降（�
 | 公開 API | `--{対象}-{名前}` | 上位層または JS から上書きされる変数 | `--section-padding`, `--badge-bg`, `--stagger-delay` |
 | プライベートカスタムプロパティ | `--_` | Block または Element 内部でのみ使用する変数 | `--_font-size-min`, `--_delay` |
 
-上位層（Project 等）から公開 API の値を設定し、Layout や Component の振る舞いをページやセクションに合わせて変える。これは §5.6 の CSS 変数経由上書きパターンの基盤となる。
+> **注記（Informative）**: 命名パターンの全分類は §6 カスタムプロパティ命名まとめを参照。
+
+> **注記（Informative）**: 上位層（Project 等）から公開 API の値を設定し、Layout や Component の振る舞いをページやセクションに合わせて変える。これは §5.6 上書きパターンの基盤となる。
 
 > **注記（Informative）**: 上位層（Project）が下位層（Layout, Component）の公開 API 変数の値を設定することは、正しい依存方向（上位→下位）に沿った操作であり、§3 の MUST NOT（下位→上位の参照禁止）に抵触しない。
 
@@ -723,6 +712,8 @@ Token（プリミティブ → セマンティック）→ Foundation 以降（�
 
 *This section is normative.*
 
+> **注記（Informative）**: 以下のファイル構成は推奨される一例である。プロジェクトの要件に応じて構成を変更してよい。
+
 ファイルとディレクトリの構造・命名・エントリポイントの構成を定義する。物理的なファイル配置と層構造の対応を規定する。
 
 **要求レベル:**
@@ -756,11 +747,11 @@ css/
 
 ### layer-order.css
 
-`@layer` の先制宣言のみを含む。スタイル定義は一切置かない。
+> **注記（Informative）**: `@layer` の先制宣言のみを含む。スタイル定義は置かない。
 
 ### property.css
 
-`@property` 宣言を含む。現行の CSS 仕様 [CSS-PROPERTIES-VALUES-1] において `@layer` 内の `@property` は無視されるため、`@layer` の外に配置する。層ディレクトリには入れない。`@property` を使用しないプロジェクトではこのファイルは不要である。
+> **注記（Informative）**: `@property` 宣言を含む。現行の CSS 仕様において `@layer` 内の `@property` は無視されるため、`@layer` の外に配置する。層ディレクトリには入れない。`@property` を使用しないプロジェクトではこのファイルは不要である。
 
 ### style.css（エントリポイント）
 
@@ -770,7 +761,7 @@ css/
 | 層ごとの index.css | 各層の index.css 内で `@layer` ブロックを使ってまとめる |
 | ビルドツール自動解決 | ビルドツールが glob import で自動的にファイルを収集する |
 
-いずれの方式でも、ディレクトリ名・ファイルプレフィックス・クラスプレフィックスによって層の帰属は識別できる。
+> **注記（Informative）**: いずれの方式でも、ディレクトリ名・ファイルプレフィックス・クラスプレフィックスによって層の帰属は識別できる。
 
 ---
 
