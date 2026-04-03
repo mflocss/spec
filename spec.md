@@ -567,14 +567,14 @@ BEM [FLOCSS] をベースとし、以下の mFLOCSS 固有の変更を定義す�
 ### クラス名
 
 ```
-.{prefix}-{name}__{element}
-.{prefix}-{name}.-{modifier}
+.{prefix}-{block}__{element}
+.{prefix}-{block}.-{modifier}
 ```
 
 | 要素 | 形式 | 例 |
 |---|---|---|
-| Block | `.{prefix}-{name}` | `.c-button`, `.l-section` |
-| Element | `.{prefix}-{name}__{element}` | `.c-card__title` |
+| Block | `.{prefix}-{block}` | `.c-button`, `.l-section` |
+| Element | `.{prefix}-{block}__{element}` | `.c-card__title` |
 | Modifier | `.-{modifier}` | `.c-button.-primary`, `.l-section.-wide` |
 | State（data-*） | `[data-{state}]` | `[data-active]`, `[data-loading]`, `[data-visible]` |
 | State（ARIA） | `[aria-{prop}="..."]` | `[aria-expanded="true"]`, `[aria-current="page"]` |
@@ -755,7 +755,7 @@ css/
 | **統合ガード** | 2 ガード原則の推奨実装パターン。`@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` で Animation 層のスタイル全体をラップし、条件を満たさない場合にブロック全体を不適用にする方式（初出: §5.7） |
 | **Utility Test** | Utility 層の適用可否を判定する検証問い（§5.8） |
 | **Block** | BEM における独立した意味のあるエンティティ。プレフィックス付きクラス名（`.c-card`, `.p-hero` 等）で表現する（初出: §6） |
-| **Element（`__element`）** | Block の一部。命名は `.{prefix}-{name}__{element}` の形式。Block なしでの使用回避等の規範的定義は §6 を参照（初出: §6） |
+| **Element（`__element`）** | Block の一部。命名は `.{prefix}-{block}__{element}` の形式。Block なしでの使用回避等の規範的定義は §6 を参照（初出: §6） |
 | **Modifier（`.-xxx`）** | 静的なバリエーション。定義は §6 を参照（初出: §6） |
 | **参照チェーン** | Token（プリミティブ → セマンティック）→ Foundation 以降（使用）。カスタムプロパティの参照パスを規定する（初出: §7） |
 | **公開 API（カスタムプロパティ）** | `--{対象}-{名前}` 形式の変数。上位層または JS から上書きされることを想定する外部インターフェース（初出: §7） |
