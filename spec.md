@@ -558,15 +558,11 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 
 *This section is normative.*
 
-層の識別・Block/Element/Modifier の構造・状態表現を体系化する命名規則を定義する。一貫した命名によりコードの可読性と保守性を高める。
+BEM [FLOCSS] をベースとし、以下の mFLOCSS 固有の変更を定義する。BEM の一般原則（Block/Element の構造、Element のネスト禁止等）はそのまま適用される。
 
 **要求レベル:**
 
-- SHOULD NOT [Block なし Element の回避]: Element（`__element`）は対応する Block クラスが HTML 上に存在するコンテキストで使用すべきである（CSS にルールセットがなくても、HTML 上に Block クラスが付与されていれば違反にはならない）。BEM の「Element は常に Block の一部であり、Block から分離して使用してはならない」に基づく
 - SHOULD [層識別プレフィックスの使用]: 層の識別のためにプレフィックスを使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-*` 属性セレクタを使用するため（§5.7 セレクタを参照）、プレフィックスの対象外とする
-- SHOULD NOT [Element の深いネスト禁止]: Element を 2 階層以上ネストすべきではない。Element が深くなる場合はコンポーネントの分離を検討する。
-- SHOULD [Modifier の使用可能層]: Modifier は Component / Layout / Project で使用すべきである
-- SHOULD NOT [Animation・Utility での Modifier 使用禁止]: Animation 層および Utility 層では Modifier を使用すべきではない
 
 ### クラス名
 
@@ -583,28 +579,14 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 | State（data-*） | `[data-{state}]` | `[data-active]`, `[data-loading]`, `[data-visible]` |
 | State（ARIA） | `[aria-{prop}="..."]` | `[aria-expanded="true"]`, `[aria-current="page"]` |
 
-### Modifier と State の使い分け
-
-- **Modifier** (`.-xxx`): 静的なバリエーション。Block または Element と併用する。HTML に記述し、原則として変化しない
-- **State**: 要素の動的な状態。`data-*` 属性または ARIA 属性（`aria-expanded`, `aria-current` 等）で表現する。JS やユーザー操作により変化する。Block・Element いずれとも組み合わせて使用できる（例: `.c-button[data-loading]`、`.c-card__title[data-active]`）
+### Modifier のコンパクト化
 
 > **注記（Informative）**: BEM の `--` ではなく `.-modifier` を採用する理由: HTML がコンパクトになる（`class="c-button -primary"` vs `class="c-button c-button--primary"`）。CSS Nesting との相性が良い。
 
-### Element の深さ
+### State の分離
 
-> **Example（SHOULD NOT [Element の深いネスト禁止]）:**
-
-```css
-/* 非推奨: Element のネスト */
-.p-hero__content__title
-
-/* 推奨: Element 名をフラットにする */
-.p-hero__content-title
-
-/* 推奨: 別の Block に分離する */
-.p-hero-content        /* 新しい Block */
-.p-hero-content__title /* その Element */
-```
+- **Modifier** (`.-xxx`): 静的なバリエーション。Block または Element と併用する。HTML に記述し、原則として変化しない
+- **State**: 要素の動的な状態。`data-*` 属性または ARIA 属性（`aria-expanded`, `aria-current` 等）で表現する。JS やユーザー操作により変化する。Block・Element いずれとも組み合わせて使用できる（例: `.c-button[data-loading]`、`.c-card__title[data-active]`）
 
 ### JS 連携
 
@@ -843,11 +825,7 @@ css/
 | §5.7 | SHOULD [transform を含む機能的トランジションのガード] | §5.7 要求レベル |
 | §5.7 | SHOULD [@keyframes 名と data-* 属性値の一致] | §5.7 要求レベル |
 | §5.8 | SHOULD NOT [Block 帰属スタイルの Utility 記述禁止] | §5.8 要求レベル |
-| §6 | SHOULD NOT [Block なし Element の回避] | §6 要求レベル |
 | §6 | SHOULD [層識別プレフィックスの使用] | §6 要求レベル |
-| §6 | SHOULD NOT [Element の深いネスト禁止] | §6 要求レベル |
-| §6 | SHOULD [Modifier の使用可能層] | §6 要求レベル |
-| §6 | SHOULD NOT [Animation・Utility での Modifier 使用禁止] | §6 要求レベル |
 | §7 | SHOULD [セマンティック変数経由の参照] | §7 要求レベル |
 | §7 | SHOULD NOT [プリミティブ変数の直接参照禁止] | §7 要求レベル |
 | §7 | SHOULD [公開 API 変数の命名規則遵守] | §7 要求レベル |
