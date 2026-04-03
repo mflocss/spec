@@ -579,18 +579,15 @@ BEM [FLOCSS] をベースとし、以下の mFLOCSS 固有の変更を定義す�
 | State（data-*） | `[data-{state}]` | `[data-active]`, `[data-loading]`, `[data-visible]` |
 | State（ARIA） | `[aria-{prop}="..."]` | `[aria-expanded="true"]`, `[aria-current="page"]` |
 
-### Modifier のコンパクト化
+### 静的バリエーション（Modifier）
+
+`.-modifier` 形式。Block または Element と併用する。HTML に記述し、原則として変化しない。
 
 > **注記（Informative）**: BEM の `--` ではなく `.-modifier` を採用する理由: HTML がコンパクトになる（`class="c-button -primary"` vs `class="c-button c-button--primary"`）。CSS Nesting との相性が良い。
 
-### State の分離
+### 動的状態（State）
 
-- **Modifier** (`.-xxx`): 静的なバリエーション。Block または Element と併用する。HTML に記述し、原則として変化しない
-- **State**: 要素の動的な状態。`data-*` 属性または ARIA 属性（`aria-expanded`, `aria-current` 等）で表現する。JS やユーザー操作により変化する。Block・Element いずれとも組み合わせて使用できる（例: `.c-button[data-loading]`、`.c-card__title[data-active]`）
-
-### JS 連携
-
-> **注記（Informative）**: `js-` プレフィックスは設けない。JS からの要素取得には `data-*` 属性または ARIA 属性を使用する（§5.7 セレクタを参照）。
+`data-*` 属性または ARIA 属性（`aria-expanded`, `aria-current` 等）で表現する。JS やユーザー操作により変化する。Block・Element・Animation の `data-*` 属性いずれとも組み合わせて使用できる（例: `.c-button[data-loading]`、`[data-animate="fade-in"][data-visible]`）。
 
 ### カスタムプロパティ命名まとめ
 
