@@ -375,8 +375,6 @@ Portability Test で判断が曖昧な場合にのみ使用する。Portability 
 
 > **注記（Informative）**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 SHOULD NOT の対象外である。これらは Component 自身の視覚的責任に該当する
 
-プライベートカスタムプロパティ（`--_xxx`）の使用については §7 Custom Properties を参照。
-
 > **Example（SHOULD [Portability Test の合格]）:**
 
 ```css
@@ -386,7 +384,7 @@ Portability Test で判断が曖昧な場合にのみ使用する。Portability 
     padding: var(--space-lg);
     background-color: var(--color-surface);
 
-    /* プライベートカスタムプロパティ: Block 内部の計算用 */
+    /* プライベートカスタムプロパティ（§7）: Block 内部の計算用 */
     --_gap: var(--space-md);
     display: grid;
     gap: var(--_gap);
