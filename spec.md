@@ -563,7 +563,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 **要求レベル:**
 
 - SHOULD NOT [Block なし Element の回避]: Element（`__element`）は対応する Block クラスが HTML 上に存在するコンテキストで使用すべきである（CSS にルールセットがなくても、HTML 上に Block クラスが付与されていれば違反にはならない）。BEM の「Element は常に Block の一部であり、Block から分離して使用してはならない」に基づく
-- SHOULD [層識別プレフィックスの使用]: 層の識別のためにプレフィックスを使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-animate` 属性セレクタを使用するため（§5.7 セレクタを参照）、プレフィックスの対象外とする
+- SHOULD [層識別プレフィックスの使用]: 層の識別のためにプレフィックスを使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-*` 属性セレクタを使用するため（§5.7 セレクタを参照）、プレフィックスの対象外とする
 - SHOULD NOT [Element の深いネスト禁止]: Element を 2 階層以上ネストすべきではない。Element が深くなる場合はコンポーネントの分離を検討する。
 - SHOULD [Modifier の使用可能層]: Modifier は Component / Layout / Project で使用すべきである
 - SHOULD NOT [Animation・Utility での Modifier 使用禁止]: Animation 層および Utility 層では Modifier を使用すべきではない
