@@ -467,7 +467,7 @@ Portability Test（§5.5）で No → Project
 - SHOULD [2 ガード原則の実装]: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装とすべきである
 - SHOULD [装飾的アニメーションの Animation 層分離]: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである
 - SHOULD [transform を含む機能的トランジションのガード]: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale` など）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。前庭障害のトリガーになりうるためである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
-- SHOULD [@keyframes 名と data-* 属性値の一致]: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（@keyframes 命名を参照）
+- SHOULD [@keyframes 名と data-* 属性値の一致]: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（§5.7 @keyframes 命名を参照）
 - MAY [機能的トランジションの所属層への記述]: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
 
 #### セレクタ
@@ -606,7 +606,7 @@ BEM [FLOCSS] をベースとし、以下の mFLOCSS 固有の変更を定義す�
 
 *This section is normative.*
 
-カスタムプロパティの参照チェーン・公開 API / プライベート命名規則・インラインスタイルの使用制限を定義する。
+カスタムプロパティの参照チェーン・インラインスタイルの使用制限を定義する。
 
 **要求レベル:**
 
@@ -614,28 +614,12 @@ BEM [FLOCSS] をベースとし、以下の mFLOCSS 固有の変更を定義す�
 - SHOULD [セマンティック変数経由の参照]: Foundation 以降の層はブランドトークンについて Token 層のセマンティック変数を参照すべきである
 - SHOULD NOT [プリミティブ変数の直接参照禁止]: Token 層以外がプリミティブ変数（`--_` プレフィックス）を直接参照すべきでない
 - SHOULD [公開 API 変数の命名規則遵守]: 上位層（Project 等）から値を設定する変数、または JS から値を注入する変数は、`--{対象}-{名前}` の公開 API 命名を使用すべきである
-- MAY [グローバルトークンの直接参照]: グローバルトークン（ease, z-index 等）は Foundation 以降の層から直接参照してよい（Token 層のトークン分類を参照）
+- MAY [グローバルトークンの直接参照]: グローバルトークン（ease, z-index 等）は Foundation 以降の層から直接参照してよい（§5.1 トークン分類を参照）
 - MAY [プライベートカスタムプロパティの定義]: Layout 以降の層でプライベートカスタムプロパティ（`--_xxx`）を定義してよい
-- MAY [JS からの動的カスタムプロパティ注入]: JS から公開 API のカスタムプロパティの値を動的に注入してよい
 
 ### 参照チェーン
 
 > **注記（Informative）**: カスタムプロパティは以下の経路で使用する: Token（プリミティブ → セマンティック）→ Foundation 以降（使用）。
-
-### 公開 API / プライベート命名規則
-
-カスタムプロパティは公開 API とプライベートに分類する。
-
-| 分類 | プレフィックス | 用途 | 例 |
-|---|---|---|---|
-| 公開 API | `--{対象}-{名前}` | 上位層または JS から上書きされる変数 | `--section-padding`, `--badge-bg`, `--stagger-delay` |
-| プライベートカスタムプロパティ | `--_` | Block または Element 内部でのみ使用する変数 | `--_font-size-min`, `--_delay` |
-
-> **注記（Informative）**: 命名パターンの全分類は §6 カスタムプロパティ命名まとめを参照。
-
-> **注記（Informative）**: 上位層（Project 等）から公開 API の値を設定し、Layout や Component の振る舞いをページやセクションに合わせて変える。これは §5.6 上書きパターンの基盤となる。
-
-> **注記（Informative）**: 上位層（Project）が下位層（Layout, Component）の公開 API 変数の値を設定することは、正しい依存方向（上位→下位）に沿った操作であり、§3 の MUST NOT（下位→上位の参照禁止）に抵触しない。
 
 > **Example（SHOULD [セマンティック変数経由の参照]、SHOULD [公開 API 変数の命名規則遵守]）:**
 
@@ -845,4 +829,3 @@ css/
 | §5.8 | MAY [セマンティックなファイルグループ化] | §5.8 要求レベル |
 | §7 | MAY [グローバルトークンの直接参照] | §7 要求レベル |
 | §7 | MAY [プライベートカスタムプロパティの定義] | §7 要求レベル |
-| §7 | MAY [JS からの動的カスタムプロパティ注入] | §7 要求レベル |
