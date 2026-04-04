@@ -6,7 +6,7 @@
 
 *This section is informative.*
 
-mFLOCSS は、CSS の記述を層に分類する思考フレームワークである。「このスタイルをどの層に書くか」という判断を体系化し、設計の一貫性と長期的な保守性を実現する。本仕様はその判断基準・命名規則・ファイル構成を厳密に定義する。本仕様の設計判断の詳細な解説は [BOOK] を参照。
+mFLOCSS は、CSS の記述を層に分類する思考フレームワークである。「このスタイルをどの層に書くか」という判断を体系化し、設計の一貫性と長期的な保守性を実現する。本仕様はその判断基準・命名規則・ファイル構成を厳密に定義する。
 
 ---
 
@@ -755,7 +755,6 @@ css/
 *This section is informative.*
 
 - **[FLOCSS]** Hiloki, "FLOCSS — Foundation Layout Object CSS". https://github.com/hiloki/flocss
-- **[BOOK]** shunei,『そのFLOCSS、なぜそこに書いた？』. https://zenn.dev/shunei/books/mflocss-design
 
 ---
 
