@@ -6,7 +6,7 @@
 
 *This section is informative.*
 
-mFLOCSS は、CSS の記述を層に分類する思考フレームワークである。「このスタイルをどの層に書くか」という判断を体系化し、設計の一貫性と長期的な保守性を実現する。本仕様はその判断基準・命名規則・ファイル構成を厳密に定義する。
+mFLOCSS は、CSS の記述を層に分類する思考フレームワークである。「このスタイルをどの層に書くか」という判断を体系化し、設計の一貫性と長期的な保守性を実現する。本仕様はその判断基準・命名規則・ファイル構成を厳密に定義する。本仕様の設計判断の詳細な解説は [BOOK] を参照。
 
 ---
 
@@ -75,7 +75,7 @@ mFLOCSS は以下の 4 原則に基づく。層数が変わってもこれらは
 
 mFLOCSS に準拠するとは、本仕様の全 MUST / MUST NOT ルールに違反しないことを意味する。
 
-MUST は `@layer` の層構造カスケードを保護するルール、または層間の依存方向を保護するルールに使用する。
+MUST は `@layer` の層構造カスケードを保護するルール、層間の依存方向を保護するルール、または Utility 層の最終上書きを構造的に保証するルール（他ルール違反時のフェイルセーフ）に使用する。
 
 設計判断の品質（層の選択・Portability Test 等）は SHOULD で推奨し、遵守するほど設計の一貫性と保守性が向上する。
 
@@ -95,7 +95,7 @@ mFLOCSS は以下の層で構成される。本章以降で使用する Block・
 
 | 順序 | 層名 | プレフィックス | 責任 |
 |---|---|---|---|
-| 1 | token | — | デザイントークンの定義（プリミティブ値とセマンティック変数） |
+| 1 | token | — | デザイントークンの定義（プリミティブ変数とセマンティック変数） |
 | 2 | reset | — | ブラウザデフォルトの正規化 |
 | 3 | foundation | — | 要素の基本スタイル |
 | 4 | layout | `l-` | 位置と空間の配置 |
@@ -106,7 +106,7 @@ mFLOCSS は以下の層で構成される。本章以降で使用する Block・
 
 ### 層間の依存方向
 
-上位層とは §3 層テーブルの順序番号が大きい層（`@layer` 優先度が高い）、下位層とは順序番号が小さい層を指す。例: Utility（8）が最上位、Token（1）が最下位。`@layer` の先制宣言では後に宣言した層ほど優先されるため、Utility を最後に宣言することで最高優先度が保証される。
+テーブルの下にある層ほど @layer の優先度が高い（後に宣言されるため）。上位層とは §3 層テーブルの順序番号が大きい層（`@layer` 優先度が高い）、下位層とは順序番号が小さい層を指す。例: Utility（8）が最上位、Token（1）が最下位。`@layer` の先制宣言では後に宣言した層ほど優先されるため、Utility を最後に宣言することで最高優先度が保証される。
 
 - MUST NOT [逆方向参照の禁止]: CSS セレクタおよびカスタムプロパティの参照において、下位層から上位層のクラスやカスタムプロパティを参照してはならない（例: Component 層が Project 層のクラスに依存してはならない）。HTML の入れ子構造はこのルールの対象外である。
 
@@ -128,7 +128,7 @@ mFLOCSS は以下の層で構成される。本章以降で使用する Block・
 
 ```
 Step 1: デザイントークン（色の値、フォント名、z-index 値等）または計算ヘルパー（--px 等）か？
-  └─ Yes → Token（プリミティブ値とセマンティック変数を同層で管理）
+  └─ Yes → Token（プリミティブ変数とセマンティック変数を同層で管理）
 
 Step 2: ブラウザデフォルトの正規化か？要素の基本スタイルか？
   ├─ 正規化（リセット CSS）→ Reset
@@ -152,7 +152,7 @@ Step 5: 装飾的アニメーション（視覚演出）か？
   ├─ Yes → Animation（2 ガード原則を適用）
   └─ 機能的トランジション（インタラクションフィードバック）→ Component / Project に残す
 
-Step 6: 特定の Block に帰属しない、局所的な単一目的の微調整か？
+Step 6: 特定の Block に帰属しない、単一目的の微調整か？
   └─ Yes → Utility
 ```
 
@@ -192,7 +192,7 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 
 **Token 層の責任:**
 
-1. **デザイントークンの定義**: プリミティブ値（生の値）とセマンティック変数（意味を持つマッピング）の管理
+1. **デザイントークンの定義**: プリミティブ変数（生の値）とセマンティック変数（意味を持つマッピング）の管理
 2. **ブランドトークンとグローバルトークンの分離**: プロジェクト固有の値と汎用的な値を区別する
 
 **検証問い（Token Test）:**
@@ -257,7 +257,8 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 **要求レベル:**
 
-- SHOULD [Reset 層の責任限定]: Reset 層を使用する場合、ブラウザデフォルトの初期化に限定すべきである（自作・外部を問わない）。プロジェクト固有のスタイルを Reset 層に記述すべきでない
+- SHOULD [Reset 層の責任限定]: Reset 層を使用する場合、ブラウザデフォルトの初期化に限定すべきである（自作・外部を問わない）
+- SHOULD NOT [プロジェクト固有スタイルの Reset 記述禁止]: プロジェクト固有のスタイルを Reset 層に記述すべきでない
 - MAY [Reset 層の使用任意]: Reset 層の使用は任意である
 
 ### 5.3 Foundation
@@ -312,7 +313,7 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 **要求レベル:**
 
 - SHOULD NOT [視覚プロパティの排除]: 見た目に関するプロパティ（`color`, `font-size`, `background-color`, `border`, `text-align` 等の視覚的プロパティ）を宣言すべきでない
-- MAY [Container Queries 基盤の宣言]: Container Queries を使用する場合、`container-type: inline-size` を宣言し、Container Queries の基盤を提供してよい
+- MAY [Container Queries 基盤の宣言]: Container Queries を使用する場合、`container-type: inline-size` を宣言し、必要に応じて `container-name` を定義して Container Queries の基盤を提供してよい
 
 #### Container Queries の層責任
 
@@ -374,7 +375,7 @@ Portability Test で判断が曖昧な場合にのみ使用する。Portability 
 
 - SHOULD [Portability Test の合格]: Portability Test に合格すべきである
 - SHOULD [迷ったら Component 優先]: Component と Project の判断に迷った場合は Component とすべきである。Project で上書き可能だが、逆（Project → Component への汎化）は困難であるため。Portability Test で明確に No と判断できる場合はこの限りではない
-- SHOULD NOT [外部レイアウト影響プロパティの排除]: 外部レイアウトに影響するプロパティ（ルート要素の `margin`, `position: fixed/sticky`, ルート要素の `overflow` 等）を Component のルート要素に含めるべきでない — 配置は使う側の責任（Responsibility Test）である
+- SHOULD NOT [外部レイアウト影響プロパティの排除]: 外部レイアウトに影響するプロパティ（Component のルート要素（= Component を構成する HTML の最外殻要素）の `margin`, `position: fixed/sticky`, `overflow` 等）を Component のルート要素に含めるべきでない — 配置は使う側の責任（Responsibility Test）である
 - MAY [他層要素の内包]: HTML 上で任意の層の要素を内包してよい（§3 依存方向を参照）。内包しても Portability Test に合格するなら Component のままである
 
 > **注記（Informative）**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 SHOULD NOT の対象外である。これらは Component 自身の視覚的責任に該当する
@@ -720,6 +721,8 @@ css/
 | **Portability Test** | Component と Project の境界を判定する基準テスト（§5.5） |
 | **Responsibility Test** | Portability Test の補助テスト。判断が曖昧な場合にのみ使用（§5.5） |
 | **セクションルート** | ページ内の各セクションを包む最外殻要素。Project Block を付与する起点（初出: §5.6） |
+| **上位層** | §3 層テーブルの順序番号が大きい層。@layer 優先度が高い。例: Utility（8）が最上位（初出: §3） |
+| **下位層** | §3 層テーブルの順序番号が小さい層。@layer 優先度が低い。例: Token（1）が最下位（初出: §3） |
 | **Animation Test** | Animation 層の適用可否を判定する検証問い（§5.7） |
 | **装飾的アニメーション** | 視覚演出としての動き。無効化しても機能に影響しない。Animation 層に分離し、2 ガード原則を適用する（初出: §5.7） |
 | **機能的トランジション** | インタラクションフィードバックとしての動き。ユーザー操作に対する応答であり、対象の Block が属する層（Component または Project）に記述する。`transform` を含む場合は `prefers-reduced-motion` ガードを適用する（初出: §5.7） |
@@ -729,6 +732,7 @@ css/
 | **Block** | BEM における独立した意味のあるエンティティ。プレフィックス付きクラス名（`.c-card`, `.p-hero` 等）で表現する（初出: §6） |
 | **Element（`__element`）** | Block の一部。命名は `.{prefix}-{block}__{element}` の形式。Block なしでの使用回避等の規範的定義は §6 を参照（初出: §6） |
 | **Modifier（`.-xxx`）** | 静的なバリエーション。定義は §6 を参照（初出: §6） |
+| **State** | data-* 属性または ARIA 属性で表現する動的な状態。JS やユーザー操作により変化する（初出: §6） |
 | **トークン参照チェーン** | ブランドトークンの参照パス。Token 層内（プリミティブ → セマンティック）→ Foundation 以降の層（セマンティック変数を参照）。グローバルトークンは Foundation 以降から直接参照してよい（§7 MAY）。参照ルールは §7 で規定する（初出: §7） |
 | **unlayered CSS** | `@layer` ブロック外に記述されたスタイル。全ての layered CSS より優先される（初出: §7） |
 | **公開 API（カスタムプロパティ）** | `--{対象}-{名前}` 形式の変数。上位層または JS から上書きされることを想定する外部インターフェース（初出: §7） |
@@ -744,7 +748,7 @@ css/
 
 - **[RFC2119]** Bradner, S., "Key words for use in RFCs to Indicate Requirement Levels", BCP 14, RFC 2119, March 1997.
 - **[CSS-CASCADE-5]** Atkins Jr., T.; Rivoal, F.; Lilley, C., "CSS Cascading and Inheritance Level 5", W3C Candidate Recommendation.
-- **[CSS-PROPERTIES-VALUES-1]** Atkins-Bittner, T.; Stearns, A.; Whitworth, G., "CSS Properties and Values API Level 1", W3C Candidate Recommendation.
+- **[CSS-PROPERTIES-VALUES-1]** Atkins-Bittner, T.; Stearns, A.; Whitworth, G., "CSS Properties and Values API Level 1", W3C Working Draft.
 
 ### Informative References
 
@@ -786,6 +790,7 @@ css/
 |---|---|---|
 | §5.1 | SHOULD [:root セレクタ限定] | §5.1 要求レベル |
 | §5.2 | SHOULD [Reset 層の責任限定] | §5.2 要求レベル |
+| §5.2 | SHOULD NOT [プロジェクト固有スタイルの Reset 記述禁止] | §5.2 要求レベル |
 | §5.3 | SHOULD NOT [クラスセレクタ・ID セレクタの回避] | §5.3 要求レベル |
 | §5.4 | SHOULD NOT [視覚プロパティの排除] | §5.4 要求レベル |
 | §5.5 | SHOULD [Portability Test の合格] | §5.5 要求レベル |
