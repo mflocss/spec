@@ -29,7 +29,7 @@ mFLOCSS は、CSS の記述を層に分類する思考フレームワークで�
 
 mFLOCSS は、CSS の設計判断を体系化する思考フレームワークであり、ルールブックではない。
 
-「どの層に、なぜ書くか」という問いに対し、明確な判断基準を提供する。`@layer` ベースのフラットアーキテクチャを採用する。
+「どの層に、なぜ書くか」という問いに対し、明確な判断基準を提供する。`@layer` ベースのフラットアーキテクチャを採用する。`@layer`（CSS Cascading and Inheritance Level 5 [CSS-CASCADE-5]）は、スタイルの優先順位をセレクタ詳細度に依存せず宣言順で制御する CSS 標準機能である。
 
 本仕様はその判断基準を厳密に定義する。
 
@@ -54,6 +54,8 @@ mFLOCSS は以下の 4 原則に基づく。層数が変わってもこれらは
 ## 2. Conformance
 
 *This section is normative.*
+
+本文書で *This section is normative.* と記されたセクションは準拠義務のある規定、*This section is informative.* と記されたセクションは参考情報である。
 
 ### 要求レベル
 
@@ -104,7 +106,7 @@ mFLOCSS は以下の層で構成される。本章以降で使用する Block・
 
 ### 層間の依存方向
 
-上位層とは §3 層テーブルの順序番号が大きい層（`@layer` 優先度が高い）、下位層とは順序番号が小さい層を指す。例: Utility（8）が最上位、Token（1）が最下位。
+上位層とは §3 層テーブルの順序番号が大きい層（`@layer` 優先度が高い）、下位層とは順序番号が小さい層を指す。例: Utility（8）が最上位、Token（1）が最下位。`@layer` の先制宣言では後に宣言した層ほど優先されるため、Utility を最後に宣言することで最高優先度が保証される。
 
 - MUST NOT [逆方向参照の禁止]: 下位層から上位層のクラスやカスタムプロパティを参照してはならない（例: Component 層が Project 層のクラスに依存してはならない）
 
@@ -468,7 +470,7 @@ Portability Test（§5.5）で No → Project
 
 **要求レベル:**
 
-- SHOULD [2 ガード原則の実装]: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装とすべきである
+- SHOULD [2 ガード原則の実装]: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装とすべきである。Animation 層は JS による `data-*` 属性の付与を前提とするため、scripting が無効な環境ではアニメーション CSS を適用しないことで要素の不可視化を防ぐ
 - SHOULD [装飾的アニメーションの Animation 層分離]: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである
 - SHOULD [transform を含む機能的トランジションのガード]: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale` など）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。前庭障害のトリガーになりうるためである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
 - SHOULD [@keyframes 名と data-* 属性値の一致]: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（§5.7 @keyframes 命名を参照）
@@ -562,7 +564,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 
 *This section is normative.*
 
-BEM [FLOCSS] をベースとし、以下の mFLOCSS 固有の変更を定義する。BEM の一般原則（Block/Element の構造、Element のネスト禁止等）はそのまま適用される。
+mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下の mFLOCSS 固有の変更を定義する。Block は独立した再利用可能な単位、Element は Block に従属する構成要素であり `.{prefix}-{block}__{element}` 形式で表現する。Element 名の連鎖（`block__elem1__elem2`）は禁止する。Modifier は BEM の `--` ではなく `.-modifier` 形式を採用する。
 
 **要求レベル:**
 
@@ -694,7 +696,7 @@ css/
 
 ### property.css
 
-> **注記（Informative）**: `@property` 宣言を含む。現行の CSS 仕様において `@layer` 内の `@property` は無視されるため、`@layer` の外に配置する。層ディレクトリには入れない。`@property` を使用しないプロジェクトではこのファイルは不要である。
+> **注記（Informative）**: `@property` 宣言を含む。現時点のブラウザ実装では `@layer` 内の `@property` が期待通りに動作しないため、`@layer` の外に配置する。層ディレクトリには入れない。`@property` を使用しないプロジェクトではこのファイルは不要である。
 
 ---
 
@@ -726,6 +728,7 @@ css/
 | **Element（`__element`）** | Block の一部。命名は `.{prefix}-{block}__{element}` の形式。Block なしでの使用回避等の規範的定義は §6 を参照（初出: §6） |
 | **Modifier（`.-xxx`）** | 静的なバリエーション。定義は §6 を参照（初出: §6） |
 | **トークン参照チェーン** | ブランドトークンの参照パス。Token 層内（プリミティブ → セマンティック）→ Foundation 以降の層（セマンティック変数を参照）。グローバルトークンは Foundation 以降から直接参照してよい（§7 MAY）。参照ルールは §7 で規定する（初出: §7） |
+| **unlayered CSS** | `@layer` ブロック外に記述されたスタイル。全ての layered CSS より優先される（初出: §7） |
 | **公開 API（カスタムプロパティ）** | `--{対象}-{名前}` 形式の変数。上位層または JS から上書きされることを想定する外部インターフェース（初出: §7） |
 | **プライベートカスタムプロパティ** | `--_` プレフィックスを持つ変数。Block または Element 内部でのみ使用し、外部からの参照・設定を想定しない（初出: §7）。「プライベート変数」は本用語の略称 |
 
