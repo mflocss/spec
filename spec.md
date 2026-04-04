@@ -471,8 +471,8 @@ Portability Test（§5.5）で No → Project
 
 **要求レベル:**
 
-- SHOULD [2 ガード原則の実装]: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装とすべきである。Animation 層は JS による `data-*` 属性の付与を前提とするため、scripting が無効な環境ではアニメーション CSS を適用しないことで要素の不可視化を防ぐ
 - SHOULD [装飾的アニメーションの Animation 層分離]: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである
+- SHOULD [2 ガード原則の実装]: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装とすべきである。Animation 層は JS による `data-*` 属性の付与を前提とするため、scripting が無効な環境ではアニメーション CSS を適用しないことで要素の不可視化を防ぐ
 - SHOULD [transform を含む機能的トランジションのガード]: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale` など）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。前庭障害のトリガーになりうるためである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
 - SHOULD [@keyframes 名と data-* 属性値の一致]: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（§5.7 @keyframes 命名を参照）
 - MAY [機能的トランジションの所属層への記述]: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
@@ -569,8 +569,8 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 
 **要求レベル:**
 
-- SHOULD NOT [Element 連鎖の回避]: Element 名を連鎖させるべきではない（例: `block__elem1__elem2`）
 - SHOULD [層識別プレフィックスの使用]: 層の識別のためにプレフィックスを使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-*` 属性セレクタを使用するため（§5.7 セレクタを参照）、プレフィックスの対象外とする
+- SHOULD NOT [Element 連鎖の回避]: Element 名を連鎖させるべきではない（例: `block__elem1__elem2`）
 
 ### クラス名
 
@@ -621,8 +621,8 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 
 - MUST NOT [静的インラインスタイルの禁止]: HTML マークアップに静的なインラインスタイルを記述してはならない。インラインスタイルはどの `@layer` にも属さない unlayered CSS として扱われ、全ての layered CSS より優先されるため、層構造による優先順位制御を破壊する。JS による動的なスタイル注入や、CMS・ライブラリが自動生成するインラインスタイルは本規定の対象外とする
 - SHOULD [セマンティック変数経由の参照]: Foundation 以降の層はブランドトークンについて Token 層のセマンティック変数を参照すべきである
-- SHOULD NOT [プリミティブ変数の直接参照禁止]: Token 層以外がプリミティブ変数（Token 層の `--_` プレフィックス変数）を直接参照すべきでない
 - SHOULD [公開 API 変数の命名規則遵守]: 上位層（Project 等）から値を設定する変数、または JS から値を注入する変数は、`--{対象}-{名前}` の公開 API 命名を使用すべきである
+- SHOULD NOT [プリミティブ変数の直接参照禁止]: Token 層以外がプリミティブ変数（Token 層の `--_` プレフィックス変数）を直接参照すべきでない
 - MAY [グローバルトークンの直接参照]: グローバルトークン（ease, z-index 等）は Foundation 以降の層から直接参照してよい（§5.1 トークン分類を参照）
 - MAY [プライベートカスタムプロパティの定義]: Layout 以降の層でプライベートカスタムプロパティ（`--_xxx`）を定義してよい
 
@@ -708,6 +708,8 @@ css/
 
 | 用語 | 定義 |
 |---|---|
+| **上位層** | §3 層テーブルの順序番号が大きい層。@layer 優先度が高い。例: Utility（8）が最上位（初出: §3） |
+| **下位層** | §3 層テーブルの順序番号が小さい層。@layer 優先度が低い。例: Token（1）が最下位（初出: §3） |
 | **先制宣言** | `layer-order.css` における `@layer` による層間の優先順位宣言。全スタイル定義に先行して記述される（初出: §4） |
 | **Token Test** | Token 層の適用可否を判定する検証問い（§5.1） |
 | **ブランドトークン** | プロジェクトごとに変わるデザイン値（color, typography, structure）。プリミティブ変数とセマンティック変数の総称。参照ルールは §5.1 および §7 を参照（初出: §5.1） |
@@ -721,8 +723,6 @@ css/
 | **Portability Test** | Component と Project の境界を判定する基準テスト（§5.5） |
 | **Responsibility Test** | Portability Test の補助テスト。判断が曖昧な場合にのみ使用（§5.5） |
 | **セクションルート** | ページ内の各セクションを包む最外殻要素。Project Block を付与する起点（初出: §5.6） |
-| **上位層** | §3 層テーブルの順序番号が大きい層。@layer 優先度が高い。例: Utility（8）が最上位（初出: §3） |
-| **下位層** | §3 層テーブルの順序番号が小さい層。@layer 優先度が低い。例: Token（1）が最下位（初出: §3） |
 | **Animation Test** | Animation 層の適用可否を判定する検証問い（§5.7） |
 | **装飾的アニメーション** | 視覚演出としての動き。無効化しても機能に影響しない。Animation 層に分離し、2 ガード原則を適用する（初出: §5.7） |
 | **機能的トランジション** | インタラクションフィードバックとしての動き。ユーザー操作に対する応答であり、対象の Block が属する層（Component または Project）に記述する。`transform` を含む場合は `prefers-reduced-motion` ガードを適用する（初出: §5.7） |
@@ -797,16 +797,16 @@ css/
 | §5.5 | SHOULD NOT [外部レイアウト影響プロパティの排除] | §5.5 要求レベル |
 | §5.6 | SHOULD [セクションルートへの Project Block 付与] | §5.6 要求レベル |
 | §5.6 | SHOULD NOT [Component 相当スタイルの Project 記述禁止] | §5.6 要求レベル |
-| §5.7 | SHOULD [2 ガード原則の実装] | §5.7 要求レベル |
 | §5.7 | SHOULD [装飾的アニメーションの Animation 層分離] | §5.7 要求レベル |
+| §5.7 | SHOULD [2 ガード原則の実装] | §5.7 要求レベル |
 | §5.7 | SHOULD [transform を含む機能的トランジションのガード] | §5.7 要求レベル |
 | §5.7 | SHOULD [@keyframes 名と data-* 属性値の一致] | §5.7 要求レベル |
 | §5.8 | SHOULD NOT [Block 帰属スタイルの Utility 記述禁止] | §5.8 要求レベル |
-| §6 | SHOULD NOT [Element 連鎖の回避] | §6 要求レベル |
 | §6 | SHOULD [層識別プレフィックスの使用] | §6 要求レベル |
+| §6 | SHOULD NOT [Element 連鎖の回避] | §6 要求レベル |
 | §7 | SHOULD [セマンティック変数経由の参照] | §7 要求レベル |
-| §7 | SHOULD NOT [プリミティブ変数の直接参照禁止] | §7 要求レベル |
 | §7 | SHOULD [公開 API 変数の命名規則遵守] | §7 要求レベル |
+| §7 | SHOULD NOT [プリミティブ変数の直接参照禁止] | §7 要求レベル |
 | §8 | SHOULD [ディレクトリ名の層名一致] | §8 要求レベル |
 | §8 | SHOULD [1 Block = 1 ファイルの維持] | §8 要求レベル |
 | §8 | SHOULD [層帰属の明確化] | §8 要求レベル |
