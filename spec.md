@@ -568,7 +568,7 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 
 **要求レベル:**
 
-- MUST NOT [Element 連鎖の禁止]: Element 名を連鎖させてはならない（例: `block__elem1__elem2`）
+- SHOULD NOT [Element 連鎖の回避]: Element 名を連鎖させるべきではない（例: `block__elem1__elem2`）
 - SHOULD [層識別プレフィックスの使用]: 層の識別のためにプレフィックスを使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-*` 属性セレクタを使用するため（§5.7 セレクタを参照）、プレフィックスの対象外とする
 
 ### クラス名
@@ -778,7 +778,6 @@ css/
 | §4 | MUST [外部 CSS の層取り込み] | §4 要求レベル |
 | §4 | MUST NOT [!important の使用制限] | §4 要求レベル |
 | §5.8 | MUST [!important の付与] | §5.8 要求レベル |
-| §6 | MUST NOT [Element 連鎖の禁止] | §6 要求レベル |
 | §7 | MUST NOT [静的インラインスタイルの禁止] | §7 要求レベル |
 
 ### SHOULD / SHOULD NOT
@@ -799,6 +798,7 @@ css/
 | §5.7 | SHOULD [transform を含む機能的トランジションのガード] | §5.7 要求レベル |
 | §5.7 | SHOULD [@keyframes 名と data-* 属性値の一致] | §5.7 要求レベル |
 | §5.8 | SHOULD NOT [Block 帰属スタイルの Utility 記述禁止] | §5.8 要求レベル |
+| §6 | SHOULD NOT [Element 連鎖の回避] | §6 要求レベル |
 | §6 | SHOULD [層識別プレフィックスの使用] | §6 要求レベル |
 | §7 | SHOULD [セマンティック変数経由の参照] | §7 要求レベル |
 | §7 | SHOULD NOT [プリミティブ変数の直接参照禁止] | §7 要求レベル |
