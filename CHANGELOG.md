@@ -56,7 +56,7 @@ MUST の使用範囲を以下の 3 種に限定して明文化した。
 
 #### §6 を BEM 差分定義に集中
 
-Block / Element / Modifier の基本定義に関する BEM 一般原則の MUST / SHOULD（4 件）を §6 から削除。§6 は mFLOCSS 独自の拡張差分（プレフィックス規則・Modifier の層制約・State の表現方法等）のみを規定する構成に集約した。
+Block / Element / Modifier の基本定義に関する BEM 一般原則の MUST / SHOULD（4 件）を §6 から削除。§6 は mFLOCSS 独自の拡張差分（プレフィックス規則・State の表現方法等）のみを規定する構成に集約した。
 
 #### §6 Element 連鎖を SHOULD NOT に降格
 
@@ -64,7 +64,7 @@ Element のネスト（`.c-card__body__title` 等）を MUST NOT から SHOULD N
 
 #### §7 トークン参照チェーンの体系化
 
-§7 の章タイトルを「Custom Properties」に統一し、プリミティブ変数→セマンティック変数→コンポーネント変数への参照チェーンを明文化。インラインスタイルの MUST NOT 禁止ルールから動的・自動生成の除外条件を本文に統合し、要求レベルを簡潔化。
+§7 の章タイトルを「Custom Properties and Inline Styles」に変更し、プリミティブ変数→セマンティック変数→コンポーネント変数への参照チェーンを明文化。インラインスタイルの MUST NOT 禁止ルールから動的・自動生成の除外条件を本文に統合し、要求レベルを簡潔化。
 
 #### §7 セマンティック変数の定義緩和
 

@@ -46,7 +46,7 @@ mFLOCSS（Modified FLOCSS）は、CSS の設計判断を体系化する思考フ
 | **style.css の MUST を SHOULD に降格** | `style.css` のエントリポイント構成をプロジェクト運用の判断に委ねる SHOULD に変更 |
 | **§6 を BEM 差分定義に集中** | BEM 一般原則（Block / Element / Modifier の基本定義）の MUST / SHOULD を削除し、mFLOCSS 独自の拡張差分のみを規定 |
 | **§6 Element 連鎖を SHOULD NOT に降格** | Element のネスト（`.c-card__body__title` 等）を MUST NOT から SHOULD NOT に変更 |
-| **§7 トークン参照チェーンの体系化** | 章タイトルを「Custom Properties」に変更し、プリミティブ→セマンティック→コンポーネント変数の参照チェーンを明文化 |
+| **§7 トークン参照チェーンの体系化** | 章タイトルを「Custom Properties and Inline Styles」に変更し、プリミティブ→セマンティック→コンポーネント変数の参照チェーンを明文化 |
 | **§7 セマンティック変数の定義緩和** | セマンティック変数がプリミティブ変数を参照することを SHOULD（推奨）に変更し、直接値の定義も許容 |
 | **ライセンスを CC BY-SA 4.0 に変更** | CC BY-ND 4.0 から CC BY-SA 4.0 へ変更（改変・再配布を著作者表示と同一ライセンスの条件で許可） |
 
