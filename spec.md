@@ -75,7 +75,7 @@ mFLOCSS は以下の 4 原則に基づく。層数が変わってもこれらは
 
 mFLOCSS に準拠するとは、本仕様の全 MUST / MUST NOT ルールに違反しないことを意味する。
 
-MUST は `@layer` の層構造カスケードを保護するルールに使用する。
+MUST は `@layer` の層構造カスケードを保護するルール、または層間の依存方向を保護するルールに使用する。
 
 設計判断の品質（層の選択・Portability Test 等）は SHOULD で推奨し、遵守するほど設計の一貫性と保守性が向上する。
 
@@ -108,9 +108,9 @@ mFLOCSS は以下の層で構成される。本章以降で使用する Block・
 
 上位層とは §3 層テーブルの順序番号が大きい層（`@layer` 優先度が高い）、下位層とは順序番号が小さい層を指す。例: Utility（8）が最上位、Token（1）が最下位。`@layer` の先制宣言では後に宣言した層ほど優先されるため、Utility を最後に宣言することで最高優先度が保証される。
 
-- MUST NOT [逆方向参照の禁止]: 下位層から上位層のクラスやカスタムプロパティを参照してはならない（例: Component 層が Project 層のクラスに依存してはならない）
+- MUST NOT [逆方向参照の禁止]: CSS セレクタおよびカスタムプロパティの参照において、下位層から上位層のクラスやカスタムプロパティを参照してはならない（例: Component 層が Project 層のクラスに依存してはならない）。HTML の入れ子構造はこのルールの対象外である。
 
-> **注記（Informative）**: 依存方向ルールは CSS の参照方向に適用される。HTML の入れ子構造はこのルールの対象外である。Component の中に Project を配置し、その中に Component を置く構造は、CSS で他の層のクラスを参照しない限り違反にならない。
+> **注記（Informative）**: Component の中に Project を配置し、その中に Component を置く構造は、CSS で他の層のクラスを参照しない限り違反にならない。
 
 ```html
 <div class="c-modal">
@@ -127,7 +127,7 @@ mFLOCSS は以下の層で構成される。本章以降で使用する Block・
 スタイルをどの層に書くべきかを 6 ステップで判断する。
 
 ```
-Step 1: デザイントークン（色の値、フォント名、z-index 値等）か？
+Step 1: デザイントークン（色の値、フォント名、z-index 値等）または計算ヘルパー（--px 等）か？
   └─ Yes → Token（プリミティブ値とセマンティック変数を同層で管理）
 
 Step 2: ブラウザデフォルトの正規化か？要素の基本スタイルか？
@@ -152,7 +152,7 @@ Step 5: 装飾的アニメーション（視覚演出）か？
   ├─ Yes → Animation（2 ガード原則を適用）
   └─ 機能的トランジション（インタラクションフィードバック）→ Component / Project に残す
 
-Step 6: 局所的な単一目的の微調整か？
+Step 6: 特定の Block に帰属しない、局所的な単一目的の微調整か？
   └─ Yes → Utility
 ```
 
@@ -167,7 +167,7 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 **要求レベル:**
 
 - MUST [先制宣言の実施]: CSS Cascading and Inheritance Level 5 [CSS-CASCADE-5] に定義される `@layer` による層間の優先順位宣言を起点ファイル（エントリポイント）CSS の先頭で、全ての `@import` に先行して行わなければならない。
-- MUST [外部 CSS の層取り込み]: 外部 CSS は `@import url() layer()` または npm + バンドラーを使用し、いずれかの層に取り込まなければならない。
+- MUST [外部 CSS の層取り込み]: 外部 CSS は `@import url() layer()` を使用するか、バンドラーを使用する場合は `@layer` 宣言内にバンドル結果が配置されるように構成し、いずれかの層に取り込まなければならない。
 - MUST NOT [!important の使用制限]: Reset 層および Utility 層を除く全層で `!important` を使用してはならない。Reset 層は外部リセット CSS を取り込むため、その内部実装における `!important` の有無は本仕様の準拠対象外とする。この制約により優先度逆転の複雑性を回避する。
 
 > **Example（MUST [先制宣言の実施]）:**
@@ -564,10 +564,11 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 
 *This section is normative.*
 
-mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下の mFLOCSS 固有の変更を定義する。Block は独立した再利用可能な単位、Element は Block に従属する構成要素であり `.{prefix}-{block}__{element}` 形式で表現する。Element 名の連鎖（`block__elem1__elem2`）は禁止する。Modifier は BEM の `--` ではなく `.-modifier` 形式を採用する。
+mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下の mFLOCSS 固有の変更を定義する。Block は独立した再利用可能な単位、Element は Block に従属する構成要素であり `.{prefix}-{block}__{element}` 形式で表現する。Modifier は BEM の `--` ではなく `.-modifier` 形式を採用する。
 
 **要求レベル:**
 
+- MUST NOT [Element 連鎖の禁止]: Element 名を連鎖させてはならない（例: `block__elem1__elem2`）
 - SHOULD [層識別プレフィックスの使用]: 層の識別のためにプレフィックスを使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-*` 属性セレクタを使用するため（§5.7 セレクタを参照）、プレフィックスの対象外とする
 
 ### クラス名
@@ -696,7 +697,7 @@ css/
 
 ### property.css
 
-> **注記（Informative）**: `@property` 宣言を含む。現時点のブラウザ実装では `@layer` 内の `@property` が期待通りに動作しないため、`@layer` の外に配置する。層ディレクトリには入れない。`@property` を使用しないプロジェクトではこのファイルは不要である。
+> **注記（Informative）**: `@property` 宣言（[CSS-PROPERTIES-VALUES-1]）を含む。現時点のブラウザ実装では `@layer` 内の `@property` が期待通りに動作しないため、`@layer` の外に配置する。層ディレクトリには入れない。`@property` を使用しないプロジェクトではこのファイルは不要である。
 
 ---
 
@@ -718,6 +719,7 @@ css/
 | **Layout Test** | Layout 層の責任範囲を判定する検証問い（§5.4） |
 | **Portability Test** | Component と Project の境界を判定する基準テスト（§5.5） |
 | **Responsibility Test** | Portability Test の補助テスト。判断が曖昧な場合にのみ使用（§5.5） |
+| **セクションルート** | ページ内の各セクションを包む最外殻要素。Project Block を付与する起点（初出: §5.6） |
 | **Animation Test** | Animation 層の適用可否を判定する検証問い（§5.7） |
 | **装飾的アニメーション** | 視覚演出としての動き。無効化しても機能に影響しない。Animation 層に分離し、2 ガード原則を適用する（初出: §5.7） |
 | **機能的トランジション** | インタラクションフィードバックとしての動き。ユーザー操作に対する応答であり、対象の Block が属する層（Component または Project）に記述する。`transform` を含む場合は `prefers-reduced-motion` ガードを適用する（初出: §5.7） |
@@ -776,6 +778,7 @@ css/
 | §4 | MUST [外部 CSS の層取り込み] | §4 要求レベル |
 | §4 | MUST NOT [!important の使用制限] | §4 要求レベル |
 | §5.8 | MUST [!important の付与] | §5.8 要求レベル |
+| §6 | MUST NOT [Element 連鎖の禁止] | §6 要求レベル |
 | §7 | MUST NOT [静的インラインスタイルの禁止] | §7 要求レベル |
 
 ### SHOULD / SHOULD NOT
