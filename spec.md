@@ -265,18 +265,21 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 **Foundation 層の責任:**
 
-1. **要素の基本スタイル**: 全ページ共通のタイポグラフィ、行間、色の初期設定
+1. **基本スタイルの正規化**: テーマが管理しない出力（ブラウザデフォルト、外部システム生成クラス）の正規化と、全ページ共通の基本スタイル定義
 
 **検証問い（Foundation Test）:**
 
-「このスタイルは、要素の基本スタイルの定義か？」
+「このスタイルは、基本スタイルの正規化か？」
 
 - Yes → Foundation
 - No（特定のコンテキストに依存する）→ 上位層
 
 **要求レベル:**
 
-- SHOULD NOT [クラスセレクタ・ID セレクタの回避]: クラスセレクタ・ID セレクタを使用すべきでない。Foundation 層は要素型セレクタを使用し、全ページ共通の基本スタイルを定義する
+- SHOULD NOT [Component/Project スタイルの Foundation 記述禁止]: Component 層または Project 層に属するスタイルを Foundation 層に記述すべきでない
+- MAY [外部生成クラスへのクラスセレクタ使用]: CMS やフレームワークが生成するクラスの正規化にクラスセレクタを使用してよい
+
+> **注記（Informative）**: Foundation 層は主に要素型セレクタを使用するが、外部システム（CMS、フレームワーク、プラグイン）が生成する HTML のクラスを正規化する必要がある場合、クラスセレクタも使用できる。これは Foundation の責任（テーマが管理しない出力の正規化）の範囲内である。
 
 > **Example（SHOULD NOT [クラスセレクタ・ID セレクタの回避]）:**
 
@@ -375,10 +378,16 @@ Portability Test で判断が曖昧な場合にのみ使用する。Portability 
 
 - SHOULD [Portability Test の合格]: Portability Test に合格すべきである
 - SHOULD [迷ったら Component 優先]: Component と Project の判断に迷った場合は Component とすべきである。Project で上書き可能だが、逆（Project → Component への汎化）は困難であるため。Portability Test で明確に No と判断できる場合はこの限りではない
-- SHOULD NOT [外部レイアウト影響プロパティの排除]: 外部レイアウトに影響するプロパティ（Component のルート要素（= Component を構成する HTML の最外殻要素）の `margin`, `position: fixed/sticky`, `overflow` 等）を Component のルート要素に含めるべきでない — 配置は使う側の責任（Responsibility Test）である
+- SHOULD NOT [外部コンテキスト依存プロパティの排除]: Component のルート要素（= Component を構成する HTML の最外殻要素）に、外部コンテキストに依存するプロパティを含めるべきでない — Responsibility Test: 「それは Component 自身の責任か、使う側の責任か？」で判断する
+  - **配置**: `margin`, `position: fixed/sticky`（使う側の責任）
+  - **表示範囲**: `overflow: hidden`（外側から覆いかぶせて隠す用途。使う側の責任）
+  - **表示/非表示**: `display: none`（理由を問わず。ブレークポイント依存・状態制御とも、存在するかしないかは使う側の責任）
 - MAY [他層要素の内包]: HTML 上で任意の層の要素を内包してよい（§3 依存方向を参照）。内包しても Portability Test に合格するなら Component のままである
+- SHOULD [Block の適切な粒度分割]: Block は適切な粒度に分割すべきである。1 つの Block が肥大化した場合は、独立した Block への分割を検討する
 
-> **注記（Informative）**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 SHOULD NOT の対象外である。これらは Component 自身の視覚的責任に該当する
+> **注記（Informative）**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 SHOULD NOT の対象外である。これらは Component 自身の視覚的責任に該当する。同様に、自身の中身を閉じ込める `overflow: hidden`（`border-radius` によるクリッピング等）は Component 自身の描画責任であり、本項の対象外である。
+
+> **注記（Informative）**: Component は自身の**見た目の変化**（`[aria-expanded]` による形状変更、`opacity`、`transform` 等）を持てるが、**存在/不在の切り替え**（`display: none`）は持たない。表示/非表示の制御は、HTML 属性（`hidden`、`<dialog>` の `show()`/`close()`）または Project 層で行う。
 
 > **Example（SHOULD [Portability Test の合格]）:**
 
@@ -413,8 +422,6 @@ Portability Test で判断が曖昧な場合にのみ使用する。Portability 
 **Project 層の責任:**
 
 1. **サイト固有のパーツとデザイン要件**: ページ / セクション単位の固有スタイル
-2. **セクションルートの管理**: ページ内の各セクションに Project Block を付与
-3. **Component / Layout の上書き**: ページやセクションに合わせた調整
 
 **プレフィックス:** `p-`
 
@@ -431,6 +438,7 @@ Portability Test（§5.5）で No → Project
 - MAY [他層要素の内包]: HTML 上で任意の層の要素を内包してよい（§3 依存方向を参照）
 - MAY [Layout と Component のみの構成]: サイト固有のスタイリングが不要なセクションは Layout と Component のみで構成してよい
 - MAY [拡張用 Element クラスの先行付与]: Project が内包する Component や Layout の要素に、現時点で固有スタイルがなくても Project の Element クラスを付与してよい（例: `class="c-section-heading p-about__heading"`）。拡張点として機能する
+- SHOULD [Component グルーピングの Project 配置]: 複数の Component を集合レイアウトするスタイルは Project 層に配置すべきである
 
 > **注記（Informative）**: Project 層は CSS 変数経由・直接プロパティ・Modifier などの方法で Component / Layout を上書きできる。
 
@@ -680,7 +688,7 @@ css/
 ├── style.css             /* エントリポイント */
 ├── token/                /* §5.1 Token — デザイントークン */
 ├── reset/                /* §5.2 Reset — ブラウザデフォルト初期化 */
-├── foundation/           /* §5.3 Foundation — 要素の基本スタイル */
+├── foundation/           /* §5.3 Foundation — 基本スタイルの正規化 */
 ├── layout/               /* §5.4 Layout — ページの骨格・配置 */
 ├── component/            /* §5.5 Component — 再利用可能なパーツ */
 ├── project/              /* §5.6 Project — サイト固有のスタイル */
@@ -790,13 +798,16 @@ css/
 | §5.1 | SHOULD [:root セレクタ限定] | §5.1 要求レベル |
 | §5.2 | SHOULD [Reset 層の責任限定] | §5.2 要求レベル |
 | §5.2 | SHOULD NOT [プロジェクト固有スタイルの Reset 記述禁止] | §5.2 要求レベル |
-| §5.3 | SHOULD NOT [クラスセレクタ・ID セレクタの回避] | §5.3 要求レベル |
+| §5.3 | SHOULD NOT [Component/Project スタイルの Foundation 記述禁止] | §5.3 要求レベル |
+| §5.3 | MAY [外部生成クラスへのクラスセレクタ使用] | §5.3 要求レベル |
 | §5.4 | SHOULD NOT [視覚プロパティの排除] | §5.4 要求レベル |
 | §5.5 | SHOULD [Portability Test の合格] | §5.5 要求レベル |
 | §5.5 | SHOULD [迷ったら Component 優先] | §5.5 要求レベル |
-| §5.5 | SHOULD NOT [外部レイアウト影響プロパティの排除] | §5.5 要求レベル |
+| §5.5 | SHOULD NOT [外部コンテキスト依存プロパティの排除] | §5.5 要求レベル |
+| §5.5 | SHOULD [Block の適切な粒度分割] | §5.5 要求レベル |
 | §5.6 | SHOULD [セクションルートへの Project Block 付与] | §5.6 要求レベル |
 | §5.6 | SHOULD NOT [Component 相当スタイルの Project 記述禁止] | §5.6 要求レベル |
+| §5.6 | SHOULD [Component グルーピングの Project 配置] | §5.6 要求レベル |
 | §5.7 | SHOULD [装飾的アニメーションの Animation 層分離] | §5.7 要求レベル |
 | §5.7 | SHOULD [2 ガード原則の実装] | §5.7 要求レベル |
 | §5.7 | SHOULD [transform を含む機能的トランジションのガード] | §5.7 要求レベル |
