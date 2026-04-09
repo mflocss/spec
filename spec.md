@@ -298,6 +298,32 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 }
 ```
 
+Foundation 層の責任は基本スタイルの正規化に限られる。`.c-*`・`.p-*` のスタイルは Component / Project 層に記述する。
+
+> **Example（SHOULD NOT [Component/Project スタイルの Foundation 記述禁止]）— 悪例:**
+
+```css
+/* ❌ Foundation に Component / Project のスタイルを記述している */
+@layer foundation {
+  .c-button {
+    background-color: var(--color-main);
+    color: var(--color-surface);
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+  }
+
+  .c-card {
+    background-color: var(--color-surface);
+    box-shadow: 0 2px 4px rgb(0 0 0 / 0.1);
+  }
+
+  .p-hero {
+    background-image: url("/hero.jpg");
+    min-block-size: 50vh;
+  }
+}
+```
+
 ### 5.4 Layout
 
 **Layout 層の責任:**
