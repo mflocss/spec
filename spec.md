@@ -281,7 +281,7 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 > **注記（Informative）**: Foundation 層は主に要素型セレクタを使用するが、外部システム（CMS、フレームワーク、プラグイン）が生成する HTML のクラスを正規化する必要がある場合、クラスセレクタも使用できる。これは Foundation の責任（テーマが管理しない出力の正規化）の範囲内である。
 
-> **Example（SHOULD NOT [クラスセレクタ・ID セレクタの回避]）:**
+> **Example（SHOULD NOT [Component/Project スタイルの Foundation 記述禁止]）:**
 
 ```css
 @layer foundation {
