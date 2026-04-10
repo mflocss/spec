@@ -16,7 +16,7 @@ mFLOCSS は、CSS の記述を層に分類する思考フレームワークで�
 
 本文書は mFLOCSS 仕様書のドラフト版である。v1.0 で正式版となる予定であり、v1.0 リリース以前は仕様の内容が変更される可能性がある。
 
-**最終更新**: 2026-04-04  
+**最終更新**: 2026-04-11  
 **著者**: shunei
 
 ---
@@ -110,7 +110,7 @@ mFLOCSS は以下の層で構成される。本章以降で使用する Block・
 
 - MUST NOT [逆方向参照の禁止]: CSS セレクタおよびカスタムプロパティの参照において、下位層から上位層のクラスやカスタムプロパティを参照してはならない（例: Component 層が Project 層のクラスに依存してはならない）。HTML の入れ子構造はこのルールの対象外である。
 
-> **注記（Informative）**: Component の中に Project を配置し、その中に Component を置く構造は、CSS で他の層のクラスを参照しない限り違反にならない。
+> **Example（MUST NOT [逆方向参照の禁止]）:**
 
 ```html
 <div class="c-modal">
@@ -217,8 +217,6 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 | セマンティック変数 | 意味を持つマッピング | `--color-main`, `--color-surface`, `--font-size-body` |
 | グローバルトークン | 多くのプロジェクトで共通して使える値 | `--ease-out-cubic`, `--z-header` |
 | 計算ヘルパー | 単位変換・計算のためのユーティリティ変数 | `--px: calc(1rem / 16)`（`calc(数値 * var(--px))` で rem に変換） |
-
-> **注記（Informative）**: 「ブランドやプロジェクトが変わったとき、この値を変更する必要があるか？」 — Yes ならブランドトークン（プリミティブ + セマンティック）、No ならグローバルトークン。計算ヘルパーはブランドに依存しないユーティリティ変数として Token 層に配置する。
 
 命名規則は §6 カスタムプロパティ命名まとめを参照。
 
@@ -377,17 +375,9 @@ Portability Test で判断が曖昧な場合にのみ使用する。Portability 
 **要求レベル:**
 
 - SHOULD [Portability Test の合格]: Portability Test に合格すべきである
-- SHOULD [迷ったら Component 優先]: Component と Project の判断に迷った場合は Component とすべきである。Project で上書き可能だが、逆（Project → Component への汎化）は困難であるため。Portability Test で明確に No と判断できる場合はこの限りではない
-- SHOULD NOT [外部コンテキスト依存プロパティの排除]: Component のルート要素（= Component を構成する HTML の最外殻要素）に、外部コンテキストに依存するプロパティを含めるべきでない — Responsibility Test: 「それは Component 自身の責任か、使う側の責任か？」で判断する
-  - **配置**: `margin`, `position: fixed/sticky`（使う側の責任）
-  - **表示範囲**: `overflow: hidden`（外側から覆いかぶせて隠す用途。使う側の責任）
-  - **表示/非表示**: `display: none`（理由を問わず。ブレークポイント依存・状態制御とも、存在するかしないかは使う側の責任）
+- SHOULD NOT [外部レイアウト影響プロパティの排除]: Component のルート要素（= Component を構成する HTML の最外殻要素）に、外部レイアウトに影響するプロパティ（`margin`, `position: fixed/sticky`）を含めるべきでない — 配置は使う側の責任である
+- SHOULD NOT [存在/不在制御の排除]: Component は自身の存在/不在を制御すべきでない（`display: none` を含めない）。表示/非表示の制御は HTML 属性（`hidden`、`<dialog>` の `show()`/`close()`）または Project 層で行う — 存在するかしないかは使う側の責任である
 - MAY [他層要素の内包]: HTML 上で任意の層の要素を内包してよい（§3 依存方向を参照）。内包しても Portability Test に合格するなら Component のままである
-- SHOULD [Block の適切な粒度分割]: Block は適切な粒度に分割すべきである。1 つの Block が肥大化した場合は、独立した Block への分割を検討する
-
-> **注記（Informative）**: Component 内部の Element（`__element`）間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）は上記 SHOULD NOT の対象外である。これらは Component 自身の視覚的責任に該当する。同様に、自身の中身を閉じ込める `overflow: hidden`（`border-radius` によるクリッピング等）は Component 自身の描画責任であり、本項の対象外である。
-
-> **注記（Informative）**: Component は自身の**見た目の変化**（`[aria-expanded]` による形状変更、`opacity`、`transform` 等）を持てるが、**存在/不在の切り替え**（`display: none`）は持たない。表示/非表示の制御は、HTML 属性（`hidden`、`<dialog>` の `show()`/`close()`）または Project 層で行う。
 
 > **Example（SHOULD [Portability Test の合格]）:**
 
@@ -436,11 +426,6 @@ Portability Test（§5.5）で No → Project
 - SHOULD [セクションルートへの Project Block 付与]: サイト固有のデザイン要件があるセクションには、セクションルートに Project Block を付与し、セクション内の要素は Element として構築すべきである
 - SHOULD NOT [Component 相当スタイルの Project 記述禁止]: Portability Test（§5.5）に合格するスタイルを Project 層に記述すべきでない。該当するスタイルは Component 層（§5.5）に記述する
 - MAY [他層要素の内包]: HTML 上で任意の層の要素を内包してよい（§3 依存方向を参照）
-- MAY [Layout と Component のみの構成]: サイト固有のスタイリングが不要なセクションは Layout と Component のみで構成してよい
-- MAY [拡張用 Element クラスの先行付与]: Project が内包する Component や Layout の要素に、現時点で固有スタイルがなくても Project の Element クラスを付与してよい（例: `class="c-section-heading p-about__heading"`）。拡張点として機能する
-- SHOULD [Component グルーピングの Project 配置]: 複数の Component を集合レイアウトするスタイルは Project 層に配置すべきである
-
-> **注記（Informative）**: Project 層は CSS 変数経由・直接プロパティ・Modifier などの方法で Component / Layout を上書きできる。
 
 > **Example（SHOULD [セクションルートへの Project Block 付与]）:**
 
@@ -546,8 +531,6 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 - SHOULD NOT [Block 帰属スタイルの Utility 記述禁止]: 特定の Block や Element に帰属できるスタイルを Utility に書くべきでない — Utility は特定の Block に帰属しない横断的かつ局所的な単一目的のスタイルに限る
 - MAY [セマンティックなファイルグループ化]: セマンティックな意味でファイルをグループ化してよい（例: `u-hidden.css` に `u-visually-hidden` と `u-hidden-sp` をまとめる）
 
-> **注記（Informative）**: 適切な用途 — アクセシビリティ非表示（`u-visually-hidden`）、レスポンシブ表示制御。不適切な用途 — 色の定義、レイアウトの組み立て、コンポーネントの装飾
-
 > **Example（MUST [!important の付与]、SHOULD NOT [Block 帰属スタイルの Utility 記述禁止]）:**
 
 ```css
@@ -599,8 +582,6 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 ### 静的バリエーション（Modifier）
 
 `.-modifier` 形式。Block または Element と併用する。HTML に記述し、原則として変化しない。
-
-> **注記（Informative）**: BEM の `--` ではなく `.-modifier` を採用する理由: HTML がコンパクトになる（`class="c-button -primary"` vs `class="c-button c-button--primary"`）。CSS Nesting との相性が良い。
 
 ### 動的状態（State）
 
@@ -802,12 +783,10 @@ css/
 | §5.3 | MAY [外部生成クラスへのクラスセレクタ使用] | §5.3 要求レベル |
 | §5.4 | SHOULD NOT [視覚プロパティの排除] | §5.4 要求レベル |
 | §5.5 | SHOULD [Portability Test の合格] | §5.5 要求レベル |
-| §5.5 | SHOULD [迷ったら Component 優先] | §5.5 要求レベル |
-| §5.5 | SHOULD NOT [外部コンテキスト依存プロパティの排除] | §5.5 要求レベル |
-| §5.5 | SHOULD [Block の適切な粒度分割] | §5.5 要求レベル |
+| §5.5 | SHOULD NOT [外部レイアウト影響プロパティの排除] | §5.5 要求レベル |
+| §5.5 | SHOULD NOT [存在/不在制御の排除] | §5.5 要求レベル |
 | §5.6 | SHOULD [セクションルートへの Project Block 付与] | §5.6 要求レベル |
 | §5.6 | SHOULD NOT [Component 相当スタイルの Project 記述禁止] | §5.6 要求レベル |
-| §5.6 | SHOULD [Component グルーピングの Project 配置] | §5.6 要求レベル |
 | §5.7 | SHOULD [装飾的アニメーションの Animation 層分離] | §5.7 要求レベル |
 | §5.7 | SHOULD [2 ガード原則の実装] | §5.7 要求レベル |
 | §5.7 | SHOULD [transform を含む機能的トランジションのガード] | §5.7 要求レベル |
@@ -831,8 +810,6 @@ css/
 | §5.4 | MAY [Container Queries 基盤の宣言] | §5.4 要求レベル |
 | §5.5 | MAY [他層要素の内包] | §5.5 要求レベル |
 | §5.6 | MAY [他層要素の内包] | §5.6 要求レベル |
-| §5.6 | MAY [Layout と Component のみの構成] | §5.6 要求レベル |
-| §5.6 | MAY [拡張用 Element クラスの先行付与] | §5.6 要求レベル |
 | §5.7 | MAY [機能的トランジションの所属層への記述] | §5.7 要求レベル |
 | §5.8 | MAY [セマンティックなファイルグループ化] | §5.8 要求レベル |
 | §7 | MAY [グローバルトークンの直接参照] | §7 要求レベル |
