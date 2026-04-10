@@ -110,11 +110,11 @@ mFLOCSS は以下の層で構成される。本章以降で使用する Block・
 
 テーブルの下にある層ほど @layer の優先度が高い。上位層とは §3 層テーブルの順序番号が大きい層（`@layer` 優先度が高い）、下位層とは順序番号が小さい層を指す。例: Utility（8）が最上位、Token（1）が最下位。
 
-> **注記（Informative）**: `@layer` の先制宣言では後に宣言した層ほど優先されるため、テーブルの下にある層ほど優先度が高い。Utility を最後に宣言することで最高優先度が保証される。
-
 **要求レベル:**
 
 - MUST NOT [逆方向参照の禁止]: CSS セレクタおよびカスタムプロパティの参照において、下位層から上位層のクラスやカスタムプロパティを参照してはならない（例: Component 層が Project 層のクラスに依存してはならない）
+
+> **注記（Informative）**: `@layer` の先制宣言では後に宣言した層ほど優先されるため、テーブルの下にある層ほど優先度が高い。Utility を最後に宣言することで最高優先度が保証される。
 
 > **Example（MUST NOT [逆方向参照の禁止]）:**
 
@@ -273,15 +273,19 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 
 ```css
 @layer reset {
-  /* ブラウザデフォルトの初期化のみ */
-  :where(*, *::before, *::after) {
+  *,
+  ::before,
+  ::after {
     box-sizing: border-box;
   }
-  :where(html) {
-    line-height: 1;
-  }
+
   :where(body) {
-    margin: 0;
+    margin: unset;
+  }
+
+  :where(ul, ol, menu) {
+    padding-inline-start: unset;
+    list-style-type: '';
   }
 }
 ```
@@ -790,7 +794,7 @@ css/
 *This section is informative.*
 
 - **[FLOCSS]** Hiloki, "FLOCSS — Foundation Layout Object CSS". https://github.com/hiloki/flocss
-- **[CSS-CASCADE-6]** Atkins Jr., T.; Rivoal, F.; Lilley, C., "CSS Cascading and Inheritance Level 6", W3C Editor's Draft. ドラフト段階の仕様である。
+- **[CSS-CASCADE-6]** Atkins Jr., T.; Rivoal, F.; Lilley, C., "CSS Cascading and Inheritance Level 6", W3C Editor's Draft.
 
 ---
 
