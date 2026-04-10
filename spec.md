@@ -46,7 +46,7 @@ mFLOCSS は以下の 4 原則に基づく。層数が変わってもこれらは
 
 1. **関心の分離** — 異なる問いに答えるスタイルは異なる層に分離する
 2. **@layer による構造的制御** — 詳細度の問題を命名規則ではなくブラウザの仕組みで解決する
-3. **判断基準の明示** — 各層に「何を書くか」だけでなく「なぜその層か」の基準がある
+3. **判断基準の明示** — 各層に「何を書くか」の明確な判断基準がある
 4. **CSS の進化への追従** — 層構成は CSS の進化に応じて適応させる設計余地を持つ（具体的な検討事項は README を参照）
 
 ---
@@ -59,7 +59,7 @@ mFLOCSS は以下の 4 原則に基づく。層数が変わってもこれらは
 
 ### 要求レベル
 
-本仕様のキーワード MUST / MUST NOT / SHOULD / SHOULD NOT / MAY は RFC 2119 [RFC2119] に基づく。
+本仕様のキーワード MUST / MUST NOT / SHOULD / SHOULD NOT / MAY は RFC 2119 [RFC2119]（RFC 8174 [RFC8174] により補足）に基づく。
 
 | キーワード | 意味 |
 |---|---|
@@ -96,7 +96,7 @@ mFLOCSS は以下の層で構成される。本章以降で使用する Block・
 | 順序 | 層名 | プレフィックス | 責任 |
 |---|---|---|---|
 | 1 | token | — | デザイントークンの定義（プリミティブ変数とセマンティック変数） |
-| 2 | reset | — | ブラウザデフォルトの正規化 |
+| 2 | reset | — | ブラウザデフォルトの初期化 |
 | 3 | foundation | — | 要素の基本スタイル |
 | 4 | layout | `l-` | 位置と空間の配置 |
 | 5 | component | `c-` | 配置先に左右されない再利用可能なパーツ |
@@ -110,9 +110,7 @@ mFLOCSS は以下の層で構成される。本章以降で使用する Block・
 
 - MUST NOT [逆方向参照の禁止]: CSS セレクタおよびカスタムプロパティの参照において、下位層から上位層のクラスやカスタムプロパティを参照してはならない（例: Component 層が Project 層のクラスに依存してはならない）。HTML の入れ子構造はこのルールの対象外である。
 
-> **Example（MUST NOT [逆方向参照の禁止] — HTML 入れ子は対象外）:**
->
-> 以下の HTML 構造は、CSS で他層のクラスを参照していないため違反にならない。
+> **Example（MUST NOT [逆方向参照の禁止]）:**
 
 ```html
 <div class="c-modal">
@@ -121,6 +119,8 @@ mFLOCSS は以下の層で構成される。本章以降で使用する Block・
   </form>
 </div>
 ```
+
+> **注記（Informative）**: HTML の入れ子構造は本ルールの対象外である。上記の例は CSS で他層のクラスを参照していないため違反にならない。Component は Component のままで任意の層の要素を内包でき、Project も同様である。
 
 ### Layer Judgment Flowchart
 
@@ -132,8 +132,8 @@ mFLOCSS は以下の層で構成される。本章以降で使用する Block・
 Step 1: デザイントークン（色の値、フォント名、z-index 値等）または計算ヘルパー（--px 等）か？
   └─ Yes → Token（プリミティブ変数とセマンティック変数を同層で管理）
 
-Step 2: ブラウザデフォルトの正規化か？要素の基本スタイルか？
-  ├─ 正規化（リセット CSS）→ Reset
+Step 2: ブラウザデフォルトの初期化か？要素の基本スタイルか？
+  ├─ 初期化（リセット CSS）→ Reset
   └─ 要素の基本スタイル → Foundation
 
 Step 3: 配置と空間だけか？（色・文字・装飾に触れないか？）
@@ -170,7 +170,9 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 
 - MUST [先制宣言の実施]: CSS Cascading and Inheritance Level 5 [CSS-CASCADE-5] に定義される `@layer` による層間の優先順位宣言を起点ファイル（エントリポイント）CSS の先頭で、全ての `@import` に先行して行わなければならない。
 - MUST [外部 CSS の層取り込み]: 外部 CSS は `@import url() layer()` を使用するか、バンドラーを使用する場合は `@layer` 宣言内にバンドル結果が配置されるように構成し、いずれかの層に取り込まなければならない。
-- MUST NOT [!important の使用制限]: Reset 層および Utility 層を除く全層で `!important` を使用してはならない。Reset 層は外部リセット CSS を取り込むため、その内部実装における `!important` の有無は本仕様の準拠対象外とする。この制約により優先度逆転の複雑性を回避する。
+- MUST NOT [!important の使用制限]: Reset 層および Utility 層を除く全層で `!important` を使用してはならない。Reset 層は外部リセット CSS を取り込むため、その内部実装における `!important` の有無は本仕様の準拠対象外とする。
+
+> **注記（Informative）**: この制約により優先度逆転の複雑性を回避する。
 
 > **Example（MUST [先制宣言の実施]）:**
 
@@ -261,6 +263,13 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 - SHOULD NOT [プロジェクト固有スタイルの Reset 記述禁止]: プロジェクト固有のスタイルを Reset 層に記述すべきでない
 - MAY [Reset 層の使用任意]: Reset 層の使用は任意である
 
+> **Example（SHOULD [Reset 層の責任限定]）:**
+
+```css
+/* layer-order.css */
+@import url("vendor/reset.css") layer(reset);
+```
+
 ### 5.3 Foundation
 
 **Foundation 層の責任:**
@@ -310,8 +319,12 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 **検証問い（Layout Test）:**
 
-- 「このスタイルは、要素の配置・寸法・空間の確保を担っているか？」 — Yes なら Layout
-- 「中身の見た目（色・文字・装飾・影・透明度）が変わるか？」 — Yes なら Layout ではない
+「このスタイルは、要素の配置・寸法・空間の確保を担っているか？」
+
+- Yes → Layout
+- No → 他層
+
+> **注記（Informative）**: 中身の見た目（色・文字・装飾・影・透明度）が変わる場合は Layout ではない。
 
 **要求レベル:**
 
@@ -377,9 +390,10 @@ Portability Test で判断が曖昧な場合にのみ使用する。Portability 
 **要求レベル:**
 
 - SHOULD [Portability Test の合格]: Portability Test に合格すべきである
-- SHOULD NOT [外部レイアウト影響プロパティの排除]: Component のルート要素（= Component を構成する HTML の最外殻要素）に、外部レイアウトに影響するプロパティ（`margin`, `position: fixed/sticky`）を含めるべきでない — 配置は使う側の責任である
-- SHOULD NOT [存在/不在制御の排除]: Component は自身の存在/不在を制御すべきでない（`display: none` を含めない）。表示/非表示の制御は HTML 属性（`hidden`、`<dialog>` の `show()`/`close()`）または Project 層で行う — 存在するかしないかは使う側の責任である
-- MAY [他層要素の内包]: HTML 上で任意の層の要素を内包してよい（§3 依存方向を参照）。内包しても Portability Test に合格するなら Component のままである
+- SHOULD NOT [外部レイアウト影響プロパティの排除]: Component のルート要素（= Component を構成する HTML の最外殻要素）に、外部レイアウトに影響するプロパティ（`margin`, `position: absolute/fixed/sticky`）を含めるべきでない
+- SHOULD NOT [存在/不在制御の排除]: Component のルート要素に、自身の存在/不在を制御するプロパティ（`display: none`）を含めるべきでない。存在/不在の制御は HTML 属性（`hidden`、`<dialog>` の `showModal()`/`close()`）または Project 層で行う
+
+> **注記（Informative）**: 上記 2 つの SHOULD NOT はいずれも Portability Test 不合格の代表例である。配置や存在の制御は「それは Component 自身の責任か、使う側の責任か？」（Responsibility Test）の観点で使う側の責任に該当する。
 
 > **Example（SHOULD [Portability Test の合格]）:**
 
@@ -427,7 +441,6 @@ Portability Test（§5.5）で No → Project
 
 - SHOULD [セクションルートへの Project Block 付与]: サイト固有のデザイン要件があるセクションには、セクションルートに Project Block を付与し、セクション内の要素は Element として構築すべきである
 - SHOULD NOT [Component 相当スタイルの Project 記述禁止]: Portability Test（§5.5）に合格するスタイルを Project 層に記述すべきでない。該当するスタイルは Component 層（§5.5）に記述する
-- MAY [他層要素の内包]: HTML 上で任意の層の要素を内包してよい（§3 依存方向を参照）
 
 > **Example（SHOULD [セクションルートへの Project Block 付与]）:**
 
@@ -468,6 +481,8 @@ Portability Test（§5.5）で No → Project
 
 - SHOULD [装飾的アニメーションの Animation 層分離]: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである
 - SHOULD [2 ガード原則の実装]: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装とすべきである。Animation 層は JS による `data-*` 属性の付与を前提とするため、scripting が無効な環境ではアニメーション CSS を適用しないことで要素の不可視化を防ぐ
+
+> **注記（Informative）**: `scripting` は JS の有効・無効を CSS で検出する Media Queries Level 5 のメディア特性である。
 - SHOULD [transform を含む機能的トランジションのガード]: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale` など）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。前庭障害のトリガーになりうるためである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
 - SHOULD [@keyframes 名と data-* 属性値の一致]: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（§5.7 @keyframes 命名を参照）
 - MAY [機能的トランジションの所属層への記述]: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
@@ -562,8 +577,10 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 
 **要求レベル:**
 
-- SHOULD [層識別プレフィックスの使用]: 層の識別のためにプレフィックスを使用すべきである。`@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため MUST としない。Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-*` 属性セレクタを使用するため（§5.7 セレクタを参照）、プレフィックスの対象外とする
+- SHOULD [層識別プレフィックスの使用]: 層の識別のためにプレフィックスを使用すべきである。Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-*` 属性セレクタを使用するため（§5.7 セレクタを参照）、プレフィックスの対象外とする
 - SHOULD NOT [Element 連鎖の回避]: Element 名を連鎖させるべきではない（例: `block__elem1__elem2`）
+
+> **注記（Informative）**: `@scope` 等の将来の CSS 機能によりプレフィックスが不要になる可能性があるため、本項は MUST としない。
 
 ### クラス名
 
@@ -610,11 +627,13 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 
 **要求レベル:**
 
-- MUST NOT [静的インラインスタイルの禁止]: HTML マークアップに静的なインラインスタイルを記述してはならない。インラインスタイルはどの `@layer` にも属さない unlayered CSS として扱われ、全ての layered CSS より優先されるため、層構造による優先順位制御を破壊する。JS による動的なスタイル注入や、CMS・ライブラリが自動生成するインラインスタイルは本規定の対象外とする
+- MUST NOT [静的インラインスタイルの禁止]: HTML マークアップに静的なインラインスタイルを記述してはならない。JS による動的なスタイル注入や、CMS・ライブラリが自動生成するインラインスタイルは本規定の対象外とする
+
+> **注記（Informative）**: インラインスタイルはどの `@layer` にも属さない unlayered CSS として扱われ、全ての layered CSS より優先されるため、層構造による優先順位制御を破壊する。
 - SHOULD [セマンティック変数経由の参照]: Foundation 以降の層はブランドトークンについて Token 層のセマンティック変数を参照すべきである
 - SHOULD [公開 API 変数の命名規則遵守]: 上位層（Project 等）から値を設定する変数、または JS から値を注入する変数は、`--{対象}-{名前}` の公開 API 命名を使用すべきである
 - SHOULD NOT [プリミティブ変数の直接参照禁止]: Token 層以外がプリミティブ変数（Token 層の `--_` プレフィックス変数）を直接参照すべきでない
-- MAY [グローバルトークンの直接参照]: グローバルトークン（ease, z-index 等）は Foundation 以降の層から直接参照してよい（§5.1 トークン分類を参照）
+- MAY [グローバルトークンの直接参照]: グローバルトークンおよび計算ヘルパー（`--px` 等）は Foundation 以降の層から直接参照してよい（§5.1 トークン分類を参照）
 - MAY [プライベートカスタムプロパティの定義]: Layout 以降の層でプライベートカスタムプロパティ（`--_xxx`）を定義してよい
 
 > **Example（SHOULD [セマンティック変数経由の参照]、SHOULD [公開 API 変数の命名規則遵守]）:**
@@ -689,7 +708,7 @@ css/
 
 ### property.css
 
-> **注記（Informative）**: `@property` 宣言（[CSS-PROPERTIES-VALUES-1]）を含む。現時点のブラウザ実装では `@layer` 内の `@property` が期待通りに動作しないため、`@layer` の外に配置する。層ディレクトリには入れない。`@property` を使用しないプロジェクトではこのファイルは不要である。
+> **注記（Informative）**: `@property` 宣言（[CSS-PROPERTIES-VALUES-1]）を含む。`@property` の登録スコープに関する W3C 仕様が未確定であり、ビルドツールによる非対応も報告されているため、`@layer` の外に配置する。層ディレクトリには入れない。`@property` を使用しないプロジェクトではこのファイルは不要である。
 
 ---
 
@@ -713,6 +732,7 @@ css/
 | **Layout Test** | Layout 層の責任範囲を判定する検証問い（§5.4） |
 | **Portability Test** | Component と Project の境界を判定する基準テスト（§5.5） |
 | **Responsibility Test** | Portability Test の補助テスト。判断が曖昧な場合にのみ使用（§5.5） |
+| **外部レイアウト影響プロパティ** | Component のルート要素に指定した場合、配置先レイアウトに影響するプロパティ（`margin`, `position: absolute/fixed/sticky` 等）（§5.5） |
 | **セクションルート** | ページ内の各セクションを包む最外殻要素。Project Block を付与する起点（初出: §5.6） |
 | **Animation Test** | Animation 層の適用可否を判定する検証問い（§5.7） |
 | **装飾的アニメーション** | 視覚演出としての動き。無効化しても機能に影響しない。Animation 層に分離し、2 ガード原則を適用する（初出: §5.7） |
@@ -738,6 +758,7 @@ css/
 *This section is normative.*
 
 - **[RFC2119]** Bradner, S., "Key words for use in RFCs to Indicate Requirement Levels", BCP 14, RFC 2119, March 1997.
+- **[RFC8174]** Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words", BCP 14, RFC 8174, May 2017. https://www.rfc-editor.org/rfc/rfc8174
 - **[CSS-CASCADE-5]** Atkins Jr., T.; Rivoal, F.; Lilley, C., "CSS Cascading and Inheritance Level 5", W3C Candidate Recommendation.
 - **[CSS-PROPERTIES-VALUES-1]** Atkins-Bittner, T.; Stearns, A.; Whitworth, G., "CSS Properties and Values API Level 1", W3C Working Draft.
 
@@ -810,8 +831,6 @@ css/
 | §5.2 | MAY [Reset 層の使用任意] | §5.2 要求レベル |
 | §5.3 | MAY [外部生成クラスへのクラスセレクタ使用] | §5.3 要求レベル |
 | §5.4 | MAY [Container Queries 基盤の宣言] | §5.4 要求レベル |
-| §5.5 | MAY [他層要素の内包] | §5.5 要求レベル |
-| §5.6 | MAY [他層要素の内包] | §5.6 要求レベル |
 | §5.7 | MAY [機能的トランジションの所属層への記述] | §5.7 要求レベル |
 | §5.8 | MAY [セマンティックなファイルグループ化] | §5.8 要求レベル |
 | §7 | MAY [グローバルトークンの直接参照] | §7 要求レベル |
