@@ -487,7 +487,9 @@ Portability Test（§5.5）で No → Project
 
 - SHOULD [装飾的アニメーションの Animation 層分離]: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである
 - SHOULD [2 ガード原則の実装]: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装とすべきである
-- SHOULD [transform を含む機能的トランジションのガード]: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale` など）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。前庭障害のトリガーになりうるためである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
+- SHOULD [transform を含む機能的トランジションのガード]: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale` など）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
+
+> **注記（Informative）**: `transform` を含むトランジションは前庭障害のトリガーになりうるため、ガード適用を推奨する。
 - SHOULD [@keyframes 名と data-* 属性値の一致]: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（§5.7 @keyframes 命名を参照）
 - MAY [機能的トランジションの所属層への記述]: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
 
@@ -583,10 +585,10 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 
 **要求レベル:**
 
-- SHOULD [層識別プレフィックスの使用]: 層の識別のためにプレフィックスを使用すべきである。Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-*` 属性セレクタを使用するため（§5.7 セレクタを参照）、プレフィックスの対象外とする
+- SHOULD [層識別プレフィックスの使用]: 層の識別のためにプレフィックスを使用すべきである。Token・Reset・Foundation・Animation はプレフィックスの対象外とする
 - SHOULD NOT [Element 連鎖の回避]: Element 名を連鎖させるべきではない（例: `block__elem1__elem2`）
 
-> **注記（Informative）**: `@scope`（CSS Cascading and Inheritance Level 6）等の機能によりプレフィックスが不要になる可能性があるため、本項は MUST としない。
+> **注記（Informative）**: Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-*` 属性セレクタを使用するため（§5.7 セレクタを参照）、プレフィックスの対象外としている。`@scope`（CSS Cascading and Inheritance Level 6）等の機能によりプレフィックスが不要になる可能性があるため、本項は MUST としない。
 
 ### クラス名
 
@@ -680,8 +682,10 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 **要求レベル:**
 
 - SHOULD [ディレクトリ名の層名一致]: ディレクトリ名は層名と一致させるべきである
-- SHOULD [1 Block = 1 ファイルの維持]: 1 つの CSS ファイルには 1 つの Block を定義すべきである。複数の独立した Block を 1 ファイルに含めると、ファイル名と Block の対応が崩れる。
+- SHOULD [1 Block = 1 ファイルの維持]: 1 つの CSS ファイルには 1 つの Block を定義すべきである
 - SHOULD [層帰属の明確化]: 各ファイルがどの層に属するかを明確にすべきである。方法はプロジェクトの規模やツールチェーンに応じて選択してよい
+
+> **注記（Informative）**: 複数の独立した Block を 1 ファイルに含めると、ファイル名と Block の対応が崩れる。
 
 > **注記（Informative）**: 以下のディレクトリ構造・ファイル例は推奨される一例である。プロジェクトの要件に応じて構成を変更してよい。
 
