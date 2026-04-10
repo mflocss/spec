@@ -112,7 +112,9 @@ mFLOCSS は以下の層で構成される。本章以降で使用する Block・
 
 > **注記（Informative）**: `@layer` の先制宣言では後に宣言した層ほど優先されるため、テーブルの下にある層ほど優先度が高い。Utility を最後に宣言することで最高優先度が保証される。
 
-- MUST NOT [逆方向参照の禁止]: CSS セレクタおよびカスタムプロパティの参照において、下位層から上位層のクラスやカスタムプロパティを参照してはならない（例: Component 層が Project 層のクラスに依存してはならない）。HTML の入れ子構造はこのルールの対象外である。
+**要求レベル:**
+
+- MUST NOT [逆方向参照の禁止]: CSS セレクタおよびカスタムプロパティの参照において、下位層から上位層のクラスやカスタムプロパティを参照してはならない（例: Component 層が Project 層のクラスに依存してはならない）
 
 > **Example（MUST NOT [逆方向参照の禁止]）:**
 
@@ -270,8 +272,18 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 > **Example（SHOULD [Reset 層の責任限定]）:**
 
 ```css
-/* layer-order.css */
-@import url("vendor/reset.css") layer(reset);
+@layer reset {
+  /* ブラウザデフォルトの初期化のみ */
+  :where(*, *::before, *::after) {
+    box-sizing: border-box;
+  }
+  :where(html) {
+    line-height: 1;
+  }
+  :where(body) {
+    margin: 0;
+  }
+}
 ```
 
 ### 5.3 Foundation
@@ -287,12 +299,12 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 - Yes → Foundation
 - No → 上位層
 
-> **注記（Informative）**: 特定のコンテキストに依存するスタイルは Foundation ではなく上位層に記述する。
-
 **要求レベル:**
 
 - SHOULD NOT [Component/Project スタイルの Foundation 記述禁止]: Component 層または Project 層に属するスタイルを Foundation 層に記述すべきでない
 - MAY [外部生成クラスへのクラスセレクタ使用]: CMS やフレームワークが生成するクラスの正規化にクラスセレクタを使用してよい
+
+> **注記（Informative）**: 特定のコンテキストに依存するスタイルは Foundation ではなく上位層に記述する。
 
 > **注記（Informative）**: Foundation 層は主に要素型セレクタを使用するが、外部システム（CMS、フレームワーク、プラグイン）が生成する HTML のクラスを正規化する必要がある場合、クラスセレクタも使用できる。これは Foundation の責任（テーマが管理しない出力の正規化）の範囲内である。
 
@@ -330,12 +342,12 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 - Yes → Layout
 - No → 他層
 
-> **注記（Informative）**: 中身の見た目（色・文字・装飾・影・透明度）が変わる場合は Layout ではない。
-
 **要求レベル:**
 
 - SHOULD NOT [視覚プロパティの排除]: 見た目に関するプロパティ（`color`, `font-size`, `background-color`, `border`, `text-align` 等の視覚プロパティ）を宣言すべきでない
 - MAY [Container Queries 基盤の宣言]: Container Queries を使用する場合、`container-type: inline-size` を宣言し、必要に応じて `container-name` を定義して Container Queries の基盤を提供してよい
+
+> **注記（Informative）**: 中身の見た目（色・文字・装飾・影・透明度）が変わる場合は Layout ではない。
 
 #### Container Queries の層責任
 
@@ -441,12 +453,12 @@ Portability Test で判断が曖昧な場合にのみ使用する。Portability 
 
 Portability Test（§5.5）で No → Project
 
-> **注記（Informative）**: Project は独自の Test を持たず、Portability Test の否定形で定義される唯一の層である。
-
 **要求レベル:**
 
 - SHOULD [セクションルートへの Project Block 付与]: サイト固有のデザイン要件があるセクションには、セクションルートに Project Block を付与し、セクション内の要素は Element として構築すべきである
 - SHOULD NOT [Component 相当スタイルの Project 記述禁止]: Portability Test（§5.5）に合格するスタイルを Project 層に記述すべきでない。該当するスタイルは Component 層（§5.5）に記述する
+
+> **注記（Informative）**: Project は独自の Test を持たず、Portability Test の否定形で定義される唯一の層である。
 
 > **Example（SHOULD [セクションルートへの Project Block 付与]）:**
 
@@ -588,7 +600,7 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 - SHOULD [層識別プレフィックスの使用]: 層の識別のためにプレフィックスを使用すべきである。Token・Reset・Foundation・Animation はプレフィックスの対象外とする
 - SHOULD NOT [Element 連鎖の回避]: Element 名を連鎖させるべきではない（例: `block__elem1__elem2`）
 
-> **注記（Informative）**: Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-*` 属性セレクタを使用するため（§5.7 セレクタを参照）、プレフィックスの対象外としている。`@scope`（CSS Cascading and Inheritance Level 6）等の機能によりプレフィックスが不要になる可能性があるため、本項は MUST としない。
+> **注記（Informative）**: Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-*` 属性セレクタを使用するため（§5.7 セレクタを参照）、プレフィックスの対象外としている。`@scope` [CSS-CASCADE-6] 等の機能によりプレフィックスが不要になる可能性があるため、本項は MUST としない。
 
 ### クラス名
 
@@ -730,9 +742,9 @@ css/
 |---|---|
 | **上位層** | §3 層テーブルの順序番号が大きい層。@layer 優先度が高い。例: Utility（8）が最上位（初出: §3） |
 | **下位層** | §3 層テーブルの順序番号が小さい層。@layer 優先度が低い。例: Token（1）が最下位（初出: §3） |
+| **デザイントークン** | Token 層で管理するすべての変数の総称。プリミティブ変数・セマンティック変数・グローバルトークンを含む（計算ヘルパーは含まない）（初出: §3） |
 | **先制宣言** | `layer-order.css` における `@layer` による層間の優先順位宣言。全スタイル定義に先行して記述される（初出: §4） |
 | **Token Test** | Token 層の適用可否を判定する検証問い（§5.1） |
-| **デザイントークン** | Token 層で管理するすべての変数の総称。プリミティブ変数・セマンティック変数・グローバルトークンを含む（計算ヘルパーは含まない）（初出: §3） |
 | **ブランドトークン** | プロジェクトごとに変わるデザイン値（color, typography, structure）。プリミティブ変数とセマンティック変数の総称。参照ルールは §5.1 および §7 を参照（初出: §5.1） |
 | **プリミティブ変数** | `--_` プレフィックスを持つ Token 層の変数。生の値（HEX 色値、px 数値等）を保持する。ブランドトークンの一種（初出: §5.1） |
 | **セマンティック変数** | 意味を持つ Token 層のマッピング変数（`--color-main` 等）。プリミティブ変数を参照でき、コンテキスト（ダークモード等）に応じた役割を表現する。ブランドトークンの一種（初出: §5.1） |
@@ -778,6 +790,7 @@ css/
 *This section is informative.*
 
 - **[FLOCSS]** Hiloki, "FLOCSS — Foundation Layout Object CSS". https://github.com/hiloki/flocss
+- **[CSS-CASCADE-6]** Atkins Jr., T.; Rivoal, F.; Lilley, C., "CSS Cascading and Inheritance Level 6", W3C Editor's Draft. ドラフト段階の仕様である。
 
 ---
 
