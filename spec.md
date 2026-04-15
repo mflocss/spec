@@ -454,7 +454,7 @@ Portability Test で判断が曖昧な場合にのみ使用する。Portability 
 
 **Project 層の責任:**
 
-1. **サイト固有のパーツとデザイン要件**: ページ / セクション単位の固有スタイル
+1. **サイト固有のパーツとデザイン要件**: Portability Test で No と判断されるパーツのスタイル（別のサイトにそのまま持っていけない、そのサイト固有のデザイン）
 
 **プレフィックス:** `p-`
 
@@ -464,16 +464,16 @@ Portability Test（§5.5）で No → Project
 
 **要求レベル:**
 
-- SHOULD [セクションルートへの Project Block 付与]: サイト固有のデザイン要件があるセクションには、セクションルートに Project Block を付与し、セクション内の要素は Element として構築すべきである
+- SHOULD [Project Block ルートの付与]: サイト固有のデザイン要件があるパーツ（セクション、サイト共通のヘッダー / フッター、ドロワー、サイト固有のナビゲーション等）のルート要素に Project Block を付与し、構成要素は Element として構築すべきである
 - SHOULD NOT [Component 相当スタイルの Project 記述禁止]: Portability Test（§5.5）に合格するスタイルを Project 層に記述すべきでない。該当するスタイルは Component 層（§5.5）に記述する
 
 > **注記（Informative）**: Project は独自の Test を持たず、Portability Test の否定形で定義される唯一の層である。
 
-> **Example（SHOULD [セクションルートへの Project Block 付与]）:**
+> **Example（SHOULD [Project Block ルートの付与]）:**
 
 ```css
 @layer project {
-  /* Block: Layout の公開 API を上書き */
+  /* セクションルートへの Project Block */
   .p-about {
     --section-padding: 2.5rem;
   }
@@ -483,7 +483,17 @@ Portability Test（§5.5）で No → Project
     max-inline-size: 50rem;
   }
 
-  /* Project 固有のパーツ */
+  /* サイト共通パーツへの Project Block（セクション以外の例） */
+  .p-site-header {
+    position: sticky;
+    inset-block-start: 0;
+  }
+
+  .p-site-header__logo {
+    block-size: 2rem;
+  }
+
+  /* Project 固有のパーツ（セクション内要素） */
   .p-hero__lead {
     text-align: center;
   }
@@ -765,7 +775,7 @@ css/
 | **Portability Test** | Component と Project の境界を判定する検証問い（§5.5） |
 | **Responsibility Test** | Portability Test の補助テスト。判断が曖昧な場合にのみ使用（§5.5） |
 | **外部レイアウト影響プロパティ** | Component のルート要素に指定した場合、配置先レイアウトに影響するプロパティ（`margin`, `position: absolute/fixed/sticky` 等）（§5.5） |
-| **セクションルート** | ページ内の各セクションを包む最外殻要素。Project Block を付与する起点（初出: §5.6） |
+| **セクションルート** | ページ内の各セクションを包む最外殻要素（初出: §5.6） |
 | **Animation Test** | Animation 層の適用可否を判定する検証問い（§5.7） |
 | **装飾的アニメーション** | 視覚演出としての動き。無効化しても機能に影響しない。Animation 層に分離し、2 ガード原則を適用する（初出: §5.7） |
 | **機能的トランジション** | インタラクションフィードバックとしての動き。ユーザー操作に対する応答であり、対象の Block が属する層（Component または Project）に記述する。`transform` を含む場合は `prefers-reduced-motion` ガードを適用する（初出: §5.7） |
@@ -840,7 +850,7 @@ css/
 | §5.5 | SHOULD [Portability Test の合格] | §5.5 要求レベル |
 | §5.5 | SHOULD NOT [外部レイアウト影響プロパティの排除] | §5.5 要求レベル |
 | §5.5 | SHOULD NOT [存在/不在制御の排除] | §5.5 要求レベル |
-| §5.6 | SHOULD [セクションルートへの Project Block 付与] | §5.6 要求レベル |
+| §5.6 | SHOULD [Project Block ルートの付与] | §5.6 要求レベル |
 | §5.6 | SHOULD NOT [Component 相当スタイルの Project 記述禁止] | §5.6 要求レベル |
 | §5.7 | SHOULD [装飾的アニメーションの Animation 層分離] | §5.7 要求レベル |
 | §5.7 | SHOULD [2 ガード原則の実装] | §5.7 要求レベル |
