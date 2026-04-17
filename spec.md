@@ -525,7 +525,7 @@ Portability Test（§5.5）で No → Project
 - SHOULD [@keyframes 名と data-* 属性値の一致]: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（§5.7 @keyframes 命名を参照）
 - MAY [機能的トランジションの所属層への記述]: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
 
-> **注記（Informative）**: `scripting` は CSS Media Queries Level 5 [MEDIAQUERIES-5] で定義されるメディア特性であり、JS の有効・無効を CSS で検出する。Baseline Newly available（Safari 17+ / Firefox 113+ / Chrome 120+、2023年12月以降）。対象ブラウザが未対応バージョン（Safari 16 以下など）を含む場合、統合ガード全体が false に評価されアニメーション CSS が一切適用されない（要素は可視状態を維持するため安全性は確保される）。
+> **注記（Informative）**: `scripting` は Media Queries Level 5 [MEDIAQUERIES-5] で定義されるメディア特性であり、JS の有効・無効を CSS で検出する。未対応ブラウザでは統合ガード全体が false に評価されアニメーション CSS が一切適用されない（要素は可視状態を維持するため安全性は確保される）。
 
 > **注記（Informative）**: `transform` を含むトランジションは前庭障害のトリガーになりうるため、ガード適用を推奨する。
 
@@ -814,7 +814,7 @@ css/
 *This section is informative.*
 
 - **[FLOCSS]** Hiloki, "FLOCSS — Foundation Layout Object CSS". https://github.com/hiloki/flocss
-- **[CSS-CASCADE-6]** Atkins Jr., T.; Rivoal, F.; Lilley, C., "CSS Cascading and Inheritance Level 6", W3C Working Draft, September 2024. https://www.w3.org/TR/css-cascade-6/
+- **[CSS-CASCADE-6]** Atkins Jr., T.; Rivoal, F.; Lilley, C., "CSS Cascading and Inheritance Level 6", W3C Working Draft. https://www.w3.org/TR/css-cascade-6/
 
 ---
 
