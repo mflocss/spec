@@ -61,7 +61,7 @@ mFLOCSS は以下の 4 原則に基づく。層数が変わってもこれらは
 
 *This section is normative.*
 
-本仕様の要求レベル（MUST / MUST NOT / SHOULD / SHOULD NOT / MAY）および §6 の命名規則は、**mFLOCSS が管理するクラス**にのみ適用される。mFLOCSS が管理するクラスとは、§6 の命名規則に従うクラス（`l-*` / `c-*` / `p-*` / `u-*` / `a-*`）、および `@layer` の各層定義として記述されるクラスを指す。
+本仕様の要求レベル（MUST / MUST NOT / SHOULD / SHOULD NOT / MAY）および §6 の命名規則は、**mFLOCSS が管理するクラス**にのみ適用される。mFLOCSS が管理するクラスとは、§6 の命名規則に従うクラス（`l-*` / `c-*` / `p-*` / `u-*` / `a-*`）、および `@layer` の各層定義として記述されるクラスを指す。加えて、§7 の HTML マークアップに関する規定（MUST NOT [静的インラインスタイルの禁止] 等）はプロジェクト全体に適用される。
 
 CMS・フレームワーク・外部ライブラリ・外部サービス等が生成するクラスで、mFLOCSS 命名規則に従わないものを **外部生成クラス** と呼ぶ。外部生成クラスへのクラスセレクタ使用、および外部生成クラスとの組み合わせは、本仕様の要求レベル・命名規則の制約を受けない。
 
@@ -105,7 +105,7 @@ mFLOCSS は以下の層で構成される。本章以降で使用する Block・
 
 | 順序 | 層名 | プレフィックス | 責任 |
 |---|---|---|---|
-| 1 | token | — | デザイントークンの定義（プリミティブ変数・セマンティック変数・グローバルトークン） |
+| 1 | token | — | デザイントークンの定義（プリミティブ変数・セマンティック変数・グローバルトークン）および計算ヘルパーの管理 |
 | 2 | reset | — | ブラウザデフォルトの初期化 |
 | 3 | foundation | — | 要素の基本スタイル |
 | 4 | layout | `l-` | 位置と空間の配置 |
@@ -121,6 +121,8 @@ mFLOCSS は以下の層で構成される。本章以降で使用する Block・
 **要求レベル:**
 
 - MUST NOT [逆方向参照の禁止]: CSS セレクタおよびカスタムプロパティの参照において、下位層から上位層のクラスやカスタムプロパティを参照してはならない（例: Component 層が Project 層のクラスに依存してはならない）
+
+> **注記（Informative）**: 「参照」とは `var()` による値の読み取りを指す。上位層（Project 等）から下位層（Layout 等）の公開 API 変数（§7）に値を設定する行為は本 MUST NOT の対象外である。
 
 > **注記（Informative）**: `@layer` の先制宣言では後に宣言した層ほど優先されるため、テーブルの下にある層ほど優先度が高い。Utility を最後に宣言することで最高優先度が保証される。
 
@@ -211,7 +213,8 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 **Token 層の責任:**
 
 1. **デザイントークンの定義**: プリミティブ変数（生の値）・セマンティック変数（意味を持つマッピング）・グローバルトークンの管理
-2. **ブランドトークンとグローバルトークンの分離**: プロジェクト固有の値と汎用的な値を区別する
+2. **計算ヘルパーの管理**: 単位変換・計算のためのユーティリティ変数（`--px` 等）の管理
+3. **ブランドトークンとグローバルトークンの分離**: プロジェクト固有の値と汎用的な値を区別する
 
 **検証問い（Token Test）:**
 
@@ -522,7 +525,7 @@ Portability Test（§5.5）で No → Project
 - SHOULD [@keyframes 名と data-* 属性値の一致]: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（§5.7 @keyframes 命名を参照）
 - MAY [機能的トランジションの所属層への記述]: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
 
-> **注記（Informative）**: `scripting` は JS の有効・無効を CSS で検出する Media Queries Level 5 のメディア特性である。Animation 層は JS による `data-*` 属性の付与を前提とするため、`scripting` が無効な環境ではアニメーション CSS を適用しないことで要素の不可視化を防ぐ。
+> **注記（Informative）**: `scripting` は CSS Media Queries Level 5 [MEDIAQUERIES-5] で定義されるメディア特性であり、JS の有効・無効を CSS で検出する。Baseline Newly available（Safari 17+ / Firefox 113+ / Chrome 120+、2023年12月以降）。対象ブラウザが未対応バージョン（Safari 16 以下など）を含む場合、統合ガード全体が false に評価されアニメーション CSS が一切適用されない（要素は可視状態を維持するため安全性は確保される）。
 
 > **注記（Informative）**: `transform` を含むトランジションは前庭障害のトリガーになりうるため、ガード適用を推奨する。
 
@@ -759,6 +762,7 @@ css/
 
 | 用語 | 定義 |
 |---|---|
+| **外部生成クラス** | CMS・フレームワーク・外部ライブラリ・外部サービス等が生成するクラスで、mFLOCSS 命名規則に従わないもの。本仕様の要求レベル・命名規則の制約を受けない（初出: §2） |
 | **上位層** | §3 層テーブルの順序番号が大きい層。@layer 優先度が高い。例: Utility（8）が最上位（初出: §3） |
 | **下位層** | §3 層テーブルの順序番号が小さい層。@layer 優先度が低い。例: Token（1）が最下位（初出: §3） |
 | **デザイントークン** | Token 層で管理するすべての変数の総称。プリミティブ変数・セマンティック変数・グローバルトークンを含む（計算ヘルパーは含まない）（初出: §3） |
@@ -803,13 +807,14 @@ css/
 - **[RFC8174]** Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words", BCP 14, RFC 8174, May 2017. https://www.rfc-editor.org/rfc/rfc8174
 - **[CSS-CASCADE-5]** Atkins Jr., T.; Rivoal, F.; Lilley, C., "CSS Cascading and Inheritance Level 5", W3C Candidate Recommendation.
 - **[CSS-PROPERTIES-VALUES-1]** Atkins-Bittner, T.; Stearns, A.; Whitworth, G., "CSS Properties and Values API Level 1", W3C Working Draft.
+- **[MEDIAQUERIES-5]** Rivoal, F.; Khan, A. A., "Media Queries Level 5", W3C Working Draft. https://www.w3.org/TR/mediaqueries-5/
 
 ### Informative References
 
 *This section is informative.*
 
 - **[FLOCSS]** Hiloki, "FLOCSS — Foundation Layout Object CSS". https://github.com/hiloki/flocss
-- **[CSS-CASCADE-6]** Atkins Jr., T.; Rivoal, F.; Lilley, C., "CSS Cascading and Inheritance Level 6", W3C Editor's Draft.
+- **[CSS-CASCADE-6]** Atkins Jr., T.; Rivoal, F.; Lilley, C., "CSS Cascading and Inheritance Level 6", W3C Working Draft, September 2024. https://www.w3.org/TR/css-cascade-6/
 
 ---
 
