@@ -140,35 +140,37 @@ mFLOCSS は以下の層で構成される。本章以降で使用する Block・
 
 > **注記（Informative）**: このフローチャートは層判断の参考ガイドであり、規範的ルールではない。
 
-スタイルをどの層に書くべきかを 6 ステップで判断する。
+スタイルをどの層に書くべきかを 7 ステップで判断する。
 
 ```
 Step 1: デザイントークン（色の値、フォント名、z-index 値等）または計算ヘルパー（--px 等）か？
   └─ Yes → Token（プリミティブ変数とセマンティック変数を同層で管理）
 
-Step 2: ブラウザデフォルトの初期化か？要素の基本スタイルか？
-  ├─ 初期化（リセット CSS）→ Reset
-  └─ 要素の基本スタイル → Foundation
+Step 2: ブラウザデフォルトの初期化（リセット CSS）か？
+  └─ Yes → Reset
 
-Step 3: 配置と空間だけか？（色・文字・装飾に触れないか？）
+Step 3: 要素の基本スタイルか？
+  └─ Yes → Foundation
+
+Step 4: 配置と空間だけか？（色・文字・装飾に触れないか？）
   └─ Yes → Layout
 
-Step 4: Portability Test — 別のサイトにそのまま持っていけるか？
+Step 5: Portability Test — 別のサイトにそのまま持っていけるか？
   ├─ Yes → Component
   └─ No → Project
   ※ 判断が曖昧な場合は、§5.5 の補助テスト（Responsibility Test）を使用する。
 
-※ Step 5-6 は Step 1-4 の判定を覆さない追加チェックである。
-  Step 1-4 で判定した層のスタイルの中に、Animation・Utility の条件を
+※ Step 6-7 は Step 1-5 の判定を覆さない追加チェックである。
+  Step 1-5 で判定した層のスタイルの中に、Animation・Utility の条件を
   満たす部分があれば、その部分を該当層に分離する。
-  （例: Step 4 で Component と判定したスタイルに装飾的アニメーションが
+  （例: Step 5 で Component と判定したスタイルに装飾的アニメーションが
   含まれる場合、その動きの部分だけを Animation 層に切り出す）
 
-Step 5: 装飾的アニメーション（視覚演出）か？
+Step 6: 装飾的アニメーション（視覚演出）か？
   ├─ Yes → Animation（2 ガード原則を適用）
   └─ 機能的トランジション（インタラクションフィードバック）→ Component / Project に残す
 
-Step 6: 特定の Block に帰属しない、単一目的の微調整か？
+Step 7: 特定の Block に帰属しない、単一目的の微調整か？
   └─ Yes → Utility
 ```
 
