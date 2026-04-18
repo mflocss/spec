@@ -225,6 +225,7 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 
 **要求レベル:**
 
+- SHOULD [Token 層の責任限定]: Token 層を使用する場合、デザイントークン（プリミティブ値・セマンティック変数・グローバルトークン）および計算ヘルパーの定義に限定すべきである
 - SHOULD [:root セレクタ限定]: `:root` セレクタのみを使用すべきである
 - MAY [テーマ切替の Token 完結]: ダークモード / テーマ切替は Token 層のセマンティック変数で完結させてよい
 
@@ -316,6 +317,7 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 
 **要求レベル:**
 
+- SHOULD [Foundation 層の責任限定]: Foundation 層を使用する場合、全ページ共通の基本スタイルの定義（要素型セレクタによる基本スタイルと外部生成クラスの正規化）に限定すべきである
 - SHOULD NOT [Component/Project スタイルの Foundation 記述禁止]: Component 層または Project 層に属するスタイルを Foundation 層に記述すべきでない
 
 > **注記（Informative）**: 特定のコンテキストに依存するスタイルは Foundation ではなく上位層に記述する。
@@ -356,6 +358,7 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 
 **要求レベル:**
 
+- SHOULD [Layout 層の責任限定]: Layout 層を使用する場合、配置・寸法・空間の確保に限定すべきである
 - SHOULD NOT [視覚プロパティの排除]: 見た目に関するプロパティ（`color`, `font-size`, `background-color`, `border`, `text-align` 等の視覚プロパティ）を宣言すべきでない
 - MAY [Container Queries 基盤の宣言]: Container Queries を使用する場合、`container-type: inline-size` を宣言し、必要に応じて `container-name` を定義して Container Queries の基盤を提供してよい
 
@@ -587,6 +590,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 **要求レベル:**
 
 - MUST [!important の付与]: Utility クラスの各宣言プロパティに `!important` を付与しなければならない（使用制限については §4 を参照）
+- SHOULD [Utility 層の責任限定]: Utility 層を使用する場合、特定の Block に帰属しない横断的かつ局所的な単一目的のスタイルに限定すべきである
 - SHOULD NOT [Block 帰属スタイルの Utility 記述禁止]: 特定の Block や Element に帰属できるスタイルを Utility に書くべきでない — Utility は特定の Block に帰属しない横断的かつ局所的な単一目的のスタイルに限る
 - MAY [セマンティックなファイルグループ化]: セマンティックな意味でファイルをグループ化してよい（例: `u-hidden.css` に `u-visually-hidden` と `u-hidden-sp` をまとめる）
 
@@ -847,10 +851,13 @@ css/
 
 | § | 一言サマリ | 全文参照 |
 |---|---|---|
+| §5.1 | SHOULD [Token 層の責任限定] | §5.1 要求レベル |
 | §5.1 | SHOULD [:root セレクタ限定] | §5.1 要求レベル |
 | §5.2 | SHOULD [Reset 層の責任限定] | §5.2 要求レベル |
 | §5.2 | SHOULD NOT [プロジェクト固有スタイルの Reset 記述禁止] | §5.2 要求レベル |
+| §5.3 | SHOULD [Foundation 層の責任限定] | §5.3 要求レベル |
 | §5.3 | SHOULD NOT [Component/Project スタイルの Foundation 記述禁止] | §5.3 要求レベル |
+| §5.4 | SHOULD [Layout 層の責任限定] | §5.4 要求レベル |
 | §5.4 | SHOULD NOT [視覚プロパティの排除] | §5.4 要求レベル |
 | §5.5 | SHOULD [Portability Test の合格] | §5.5 要求レベル |
 | §5.5 | SHOULD NOT [外部レイアウト影響プロパティの排除] | §5.5 要求レベル |
@@ -861,6 +868,7 @@ css/
 | §5.7 | SHOULD [2 ガード原則の実装] | §5.7 要求レベル |
 | §5.7 | SHOULD [transform を含む機能的トランジションのガード] | §5.7 要求レベル |
 | §5.7 | SHOULD [@keyframes 名と data-* 属性値の一致] | §5.7 要求レベル |
+| §5.8 | SHOULD [Utility 層の責任限定] | §5.8 要求レベル |
 | §5.8 | SHOULD NOT [Block 帰属スタイルの Utility 記述禁止] | §5.8 要求レベル |
 | §6 | SHOULD [層識別プレフィックスの使用] | §6 要求レベル |
 | §6 | SHOULD NOT [Element 連鎖の回避] | §6 要求レベル |
