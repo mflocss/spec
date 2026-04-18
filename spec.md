@@ -738,7 +738,7 @@ css/
 ├── style.css             /* エントリポイント */
 ├── token/                /* §5.1 Token — デザイントークン */
 ├── reset/                /* §5.2 Reset — ブラウザデフォルト初期化 */
-├── foundation/           /* §5.3 Foundation — 基本スタイルの正規化 */
+├── foundation/           /* §5.3 Foundation — 全ページ共通の基本スタイル */
 ├── layout/               /* §5.4 Layout — ページの骨格・配置 */
 ├── component/            /* §5.5 Component — 再利用可能なパーツ */
 ├── project/              /* §5.6 Project — サイト固有のスタイル */
