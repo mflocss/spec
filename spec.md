@@ -542,7 +542,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 
 | 分類 | 性質 | 例 | 層 |
 |---|---|---|---|
-| 装飾的アニメーション | 視覚演出。なくても機能に影響しない | fade-in, slide-up, stagger, parallax | Animation |
+| 装飾的アニメーション | 視覚演出。なくても機能に影響しない | fade-in, slide-up, parallax | Animation |
 | 機能的トランジション | インタラクションフィードバック。ユーザー操作に対する応答 | hover の色変化, ボタンの translate, フォーカスリングの遷移 | Component / Project |
 
 #### @keyframes 命名
@@ -752,7 +752,7 @@ css/
 
 ### layer-order.css
 
-> **注記（Informative）**: `@layer` の先制宣言のみを含む。スタイル定義は置かない。
+> **注記（Informative）**: `@layer` の先制宣言のみを含む。スタイル定義は置かない。層ディレクトリ（`token/` 等）と同列に配置する。
 
 ### property.css
 
