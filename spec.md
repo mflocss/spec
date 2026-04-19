@@ -524,13 +524,13 @@ Portability Test（§5.5）で No → Project
 
 - SHOULD [装飾的アニメーションの Animation 層分離]: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである
 - SHOULD [2 ガード原則の実装]: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装とすべきである
-- SHOULD [transform を含む機能的トランジションのガード]: 機能的トランジションのうち `transform`（`translate` / `rotate` / `scale` など）を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
+- SHOULD [translate / rotate / scale を含む機能的トランジションのガード]: 機能的トランジションのうち `translate` / `rotate` / `scale` を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
 - SHOULD [@keyframes 名と data-* 属性値の一致]: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（§5.7 @keyframes 命名を参照）
 - MAY [機能的トランジションの所属層への記述]: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
 
 > **注記（Informative）**: `scripting` は Media Queries Level 5 [MEDIAQUERIES-5] で定義されるメディア特性であり、JS の有効・無効を CSS で検出する。未対応ブラウザでは統合ガード全体が false に評価されアニメーション CSS が一切適用されない（要素は可視状態を維持するため安全性は確保される）。
 
-> **注記（Informative）**: `transform` を含むトランジションは前庭障害のトリガーになりうるため、ガード適用を推奨する。
+> **注記（Informative）**: `translate` / `rotate` / `scale` を含むトランジションは前庭障害のトリガーになりうるため、ガード適用を推奨する。
 
 #### セレクタ
 
@@ -788,7 +788,7 @@ css/
 | **セクションルート** | ページ内の各セクションを包む最外殻要素（初出: §5.6） |
 | **Animation Test** | Animation 層の適用可否を判定する検証問い（§5.7） |
 | **装飾的アニメーション** | 視覚演出としての動き。無効化しても機能に影響しない。Animation 層に分離し、2 ガード原則を適用する（初出: §5.7） |
-| **機能的トランジション** | インタラクションフィードバックとしての動き。ユーザー操作に対する応答であり、対象の Block が属する層（Component または Project）に記述する。`transform` を含む場合は `prefers-reduced-motion` ガードを適用する（初出: §5.7） |
+| **機能的トランジション** | インタラクションフィードバックとしての動き。ユーザー操作に対する応答であり、対象の Block が属する層（Component または Project）に記述する。`translate` / `rotate` / `scale` を含む場合は `prefers-reduced-motion` ガードを適用する（初出: §5.7） |
 | **2 ガード原則** | Animation 層で `prefers-reduced-motion` と `scripting` の 2 条件を考慮すること。推奨は `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガード（初出: §5.7） |
 | **統合ガード** | 2 ガード原則の推奨実装パターン。`@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` で Animation 層のスタイル全体をラップし、条件を満たさない場合にブロック全体を不適用にする方式（初出: §5.7） |
 | **Utility Test** | Utility 層の適用可否を判定する検証問い（§5.8） |
@@ -868,7 +868,7 @@ css/
 | §5.6 | SHOULD NOT [Component 相当スタイルの Project 記述禁止] | §5.6 要求レベル |
 | §5.7 | SHOULD [装飾的アニメーションの Animation 層分離] | §5.7 要求レベル |
 | §5.7 | SHOULD [2 ガード原則の実装] | §5.7 要求レベル |
-| §5.7 | SHOULD [transform を含む機能的トランジションのガード] | §5.7 要求レベル |
+| §5.7 | SHOULD [translate / rotate / scale を含む機能的トランジションのガード] | §5.7 要求レベル |
 | §5.7 | SHOULD [@keyframes 名と data-* 属性値の一致] | §5.7 要求レベル |
 | §5.8 | SHOULD [Utility 層の責任限定] | §5.8 要求レベル |
 | §5.8 | SHOULD NOT [Block 帰属スタイルの Utility 記述禁止] | §5.8 要求レベル |
