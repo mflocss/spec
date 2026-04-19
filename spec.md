@@ -511,7 +511,7 @@ Portability Test（§5.5）で No → Project
 **Animation 層の責任:**
 
 1. **装飾的アニメーションの分離管理**: Component / Project から動きを分離し一元管理
-2. **状態遷移の制御**: `data-animate` + `data-*` 属性による表示制御
+2. **状態遷移の制御**: `data-*` 属性による表示制御
 
 **検証問い（Animation Test）:**
 
@@ -535,6 +535,8 @@ Portability Test（§5.5）で No → Project
 #### セレクタ
 
 Animation 層は `data-*` 属性セレクタを使用する。
+
+> **注記（Informative）**: 属性名はプロジェクトで任意に決められる。本仕様の例では慣例として `data-animate` を用いる。
 
 #### 動きの分類
 
