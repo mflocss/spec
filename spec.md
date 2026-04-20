@@ -333,8 +333,7 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 1. **ページの骨格（ストラクチャ）**: ヘッダー、メインコンテンツ、セクション、フッターなど、ページ全体の構造を定義する
 2. **空間の確保**: セクション間の余白（`padding-block`）、コンテンツ幅の制約（`max-inline-size`）
 3. **配置制御**: `position: sticky` / `z-index` などの構造的な配置
-4. **Container Queries の基盤**: `container-type` / `container-name` の宣言
-5. **公開 API の提供**: カスタムプロパティで上位層（Project）に値の設定を委ねる
+4. **公開 API の提供**: カスタムプロパティで上位層（Project）に値の設定を委ねる
 
 **検証問い（Layout Test）**:
 
@@ -344,18 +343,6 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 **要求レベル:**
 
 - SHOULD NOT: 見た目に関するプロパティ（`color`, `font-size`, `background-color`, `border`, `text-align` 等の視覚的プロパティ）を宣言すべきでない
-- MAY: Container Queries を使用する場合、`container-type: inline-size` を宣言し、Container Queries の基盤を提供してよい
-- MAY: `container-name` を併用し、名前付きコンテナを定義してよい。セクション単位で名前付きコンテナを定義すると、`@container` での参照先を明示できる
-
-#### Container Queries の層責任
-
-> **注記（Informative）**: Container Queries は複数層にまたがる仕組みであるため、層責任の全体像をここにまとめて示す。各層の個別ルールは該当セクション（§5.5, §5.6）に従う。
-
-| 責任 | 層 |
-|---|---|
-| `container-type` の宣言 | Layout |
-| `container-name` の定義 | Layout（MAY） |
-| `@container` によるスタイル切替 | Component / Project |
 
 プライベートカスタムプロパティ（`--_xxx`）の使用については §7 Custom Properties を参照。
 
@@ -363,19 +350,17 @@ Token 層はプリミティブ変数とセマンティック変数を同一層�
 
 ```css
 @layer layout {
-  /* 配置・重なり・コンテナ定義 */
+  /* 配置・重なり */
   .l-header {
     position: sticky;
     inset-block-start: 0;
     z-index: var(--z-header);
-    container-type: inline-size;
   }
 
   /* 公開 API: カスタムプロパティで上位層に値の設定を委ねる */
   .l-section {
     --section-padding: 3.75rem;
 
-    container-type: inline-size;
     padding-block: var(--section-padding);
   }
 }
@@ -844,8 +829,6 @@ SP ファースト / PC ファーストはプロジェクトごとに判断す�
 | Container Queries | コンポーネント単位のレスポンシブ | カードの画像/コンテンツの縦横切替、テーブルのレイアウト変更 |
 | Media Queries | ビューポート全体の離散的変化 | ナビゲーション切替、カラム数変更 |
 | `clamp()` | 連続的な流体デザイン | フォントサイズ、余白の滑らかな変化 |
-
-Container Queries の層責任（`container-type` / `container-name` / `@container` の配置先）は §5.4 Layout を参照。
 
 ### Container Queries の単位
 
