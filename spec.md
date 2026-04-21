@@ -360,41 +360,30 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 
 - SHOULD [Layout 層の責任限定]: Layout 層を使用する場合、配置・寸法・空間の確保に限定すべきである
 - SHOULD NOT [視覚プロパティの排除]: 見た目に関するプロパティ（`color`, `font-size`, `background-color`, `border`, `text-align` 等の視覚プロパティ）を宣言すべきでない
-- MAY [Container Queries 基盤の宣言]: Container Queries を使用する場合、`container-type: inline-size` を宣言し、必要に応じて `container-name` を定義して Container Queries の基盤を提供してよい
 
 > **注記（Informative）**: 中身の見た目（色・文字・装飾・影・透明度）が変わる場合は Layout ではない。
 
-#### Container Queries の層責任
-
-> **注記（Informative）**: Container Queries は複数層にまたがる仕組みであるため、層責任の全体像をここにまとめて示す。`@container` によるスタイル切替を記述する際は、対象層（§5.5 Component, §5.6 Project）の各要求レベルに従う。
-
-| 責任 | 層 |
-|---|---|
-| `container-type` の宣言 | Layout |
-| `container-name` の定義 | Layout |
-| `@container` によるスタイル切替 | Component / Project |
-
-> **Example（MAY [Container Queries 基盤の宣言]）:**
+> **Example（SHOULD [Layout 層の責任限定]）:**
 
 ```css
 @layer layout {
-  /* 配置・重なり・コンテナ定義 */
+  /* 配置・重なり */
   .l-header {
     position: sticky;
     inset-block-start: 0;
     z-index: var(--z-header);
-    container-type: inline-size;
   }
 
   /* 公開 API: カスタムプロパティで上位層に値の設定を委ねる */
   .l-section {
     --section-padding: 3.75rem;
 
-    container-type: inline-size;
     padding-block: var(--section-padding);
   }
 }
 ```
+
+> **注記（Informative）**: Container Queries の `container-type` / `container-name` 宣言は、対象となる Block を記述する層で行う。Layout 層に限定されない。
 
 ### 5.5 Component
 
@@ -887,7 +876,6 @@ css/
 |---|---|---|
 | §5.1 | MAY [テーマ切替の Token 完結] | §5.1 要求レベル |
 | §5.2 | MAY [Reset 層の使用任意] | §5.2 要求レベル |
-| §5.4 | MAY [Container Queries 基盤の宣言] | §5.4 要求レベル |
 | §5.7 | MAY [機能的トランジションの所属層への記述] | §5.7 要求レベル |
 | §5.8 | MAY [セマンティックなファイルグループ化] | §5.8 要求レベル |
 | §7 | MAY [グローバルトークンの直接参照] | §7 要求レベル |
