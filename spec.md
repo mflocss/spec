@@ -516,6 +516,16 @@ Portability Test（§5.5）で No → Project
 }
 ```
 
+> **注記（Informative）**: Project が Component / Layout を上書きする際の推奨パターン:
+>
+> | パターン | 用途 | 例 |
+> |---|---|---|
+> | CSS 変数経由（公開 API） | Component / Layout の公開 API の値を設定。**推奨** | `.p-about { --section-padding: 2.5rem; }` |
+> | 直接プロパティ上書き | 特定の配置先で Component のスタイルを変更 | `.p-hero .c-button { font-size: ... }` |
+> | Modifier（静的バリエーション） | Component / Project で定義する汎用バリエーション | `.c-button.-primary` |
+>
+> CSS 変数経由（公開 API）は保守性に優れるため第一選択肢。直接プロパティ上書きは公開 API がない場合の次善策。Modifier は汎用的なバリエーションを事前に定義する場合に使う。
+
 ### 5.7 Animation
 
 **Animation 層の責任:**
