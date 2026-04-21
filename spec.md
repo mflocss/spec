@@ -664,6 +664,13 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 
 `data-*` 属性または ARIA 属性（`aria-expanded`, `aria-current` 等）で表現する。JS やユーザー操作により変化する。Block・Element・Animation の `data-*` 属性いずれとも組み合わせて使用できる（例: `.c-button[data-loading]`、`[data-animate="fade-in"][data-visible]`）。
 
+> **注記（Informative）**: Modifier と State の判定基準は「**HTML 上で動的に変化するか**」。
+>
+> - 投稿日付から自動計算してサーバ側で判定し、HTML に書き出す（ビルド時に確定） → Modifier（例: `.c-card.-new`）
+> - JavaScript でページ表示後に動的に付与・除去する → State（例: `.c-card[data-new]`）
+>
+> 同じ概念（「新着」）でも、描画タイミングによって適切なレイヤが異なる。
+
 ### カスタムプロパティ命名まとめ
 
 | 層 | パターン | 例 |
