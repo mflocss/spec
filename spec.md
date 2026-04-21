@@ -516,6 +516,15 @@ Portability Test（§5.5）で No → Project
 >
 > CSS 変数経由（公開 API）は保守性に優れるため第一選択肢。直接プロパティ上書きは公開 API がない場合の次善策。Modifier は汎用的なバリエーションを事前に定義する場合に使う。
 
+> **注記（Informative）**: Modifier と Project 上書きの境界判定は **Portability Test と同じ基準**。
+>
+> 「このバリエーションは別のサイトでも使うか？」
+>
+> - Yes（他ページ・他サイトで再利用しうる） → Modifier（`.c-button.-large`）
+> - No（そのページ固有） → Project 上書き（`.p-about .c-button { ... }`）
+>
+> Modifier は Component / Project の公開カタログ、Project 上書きはそのサイト固有のバリエーション。
+
 ### 5.7 Animation
 
 **Animation 層の責任:**
