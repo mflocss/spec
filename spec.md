@@ -413,6 +413,8 @@ Portability Test で判断が曖昧な場合にのみ使用する。Portability 
 - SHOULD NOT [外部レイアウト影響プロパティの排除]: Component のルート要素（= Component を構成する HTML の最外殻要素）に、外部レイアウトに影響するプロパティ（`margin`, `position: absolute/fixed/sticky`）を含めるべきでない
 - SHOULD NOT [存在/不在制御の排除]: Component のルート要素に、自身の存在/不在を制御するプロパティ（`display: none`）を含めるべきでない
 
+> **注記（Informative）**: SHOULD NOT [外部レイアウト影響プロパティの排除] は Component ルート要素のみが対象である。Component 内部の Element 間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）はこの制限の対象外であり、Component 自身の視覚的責任（内部配置）に該当する。外部配置（ルート要素の配置・存在）は使う側の責任。
+
 > **注記（Informative）**: 上記 2 つの SHOULD NOT はいずれも Portability Test 不合格の代表例である。配置や存在の制御は「それは Component 自身の責任か、使う側の責任か？」（Responsibility Test）の観点で使う側の責任に該当する。存在/不在の制御は HTML 属性（`hidden`、`<dialog>` の `showModal()`/`close()`）または Project 層で行う。Utility 層の `u-visually-hidden` 等の単一目的スタイルは §5.8 Utility 責任に従う。
 
 #### 例外: 自己配置型 Component
