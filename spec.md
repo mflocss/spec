@@ -419,6 +419,15 @@ Portability Test で判断が曖昧な場合にのみ使用する。Portability 
 
 > **注記（Informative）**: 上記 2 つの SHOULD NOT はいずれも Portability Test 不合格の代表例である。配置や存在の制御は「それは Component 自身の責任か、使う側の責任か？」（Responsibility Test）の観点で使う側の責任に該当する。存在/不在の制御は HTML 属性（`hidden`、`<dialog>` の `showModal()`/`close()`）または Project 層で行う。Utility 層の `u-visually-hidden` 等の単一目的スタイルは §5.8 Utility 責任に従う。
 
+> **注記（Informative）**: `overflow` は Component の描画責任に該当する場合と、使う側の責任に該当する場合がある。判断の問い: **「Component がなくなっても、その overflow が必要か？」** Yes なら使う側（Project 等で記述）、No なら Component 自身の描画責任。
+>
+> | 例 | 判断 | 理由 |
+> |---|---|---|
+> | Card の `border-radius` + `overflow: hidden` | Component | 角丸クリッピングは Component の見た目 |
+> | Accordion の `overflow: hidden` | Component | 高さアニメーションで中身を閉じ込める |
+> | Modal の `overflow: auto` | Component | Modal 内部スクロールは Modal 自身の機能 |
+> | テーブルが画面外にはみ出るケース | Project | ラッパー Element の `overflow-x: auto` |
+
 > **Example（SHOULD [Portability Test の合格]）:**
 
 ```css
