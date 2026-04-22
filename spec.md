@@ -614,8 +614,23 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 
 - SHOULD [層識別プレフィックスの使用]: 層の識別のためにプレフィックスを使用すべきである。Token・Reset・Foundation・Animation はプレフィックスの対象外とする
 - SHOULD NOT [Element 連鎖の回避]: Element 名を連鎖させるべきではない（例: `block__elem1__elem2`）
+- SHOULD NOT [Element 併記の回避]: 同一要素に異なる層のクラスを併記する場合、Element 同士（例: `c-form__input p-contact__input`）を併記すべきでない。併記は Block 同士、または Block と他層の Element の組み合わせに限る。Element レベルでスタイルを上書きする必要がある場合は、子孫セレクタ、または当該 Block が公開する Custom Property（§7）を使用する
 
 > **注記（Informative）**: Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-*` 属性セレクタを使用するため（§5.7 セレクタを参照）、プレフィックスの対象外としている。`@scope` [CSS-CASCADE-6] 等の機能によりプレフィックスが不要になる可能性があるため、本項は MUST としない。
+
+> **注記（Informative）**: Element 同士の併記は、同一要素に 2 つの命名スコープが共存する状態となり、Element の責任境界を曖昧にする。Element の内部装飾は当該 Block が完結して保持し、他層は Block レベルの併記または Block の公開 API を通じて上書きを行う方針が責任境界を保つ。
+
+> **Example（SHOULD NOT [Element 併記の回避]）:**
+
+```html
+<!-- NG: Element 同士の併記 -->
+<input class="c-form__input p-contact__input">
+
+<!-- OK: Block 同士、または Block と他層 Element の併記 -->
+<form class="c-form p-contact__form">
+  <input class="c-form__input">
+</form>
+```
 
 ### クラス名
 
@@ -861,6 +876,7 @@ css/
 | §5.8 | SHOULD NOT [Block 帰属スタイルの Utility 記述禁止] | §5.8 要求レベル |
 | §6 | SHOULD [層識別プレフィックスの使用] | §6 要求レベル |
 | §6 | SHOULD NOT [Element 連鎖の回避] | §6 要求レベル |
+| §6 | SHOULD NOT [Element 併記の回避] | §6 要求レベル |
 | §7 | SHOULD [セマンティック変数経由の参照] | §7 要求レベル |
 | §7 | SHOULD [公開 API 変数の命名規則遵守] | §7 要求レベル |
 | §7 | SHOULD NOT [プリミティブ変数の直接参照禁止] | §7 要求レベル |
