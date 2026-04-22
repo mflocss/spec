@@ -415,6 +415,18 @@ Portability Test で判断が曖昧な場合にのみ使用する。Portability 
 
 > **注記（Informative）**: 上記 2 つの SHOULD NOT はいずれも Portability Test 不合格の代表例である。配置や存在の制御は「それは Component 自身の責任か、使う側の責任か？」（Responsibility Test）の観点で使う側の責任に該当する。存在/不在の制御は HTML 属性（`hidden`、`<dialog>` の `showModal()`/`close()`）または Project 層で行う。Utility 層の `u-visually-hidden` 等の単一目的スタイルは §5.8 Utility 責任に従う。
 
+#### 例外: 自己配置型 Component
+
+Component のルート要素に `position: fixed | absolute | sticky` を宣言することがその Component の機能本質である場合、§5.5 SHOULD NOT [外部レイアウト影響プロパティの排除] の対象外とする。
+
+**要求レベル（例外適用時）:**
+
+- MUST [機能本質の担保]: `position: fixed | absolute | sticky` の宣言が Component の機能そのもの（wrapper による外部配置では機能を実現できない）でなければならない
+- MUST [配置基準の独立性]: 配置基準はビューポート、`:focus-visible` 等、使う側の DOM 位置に依存しないものでなければならない
+- MUST [deviation コメントの明記]: 例外適用の理由を Component の CSS に deviation コメントとして明記しなければならない
+
+> **注記（Informative）**: 配置が Component の機能に内在する場合、wrapper による外部配置が論理的に成立しない。本例外は「配置は使う側の責任」という Portability Test の原則自体を否定するものではなく、その Component 自身が配置の本質を担う稀なケースであることを明示するために deviation コメントを必須としている。典型例として、ビューポート常駐のバックトップボタン（`position: fixed`）、ビューポート全体を覆うオーバーレイ（`position: fixed`）、`:focus-visible` で可視化されるスキップリンク（`position: absolute`）がある。
+
 > **Example（SHOULD [Portability Test の合格]）:**
 
 ```css
@@ -865,6 +877,9 @@ css/
 | §4 | MUST [先制宣言の実施] | §4 要求レベル |
 | §4 | MUST [外部 CSS の層取り込み] | §4 要求レベル |
 | §4 | MUST NOT [!important の使用制限] | §4 要求レベル |
+| §5.5 | MUST [機能本質の担保] | §5.5 例外: 自己配置型 Component |
+| §5.5 | MUST [配置基準の独立性] | §5.5 例外: 自己配置型 Component |
+| §5.5 | MUST [deviation コメントの明記] | §5.5 例外: 自己配置型 Component |
 | §5.8 | MUST [!important の付与] | §5.8 要求レベル |
 | §7 | MUST NOT [静的インラインスタイルの禁止] | §7 要求レベル |
 
