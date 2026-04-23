@@ -627,13 +627,10 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 - SHOULD [層識別プレフィックスの使用]: 層の識別のためにプレフィックスを使用すべきである。Token・Reset・Foundation・Animation はプレフィックスの対象外とする
 - SHOULD NOT [Element 連鎖の回避]: Element 名を連鎖させるべきではない（例: `block__elem1__elem2`）
 - SHOULD NOT [Element 併記の回避]: 同一要素に異なる層のクラスを併記する場合、Element 同士（例: `c-form__input p-contact__input`）を併記すべきでない。併記は Block 同士、または Block と他層の Element の組み合わせに限る。Element レベルでスタイルを上書きする必要がある場合は、子孫セレクタ、または当該 Block が公開する Custom Property（§7）を使用する
-- SHOULD NOT [公開 API プレフィックス含有の回避]: 公開 API カスタムプロパティ（`--{対象}-{名前}`、§7 SHOULD [公開 API 変数の命名規則遵守]）の命名に、層識別プレフィックス（`c-` / `p-` / `l-` 等）を含めるべきでない。`{対象}` は Block 名から層プレフィックスを除いた名前を使用する（例: `.c-button` の公開 API は `--button-color`、`.c-media-split` の公開 API は `--media-split-first-order`）
 
 > **注記（Informative）**: Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-*` 属性セレクタを使用するため（§5.7 セレクタを参照）、プレフィックスの対象外としている。`@scope` [CSS-CASCADE-6] 等の機能によりプレフィックスが不要になる可能性があるため、本項は MUST としない。
 
 > **注記（Informative）**: Element 同士の併記は、同一要素に 2 つの命名スコープが共存する状態となり、Element の責任境界を曖昧にする。Element の内部装飾は当該 Block が完結して保持し、他層は Block レベルの併記または Block の公開 API を通じて上書きを行う方針が責任境界を保つ。
-
-> **注記（Informative）**: 層識別プレフィックスは、mFLOCSS が管理するクラスの層を識別するために付与される（SHOULD [層識別プレフィックスの使用]）。一方、カスタムプロパティは CSS の標準機能であり、mFLOCSS のスコープ外から参照・上書きされる可能性があるため、層識別情報を含めず対象名のみで命名する方が汎用性と可読性で優れる。
 
 > **Example（SHOULD NOT [Element 併記の回避]）:**
 
@@ -645,20 +642,6 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 <form class="c-form p-contact__form">
   <input class="c-form__input">
 </form>
-```
-
-> **Example（SHOULD NOT [公開 API プレフィックス含有の回避]）:**
-
-```css
-/* NG: 公開 API に層プレフィックスを含める */
-.c-button {
-  color: var(--c-button-color);
-}
-
-/* OK: 公開 API は対象名のみ */
-.c-button {
-  color: var(--button-color);
-}
 ```
 
 ### クラス名
@@ -710,10 +693,12 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 
 > **注記（Informative）**: インラインスタイルはどの `@layer` にも属さない unlayered CSS として扱われ、全ての layered CSS より優先されるため、層構造による優先順位制御を破壊する。
 - SHOULD [セマンティック変数経由の参照]: Foundation 以降の層はブランドトークンについて Token 層のセマンティック変数を参照すべきである
-- SHOULD [公開 API 変数の命名規則遵守]: 上位層（Project 等）から値を設定する変数、または JS から値を注入する変数は、`--{対象}-{名前}` の公開 API 命名を使用すべきである
+- SHOULD [公開 API 変数の命名規則遵守]: 上位層（Project 等）から値を設定する変数、または JS から値を注入する変数は、`--{対象}-{名前}` の公開 API 命名を使用すべきである。`{対象}` は層識別プレフィックス（`c-` / `p-` / `l-` 等）を含まない名前とする（例: `.c-button` の公開 API は `--button-color`、`.c-media-split` の公開 API は `--media-split-first-order`）
 - SHOULD NOT [プリミティブ変数の直接参照禁止]: Token 層以外がプリミティブ変数（Token 層の `--_` プレフィックス変数）を直接参照すべきでない
 - MAY [グローバルトークンの直接参照]: グローバルトークンおよび計算ヘルパー（`--px` 等）は Foundation 以降の層から直接参照してよい（§5.1 トークン分類を参照）
 - MAY [プライベートカスタムプロパティの定義]: Layout 以降の層でプライベートカスタムプロパティ（`--_xxx`）を定義してよい
+
+> **注記（Informative）**: 層識別プレフィックス（§6 SHOULD [層識別プレフィックスの使用]）は、mFLOCSS が管理するクラスの層を識別するために付与される。一方、カスタムプロパティは CSS の標準機能であり、mFLOCSS のスコープ外から参照・上書きされる可能性があるため、層識別情報を含めず対象名のみで命名する方が汎用性と可読性で優れる。
 
 > **Example（SHOULD [セマンティック変数経由の参照]、SHOULD [公開 API 変数の命名規則遵守]）:**
 
@@ -726,7 +711,7 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
   }
 }
 
-/* Component: Token を参照し、公開 API を定義 */
+/* Component: Token を参照し、公開 API を定義（対象名のみ、層プレフィックスは含めない） */
 @layer component {
   .c-card {
     --card-padding: var(--space-md);
@@ -739,6 +724,20 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
   .p-about {
     --card-padding: var(--space-lg);
   }
+}
+```
+
+> **Example（SHOULD [公開 API 変数の命名規則遵守] — 層プレフィックスの除外）:**
+
+```css
+/* NG: 公開 API に層プレフィックスを含める */
+.c-button {
+  color: var(--c-button-color);
+}
+
+/* OK: 公開 API は対象名のみ */
+.c-button {
+  color: var(--button-color);
 }
 ```
 
@@ -909,7 +908,6 @@ css/
 | §6 | SHOULD [層識別プレフィックスの使用] | §6 要求レベル |
 | §6 | SHOULD NOT [Element 連鎖の回避] | §6 要求レベル |
 | §6 | SHOULD NOT [Element 併記の回避] | §6 要求レベル |
-| §6 | SHOULD NOT [公開 API プレフィックス含有の回避] | §6 要求レベル |
 | §7 | SHOULD [セマンティック変数経由の参照] | §7 要求レベル |
 | §7 | SHOULD [公開 API 変数の命名規則遵守] | §7 要求レベル |
 | §7 | SHOULD NOT [プリミティブ変数の直接参照禁止] | §7 要求レベル |
