@@ -516,15 +516,13 @@ Portability Test（§5.5）で No → Project
 }
 ```
 
-> **注記（Informative）**: Project が Component / Layout を上書きする際の推奨パターン:
+> **注記（Informative）**: Project が Component / Layout を上書きする際のパターン:
 >
-> | パターン | 用途 | 例 |
+> | パターン | 特性 | 例 |
 > |---|---|---|
-> | CSS 変数経由（公開 API） | Component / Layout の公開 API の値を設定。**推奨** | `.p-about { --section-padding: 2.5rem; }` |
-> | 直接プロパティ上書き | 特定の配置先で Component のスタイルを変更 | `.p-hero .c-button { font-size: ... }` |
-> | Modifier（静的バリエーション） | Component / Project で定義する汎用バリエーション | `.c-button.-primary` |
->
-> CSS 変数経由（公開 API）は保守性に優れるため第一選択肢。直接プロパティ上書きは公開 API がない場合の次善策。Modifier は汎用的なバリエーションを事前に定義する場合に使う。
+> | CSS 変数経由（公開 API） | Component / Layout が公開 API として提供する変数に値を設定する。変更影響が変数スコープに閉じるため保守性が高い | `.p-about { --section-padding: 2.5rem; }` |
+> | 直接プロパティ上書き | 特定の配置先で Component のスタイルを変更する。公開 API が存在しないプロパティを上書きする場合に使用する | `.p-hero .c-button { font-size: ... }` |
+> | Modifier（静的バリエーション） | Component / Project が公開する汎用バリエーション | `.c-button.-primary` |
 
 > **注記（Informative）**: Modifier と Project 上書きの境界判定は **Portability Test と同じ基準**。
 >
