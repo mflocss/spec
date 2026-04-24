@@ -413,7 +413,18 @@ Portability Test で判断が曖昧な場合にのみ使用する。Portability 
 - SHOULD NOT [外部レイアウト影響プロパティの排除]: Component のルート要素（= Component を構成する HTML の最外殻要素）に、外部レイアウトに影響するプロパティ（`margin`, `position: absolute/fixed/sticky`）を含めるべきでない
 - SHOULD NOT [存在/不在制御の排除]: Component のルート要素に、自身の存在/不在を制御するプロパティ（`display: none`）を含めるべきでない
 
+> **注記（Informative）**: SHOULD NOT [外部レイアウト影響プロパティの排除] は Component ルート要素のみが対象である。Component 内部の Element 間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）はこの制限の対象外であり、Component 自身の視覚的責任（内部配置）に該当する。外部配置（ルート要素の配置・存在）は使う側の責任。
+
 > **注記（Informative）**: 上記 2 つの SHOULD NOT はいずれも Portability Test 不合格の代表例である。配置や存在の制御は「それは Component 自身の責任か、使う側の責任か？」（Responsibility Test）の観点で使う側の責任に該当する。存在/不在の制御は HTML 属性（`hidden`、`<dialog>` の `showModal()`/`close()`）または Project 層で行う。Utility 層の `u-visually-hidden` 等の単一目的スタイルは §5.8 Utility 責任に従う。
+
+> **注記（Informative）**: `overflow` は Component の描画責任に該当する場合と、使う側の責任に該当する場合がある。判断の問い: **「Component がなくなっても、その overflow が必要か？」** Yes なら使う側（Project 等で記述）、No なら Component 自身の描画責任。
+>
+> | 例 | 判断 | 理由 |
+> |---|---|---|
+> | Card の `border-radius` + `overflow: hidden` | Component | 角丸クリッピングは Component の見た目 |
+> | Accordion の `overflow: hidden` | Component | 高さアニメーションで中身を閉じ込める |
+> | Modal の `overflow: auto` | Component | Modal 内部スクロールは Modal 自身の機能 |
+> | テーブルが画面外にはみ出るケース | Project | ラッパー Element の `overflow-x: auto` |
 
 #### 例外: 自己配置型 Component
 
@@ -504,6 +515,23 @@ Portability Test（§5.5）で No → Project
   }
 }
 ```
+
+> **注記（Informative）**: Project が Component / Layout を上書きする際のパターン:
+>
+> | パターン | 特性 | 例 |
+> |---|---|---|
+> | CSS 変数経由（公開 API） | Component / Layout が公開 API として提供する変数に値を設定する。変更影響が変数スコープに閉じるため保守性が高い | `.p-about { --section-padding: 2.5rem; }` |
+> | 直接プロパティ上書き | 特定の配置先で Component のスタイルを変更する。公開 API が存在しないプロパティを上書きする場合に使用する | `.p-hero .c-button { font-size: ... }` |
+> | Modifier（静的バリエーション） | Component / Project が公開する汎用バリエーション | `.c-button.-primary` |
+
+> **注記（Informative）**: Modifier と Project 上書きの境界判定は **Portability Test と同じ基準**。
+>
+> 「このバリエーションは別のサイトでも使うか？」
+>
+> - Yes（他ページ・他サイトで再利用しうる） → Modifier（`.c-button.-large`）
+> - No（そのページ固有） → Project 上書き（`.p-about .c-button { ... }`）
+>
+> Modifier は Component / Project の公開カタログ、Project 上書きはそのサイト固有のバリエーション。
 
 ### 5.7 Animation
 
@@ -667,6 +695,13 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 ### 動的状態（State）
 
 `data-*` 属性または ARIA 属性（`aria-expanded`, `aria-current` 等）で表現する。JS やユーザー操作により変化する。Block・Element・Animation の `data-*` 属性いずれとも組み合わせて使用できる（例: `.c-button[data-loading]`、`[data-animate="fade-in"][data-visible]`）。
+
+> **注記（Informative）**: Modifier と State の判定基準は「**HTML 上で動的に変化するか**」。
+>
+> - 投稿日付から自動計算してサーバ側で判定し、HTML に書き出す（ビルド時に確定） → Modifier（例: `.c-card.-new`）
+> - JavaScript でページ表示後に動的に付与・除去する → State（例: `.c-card[data-new]`）
+>
+> 同じ概念（「新着」）でも、描画タイミングによって適切なレイヤが異なる。
 
 ### カスタムプロパティ命名まとめ
 
