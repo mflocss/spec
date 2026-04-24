@@ -553,6 +553,7 @@ Portability Test（§5.5）で No → Project
 - SHOULD [2 ガード原則の実装]: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装とすべきである
 - SHOULD [translate / rotate / scale を含む機能的トランジションのガード]: 機能的トランジションのうち `translate` / `rotate` / `scale` を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
 - SHOULD [@keyframes 名と data-* 属性値の一致]: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（§5.7 @keyframes 命名を参照）
+- SHOULD [Animation 層公開 API の概念名命名]: Animation 層が公開 API Custom Properties（§7）を定義する場合、`--{対象}-{名前}` の `{対象}` は特定の `@keyframes` 名または animation 名ではなく、animation 制御の概念名とすべきである（例: `--stagger-delay`、`--transition-duration-short`）
 - MAY [機能的トランジションの所属層への記述]: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
 
 > **注記（Informative）**: `scripting` は Media Queries Level 5 [MEDIAQUERIES-5] で定義されるメディア特性であり、JS の有効・無効を CSS で検出する。未対応ブラウザでは統合ガード全体が false に評価されアニメーション CSS が一切適用されない（要素は可視状態を維持するため安全性は確保される）。
@@ -595,6 +596,25 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
     [data-animate="fade-in"][data-visible] {
       animation-play-state: running;
     }
+  }
+}
+```
+
+> **Example（SHOULD [Animation 層公開 API の概念名命名]）:**
+
+```css
+/* OK: {対象} が animation 制御の概念名 */
+@layer animation {
+  [data-animate] {
+    animation-delay: var(--stagger-delay);
+    transition-duration: var(--transition-duration-short);
+  }
+}
+
+/* NG: {対象} が特定 animation 名 */
+@layer animation {
+  [data-animate="fade-in"] {
+    animation-duration: var(--fade-in-duration);
   }
 }
 ```
@@ -692,6 +712,8 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 
 `.-modifier` 形式。Block または Element と併用する。HTML に記述し、原則として変化しない。
 
+> **注記（Informative）**: `.-modifier` ドット記法を採用する選択根拠は書籍を参照。
+
 ### 動的状態（State）
 
 `data-*` 属性または ARIA 属性（`aria-expanded`, `aria-current` 等）で表現する。JS やユーザー操作により変化する。Block・Element・Animation の `data-*` 属性いずれとも組み合わせて使用できる（例: `.c-button[data-loading]`、`[data-animate="fade-in"][data-visible]`）。
@@ -729,11 +751,16 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 > **注記（Informative）**: インラインスタイルはどの `@layer` にも属さない unlayered CSS として扱われ、全ての layered CSS より優先されるため、層構造による優先順位制御を破壊する。
 - SHOULD [セマンティック変数経由の参照]: Foundation 以降の層はブランドトークンについて Token 層のセマンティック変数を参照すべきである
 - SHOULD [公開 API 変数の命名規則遵守]: 上位層（Project 等）から値を設定する変数、または JS から値を注入する変数は、`--{対象}-{名前}` の公開 API 命名を使用すべきである。`{対象}` は層識別プレフィックス（`c-` / `p-` / `l-` 等）を含まない名前とする（例: `.c-button` の公開 API は `--button-color`、`.c-media-split` の公開 API は `--media-split-first-order`）
+- SHOULD [公開 API 変数への @property 宣言]: 公開 API Custom Properties のうち型チェックが有効な値域を持つものは、`@property`（[CSS-PROPERTIES-VALUES-1]）により `syntax` / `inherits` / `initial-value` を宣言すべきである
 - SHOULD NOT [プリミティブ変数の直接参照禁止]: Token 層以外がプリミティブ変数（Token 層の `--_` プレフィックス変数）を直接参照すべきでない
 - MAY [グローバルトークンの直接参照]: グローバルトークンおよび計算ヘルパー（`--px` 等）は Foundation 以降の層から直接参照してよい（§5.1 トークン分類を参照）
 - MAY [プライベートカスタムプロパティの定義]: Layout 以降の層でプライベートカスタムプロパティ（`--_xxx`）を定義してよい
 
 > **注記（Informative）**: 層識別プレフィックス（§6 SHOULD [層識別プレフィックスの使用]）は、mFLOCSS が管理するクラスの層を識別するために付与される。一方、カスタムプロパティは CSS の標準機能であり、mFLOCSS のスコープ外から参照・上書きされる可能性があるため、層識別情報を含めず対象名のみで命名する方が汎用性と可読性で優れる。
+
+> **注記（Informative）**: Animation 層の公開 API Custom Properties における `{対象}` の解釈は §5.7 SHOULD [Animation 層公開 API の概念名命名] を参照。
+
+> **注記（Informative）**: `@property` はネイティブ CSS 機能であり、フレームワーク非依存である。`@property` 宣言ファイルの配置は §8 property.css を参照。
 
 > **Example（SHOULD [セマンティック変数経由の参照]、SHOULD [公開 API 変数の命名規則遵守]）:**
 
@@ -773,6 +800,17 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 /* OK: 公開 API は対象名のみ */
 .c-button {
   color: var(--button-color);
+}
+```
+
+> **Example（SHOULD [公開 API 変数への @property 宣言]）:**
+
+```css
+/* property.css（@layer の外に配置。§8 property.css 参照） */
+@property --button-color {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
 }
 ```
 
@@ -938,6 +976,7 @@ css/
 | §5.7 | SHOULD [2 ガード原則の実装] | §5.7 要求レベル |
 | §5.7 | SHOULD [translate / rotate / scale を含む機能的トランジションのガード] | §5.7 要求レベル |
 | §5.7 | SHOULD [@keyframes 名と data-* 属性値の一致] | §5.7 要求レベル |
+| §5.7 | SHOULD [Animation 層公開 API の概念名命名] | §5.7 要求レベル |
 | §5.8 | SHOULD [Utility 層の責任限定] | §5.8 要求レベル |
 | §5.8 | SHOULD NOT [Block 帰属スタイルの Utility 記述禁止] | §5.8 要求レベル |
 | §6 | SHOULD [層識別プレフィックスの使用] | §6 要求レベル |
@@ -945,6 +984,7 @@ css/
 | §6 | SHOULD NOT [Element 併記の回避] | §6 要求レベル |
 | §7 | SHOULD [セマンティック変数経由の参照] | §7 要求レベル |
 | §7 | SHOULD [公開 API 変数の命名規則遵守] | §7 要求レベル |
+| §7 | SHOULD [公開 API 変数への @property 宣言] | §7 要求レベル |
 | §7 | SHOULD NOT [プリミティブ変数の直接参照禁止] | §7 要求レベル |
 | §8 | SHOULD [ディレクトリ名の層名一致] | §8 要求レベル |
 | §8 | SHOULD [1 Block = 1 ファイルの維持] | §8 要求レベル |
