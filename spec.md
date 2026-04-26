@@ -413,18 +413,7 @@ Portability Test で判断が曖昧な場合にのみ使用する。Portability 
 - SHOULD NOT [外部レイアウト影響プロパティの排除]: Component のルート要素（= Component を構成する HTML の最外殻要素）に、外部レイアウトに影響するプロパティ（`margin`, `position: absolute/fixed/sticky`）を含めるべきでない
 - SHOULD NOT [存在/不在制御の排除]: Component のルート要素に、自身の存在/不在を制御するプロパティ（`display: none`）を含めるべきでない
 
-> **注記（Informative）**: SHOULD NOT [外部レイアウト影響プロパティの排除] は Component ルート要素のみが対象である。Component 内部の Element 間の余白（`margin`, `gap`）や内部配置（`position: relative` / `absolute`）はこの制限の対象外であり、Component 自身の視覚的責任（内部配置）に該当する。外部配置（ルート要素の配置・存在）は使う側の責任。
-
 > **注記（Informative）**: 上記 2 つの SHOULD NOT はいずれも Portability Test 不合格の代表例である。配置や存在の制御は「それは Component 自身の責任か、使う側の責任か？」（Responsibility Test）の観点で使う側の責任に該当する。存在/不在の制御は HTML 属性（`hidden`、`<dialog>` の `showModal()`/`close()`）または Project 層で行う。Utility 層の `u-visually-hidden` 等の単一目的スタイルは §5.8 Utility 責任に従う。
-
-> **注記（Informative）**: `overflow` は Component の描画責任に該当する場合と、使う側の責任に該当する場合がある。判断の問い: **「Component がなくなっても、その overflow が必要か？」** Yes なら使う側（Project 等で記述）、No なら Component 自身の描画責任。
->
-> | 例 | 判断 | 理由 |
-> |---|---|---|
-> | Card の `border-radius` + `overflow: hidden` | Component | 角丸クリッピングは Component の見た目 |
-> | Accordion の `overflow: hidden` | Component | 高さアニメーションで中身を閉じ込める |
-> | Modal の `overflow: auto` | Component | Modal 内部スクロールは Modal 自身の機能 |
-> | テーブルが画面外にはみ出るケース | Project | ラッパー Element の `overflow-x: auto` |
 
 #### 例外: 自己配置型 Component
 
@@ -515,23 +504,6 @@ Portability Test（§5.5）で No → Project
   }
 }
 ```
-
-> **注記（Informative）**: Project が Component / Layout を上書きする際のパターン:
->
-> | パターン | 特性 | 例 |
-> |---|---|---|
-> | CSS 変数経由（公開 API） | Component / Layout が公開 API として提供する変数に値を設定する。変更影響が変数スコープに閉じるため保守性が高い | `.p-about { --section-padding: 2.5rem; }` |
-> | 直接プロパティ上書き | 特定の配置先で Component のスタイルを変更する。公開 API が存在しないプロパティを上書きする場合に使用する | `.p-hero .c-button { font-size: ... }` |
-> | Modifier（静的バリエーション） | Component / Project が公開する汎用バリエーション | `.c-button.-primary` |
-
-> **注記（Informative）**: Modifier と Project 上書きの境界判定は **Portability Test と同じ基準**。
->
-> 「このバリエーションは別のサイトでも使うか？」
->
-> - Yes（他ページ・他サイトで再利用しうる） → Modifier（`.c-button.-large`）
-> - No（そのページ固有） → Project 上書き（`.p-about .c-button { ... }`）
->
-> Modifier は Component / Project の公開カタログ、Project 上書きはそのサイト固有のバリエーション。
 
 ### 5.7 Animation
 
@@ -712,8 +684,6 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 
 `.-modifier` 形式。Block または Element と併用する。HTML に記述し、原則として変化しない。
 
-> **注記（Informative）**: `.-modifier` ドット記法を採用する選択根拠は書籍を参照。
-
 ### 動的状態（State）
 
 `data-*` 属性または ARIA 属性（`aria-expanded`, `aria-current` 等）で表現する。JS やユーザー操作により変化する。Block・Element・Animation の `data-*` 属性いずれとも組み合わせて使用できる（例: `.c-button[data-loading]`、`[data-animate="fade-in"][data-visible]`）。
@@ -751,68 +721,14 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 > **注記（Informative）**: インラインスタイルはどの `@layer` にも属さない unlayered CSS として扱われ、全ての layered CSS より優先されるため、層構造による優先順位制御を破壊する。
 - SHOULD [セマンティック変数経由の参照]: Foundation 以降の層はブランドトークンについて Token 層のセマンティック変数を参照すべきである
 - SHOULD [公開 API 変数の命名規則遵守]: 上位層（Project 等）から値を設定する変数、または JS から値を注入する変数は、`--{対象}-{名前}` の公開 API 命名を使用すべきである。`{対象}` は層識別プレフィックス（`c-` / `p-` / `l-` 等）を含まない名前とする（例: `.c-button` の公開 API は `--button-color`、`.c-media-split` の公開 API は `--media-split-first-order`）
-- SHOULD [公開 API 変数への @property 宣言]: 公開 API Custom Properties のうち型チェックが有効な値域を持つものは、`@property`（[CSS-PROPERTIES-VALUES-1]）により `syntax` / `inherits` / `initial-value` を宣言すべきである
 - SHOULD NOT [プリミティブ変数の直接参照禁止]: Token 層以外がプリミティブ変数（Token 層の `--_` プレフィックス変数）を直接参照すべきでない
 - MAY [グローバルトークンの直接参照]: グローバルトークンおよび計算ヘルパー（`--px` 等）は Foundation 以降の層から直接参照してよい（§5.1 トークン分類を参照）
 - MAY [プライベートカスタムプロパティの定義]: Layout 以降の層でプライベートカスタムプロパティ（`--_xxx`）を定義してよい
+- MAY [公開 API 変数への @property 宣言]: 公開 API Custom Properties に対して `@property`（[CSS-PROPERTIES-VALUES-1]）により `syntax` / `inherits` / `initial-value` を宣言してよい
 
 > **注記（Informative）**: 層識別プレフィックス（§6 SHOULD [層識別プレフィックスの使用]）は、mFLOCSS が管理するクラスの層を識別するために付与される。一方、カスタムプロパティは CSS の標準機能であり、mFLOCSS のスコープ外から参照・上書きされる可能性があるため、層識別情報を含めず対象名のみで命名する方が汎用性と可読性で優れる。
 
 > **注記（Informative）**: Animation 層の公開 API Custom Properties における `{対象}` の解釈は §5.7 SHOULD [Animation 層公開 API の概念名命名] を参照。
-
-> **注記（Informative）**: `@property` はネイティブ CSS 機能であり、フレームワーク非依存である。`@property` 宣言ファイルの配置は §8 property.css を参照。
-
-> **Example（SHOULD [セマンティック変数経由の参照]、SHOULD [公開 API 変数の命名規則遵守]）:**
-
-```css
-/* Token: セマンティック変数を定義 */
-@layer token {
-  :root {
-    --space-md: 1rem;
-    --space-lg: 1.5rem;
-  }
-}
-
-/* Component: Token を参照し、公開 API を定義（対象名のみ、層プレフィックスは含めない） */
-@layer component {
-  .c-card {
-    --card-padding: var(--space-md);
-    padding: var(--card-padding);
-  }
-}
-
-/* Project: Component の公開 API を上書き */
-@layer project {
-  .p-about {
-    --card-padding: var(--space-lg);
-  }
-}
-```
-
-> **Example（SHOULD [公開 API 変数の命名規則遵守] — 層プレフィックスの除外）:**
-
-```css
-/* NG: 公開 API に層プレフィックスを含める */
-.c-button {
-  color: var(--c-button-color);
-}
-
-/* OK: 公開 API は対象名のみ */
-.c-button {
-  color: var(--button-color);
-}
-```
-
-> **Example（SHOULD [公開 API 変数への @property 宣言]）:**
-
-```css
-/* property.css（@layer の外に配置。§8 property.css 参照） */
-@property --button-color {
-  syntax: "<color>";
-  inherits: false;
-  initial-value: transparent;
-}
-```
 
 ---
 
@@ -984,7 +900,6 @@ css/
 | §6 | SHOULD NOT [Element 併記の回避] | §6 要求レベル |
 | §7 | SHOULD [セマンティック変数経由の参照] | §7 要求レベル |
 | §7 | SHOULD [公開 API 変数の命名規則遵守] | §7 要求レベル |
-| §7 | SHOULD [公開 API 変数への @property 宣言] | §7 要求レベル |
 | §7 | SHOULD NOT [プリミティブ変数の直接参照禁止] | §7 要求レベル |
 | §8 | SHOULD [ディレクトリ名の層名一致] | §8 要求レベル |
 | §8 | SHOULD [1 Block = 1 ファイルの維持] | §8 要求レベル |
@@ -1000,3 +915,4 @@ css/
 | §5.8 | MAY [セマンティックなファイルグループ化] | §5.8 要求レベル |
 | §7 | MAY [グローバルトークンの直接参照] | §7 要求レベル |
 | §7 | MAY [プライベートカスタムプロパティの定義] | §7 要求レベル |
+| §7 | MAY [公開 API 変数への @property 宣言] | §7 要求レベル |
