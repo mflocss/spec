@@ -289,10 +289,6 @@ Reset 層が外部リセット CSS を取り込む場合、その内部実装に
 **要求レベル:**
 
 - SHOULD [Reset 層の責任限定]: Reset 層を使用する場合、ブラウザデフォルトの初期化に限定すべきである（自作・外部を問わない）
-- SHOULD [flex / Grid item の content-based minimum size 罠の予防]: Reset 層で全要素に `min-inline-size: 0` および `min-block-size: 0` を適用すべきである。flex item および Grid item の main axis 方向では `min-*: auto` が content-based minimum size に解決される（[CSS-FLEXBOX-1] §4.5 / [CSS-GRID-1] §6.2）ため、書き忘れによる予期せぬ overflow / 折り返し破綻を構造的に予防する
-
-> **注記（Informative）**: 本規定は CSS Flexbox L1 / CSS Grid Layout L1 で確定的に発生する罠への予防策である。`<input>` / `<textarea>` / replaced element（`<img>` / `<video>` / `<iframe>` 等）が `min-width: auto` の intrinsic size に依存している箇所では個別の `min-*` 上書きで対処する。
-
 - SHOULD NOT [プロジェクト固有スタイルの Reset 記述禁止]: プロジェクト固有のスタイルを Reset 層に記述すべきでない
 - MAY [Reset 層の使用任意]: Reset 層の使用は任意である
 
@@ -537,15 +533,9 @@ Portability Test（§5.5）で No → Project
 **要求レベル:**
 
 - SHOULD [装飾的アニメーションの Animation 層分離]: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである
-- SHOULD [2 ガード原則の実装]: Animation 層のスタイルは、`prefers-reduced-motion: reduce` 環境でアニメーションが無効になり、`scripting: none` 環境で要素が不可視にならない実装とすべきである
-- SHOULD [translate / rotate / scale を含む機能的トランジションのガード]: 機能的トランジションのうち `translate` / `rotate` / `scale` を含むものは、`prefers-reduced-motion: no-preference` のガードを適用すべきである。色変化（`color` / `background-color` 等）や `opacity` のみのトランジションはガード不要である
 - SHOULD [@keyframes 名と data-* 属性値の一致]: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（§5.7 @keyframes 命名を参照）
 - SHOULD [Animation 層公開 API の概念名命名]: Animation 層が公開 API Custom Properties（§7）を定義する場合、`--{対象}-{名前}` の `{対象}` は特定の `@keyframes` 名または animation 名ではなく、animation 制御の概念名とすべきである（例: `--stagger-delay`、`--transition-duration-short`）
 - MAY [機能的トランジションの所属層への記述]: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
-
-> **注記（Informative）**: `scripting` は Media Queries Level 5 [MEDIAQUERIES-5] で定義されるメディア特性であり、JS の有効・無効を CSS で検出する。未対応ブラウザでは統合ガード全体が false に評価されアニメーション CSS が一切適用されない（要素は可視状態を維持するため安全性は確保される）。
-
-> **注記（Informative）**: `translate` / `rotate` / `scale` を含むトランジションは前庭障害のトリガーになりうるため、ガード適用を推奨する。
 
 #### セレクタ
 
@@ -566,7 +556,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 
 `@layer` は `@keyframes` 名のスコープを分離しないため、属性値との対応関係を明確にすることで名前衝突のリスクを低減する（例: `data-animate="scale-in"` → `@keyframes scale-in`）。
 
-> **Example（SHOULD [2 ガード原則の実装]、SHOULD [@keyframes 名と data-* 属性値の一致]）:**
+> **Example（SHOULD [@keyframes 名と data-* 属性値の一致]）:**
 
 ```css
 @layer animation {
@@ -628,7 +618,6 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 - MUST [!important の付与]: Utility クラスの各宣言プロパティに `!important` を付与しなければならない（使用制限については §4 を参照）
 - SHOULD [Utility 層の責任限定]: Utility 層を使用する場合、特定の Block に帰属しない横断的かつ局所的な単一目的のスタイルに限定すべきである
 - SHOULD NOT [Block 帰属スタイルの Utility 記述禁止]: 特定の Block や Element に帰属できるスタイルを Utility に書くべきでない — Utility は特定の Block に帰属しない横断的かつ局所的な単一目的のスタイルに限る
-- MAY [セマンティックなファイルグループ化]: セマンティックな意味でファイルをグループ化してよい（例: `u-hidden.css` に `u-visually-hidden` と `u-hidden-sp` をまとめる）
 
 > **Example（MUST [!important の付与]、SHOULD NOT [Block 帰属スタイルの Utility 記述禁止]）:**
 
@@ -737,7 +726,6 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 - SHOULD NOT [プリミティブ変数の直接参照禁止]: Token 層以外がプリミティブ変数（Token 層の `--_` プレフィックス変数）を直接参照すべきでない
 - MAY [グローバルトークンの直接参照]: グローバルトークンおよび計算ヘルパー（`--px` 等）は Foundation 以降の層から直接参照してよい（§5.1 トークン分類を参照）
 - MAY [プライベートカスタムプロパティの定義]: Layout 以降の層でプライベートカスタムプロパティ（`--_xxx`）を定義してよい
-- MAY [公開 API 変数への @property 宣言]: 公開 API Custom Properties に対して `@property`（[CSS-PROPERTIES-VALUES-1]）により `syntax` / `inherits` / `initial-value` を宣言してよい
 
 > **注記（Informative）**: インラインスタイルはどの `@layer` にも属さない unlayered CSS として扱われ、全ての layered CSS より優先されるため、層構造による優先順位制御を破壊する。
 
@@ -752,39 +740,6 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 *This section is normative.*
 
 ファイルとディレクトリの構造・命名・エントリポイントの構成を定義する。物理的なファイル配置と層構造の対応を規定する。
-
-**要求レベル:**
-
-- SHOULD [ディレクトリ名の層名一致]: ディレクトリ名は層名と一致させるべきである
-- SHOULD [1 Block = 1 ファイルの維持]: 1 つの CSS ファイルには 1 つの Block を定義すべきである
-- SHOULD [層帰属の明確化]: 各ファイルがどの層に属するかを明確にすべきである。方法はプロジェクトの規模やツールチェーンに応じて選択してよい
-
-> **注記（Informative）**: 複数の独立した Block を 1 ファイルに含めると、ファイル名と Block の対応が崩れる。
-
-> **注記（Informative）**: 以下のディレクトリ構造・ファイル例は推奨される一例である。プロジェクトの要件に応じて構成を変更してよい。
-
-### ディレクトリ構造
-
-> **Example（SHOULD [ディレクトリ名の層名一致]）:**
-
-```
-css/
-├── layer-order.css       /* 層の先制宣言（§4） */
-├── property.css          /* @property 宣言（任意） */
-├── style.css             /* エントリポイント */
-├── token/                /* §5.1 Token — デザイントークン */
-├── reset/                /* §5.2 Reset — ブラウザデフォルト初期化 */
-├── foundation/           /* §5.3 Foundation — 全ページ共通の基本スタイル */
-├── layout/               /* §5.4 Layout — ページの骨格・配置 */
-├── component/            /* §5.5 Component — 再利用可能なパーツ */
-├── project/              /* §5.6 Project — サイト固有のスタイル */
-├── animation/            /* §5.7 Animation — 装飾的アニメーション */
-└── utility/              /* §5.8 Utility — 単一目的の上書き */
-```
-
-### 1 Block = 1 ファイル
-
-> **注記（Informative）**: Utility 層は例外とする。Utility は Block 構造を持たない単一目的のクラスであり、セマンティックな意味でグループ化することが推奨される（§5.8 参照）。
 
 ### layer-order.css
 
@@ -855,8 +810,6 @@ css/
 
 - **[FLOCSS]** Hiloki, "FLOCSS — Foundation Layout Object CSS". https://github.com/hiloki/flocss
 - **[CSS-CASCADE-6]** Atkins Jr., T.; Rivoal, F.; Lilley, C., "CSS Cascading and Inheritance Level 6", W3C Working Draft. https://www.w3.org/TR/css-cascade-6/
-- **[CSS-FLEXBOX-1]** Atkins Jr., T.; Etemad, E. J., "CSS Flexible Box Layout Module Level 1", W3C Candidate Recommendation. https://www.w3.org/TR/css-flexbox-1/
-- **[CSS-GRID-1]** Atkins Jr., T.; Etemad, E. J.; Wachter, R., "CSS Grid Layout Module Level 1", W3C Candidate Recommendation. https://www.w3.org/TR/css-grid-1/
 
 ---
 
@@ -894,7 +847,6 @@ css/
 | §5.1 | SHOULD [Token 層の責任限定] | §5.1 要求レベル |
 | §5.1 | SHOULD [:root セレクタ限定] | §5.1 要求レベル |
 | §5.2 | SHOULD [Reset 層の責任限定] | §5.2 要求レベル |
-| §5.2 | SHOULD [flex / Grid item の content-based minimum size 罠の予防] | §5.2 要求レベル |
 | §5.2 | SHOULD NOT [プロジェクト固有スタイルの Reset 記述禁止] | §5.2 要求レベル |
 | §5.3 | SHOULD [Foundation 層の責任限定] | §5.3 要求レベル |
 | §5.3 | SHOULD NOT [Component/Project スタイルの Foundation 記述禁止] | §5.3 要求レベル |
@@ -907,8 +859,6 @@ css/
 | §5.6 | SHOULD [Project Block ルートの付与] | §5.6 要求レベル |
 | §5.6 | SHOULD NOT [Component 相当スタイルの Project 記述禁止] | §5.6 要求レベル |
 | §5.7 | SHOULD [装飾的アニメーションの Animation 層分離] | §5.7 要求レベル |
-| §5.7 | SHOULD [2 ガード原則の実装] | §5.7 要求レベル |
-| §5.7 | SHOULD [translate / rotate / scale を含む機能的トランジションのガード] | §5.7 要求レベル |
 | §5.7 | SHOULD [@keyframes 名と data-* 属性値の一致] | §5.7 要求レベル |
 | §5.7 | SHOULD [Animation 層公開 API の概念名命名] | §5.7 要求レベル |
 | §5.8 | SHOULD [Utility 層の責任限定] | §5.8 要求レベル |
@@ -919,9 +869,6 @@ css/
 | §7 | SHOULD [セマンティック変数経由の参照] | §7 要求レベル |
 | §7 | SHOULD [公開 API 変数の命名規則遵守] | §7 要求レベル |
 | §7 | SHOULD NOT [プリミティブ変数の直接参照禁止] | §7 要求レベル |
-| §8 | SHOULD [ディレクトリ名の層名一致] | §8 要求レベル |
-| §8 | SHOULD [1 Block = 1 ファイルの維持] | §8 要求レベル |
-| §8 | SHOULD [層帰属の明確化] | §8 要求レベル |
 
 ### MAY / MAY NOT
 
@@ -930,7 +877,5 @@ css/
 | §5.1 | MAY [テーマ切替の Token 完結] | §5.1 要求レベル |
 | §5.2 | MAY [Reset 層の使用任意] | §5.2 要求レベル |
 | §5.7 | MAY [機能的トランジションの所属層への記述] | §5.7 要求レベル |
-| §5.8 | MAY [セマンティックなファイルグループ化] | §5.8 要求レベル |
 | §7 | MAY [グローバルトークンの直接参照] | §7 要求レベル |
 | §7 | MAY [プライベートカスタムプロパティの定義] | §7 要求レベル |
-| §7 | MAY [公開 API 変数への @property 宣言] | §7 要求レベル |
