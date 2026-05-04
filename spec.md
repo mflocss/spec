@@ -174,7 +174,7 @@ Step 5: Portability Test — 別のサイトにそのまま持っていけるか
   含まれる場合、その動きの部分だけを Animation 層に切り出す）
 
 Step 6: 装飾的アニメーション（視覚演出）か？
-  ├─ Yes → Animation（2 ガード原則を適用）
+  ├─ Yes → Animation
   └─ 機能的トランジション（インタラクションフィードバック）→ Component / Project に残す
 
 Step 7: 特定の Block に帰属しない、単一目的の微調整か？
@@ -532,7 +532,7 @@ Portability Test（§5.5）で No → Project
 
 **要求レベル:**
 
-- SHOULD [装飾的アニメーションの Animation 層分離]: 装飾的アニメーションは Animation 層に分離し、2 ガード原則を適用すべきである
+- SHOULD [装飾的アニメーションの Animation 層分離]: 装飾的アニメーションは Animation 層に分離すべきである
 - SHOULD [@keyframes 名と data-* 属性値の一致]: `@keyframes` 名は対応する `data-*` 属性の値と一致させるべきである（§5.7 @keyframes 命名を参照）
 - SHOULD [Animation 層公開 API の概念名命名]: Animation 層が公開 API Custom Properties（§7）を定義する場合、`--{対象}-{名前}` の `{対象}` は特定の `@keyframes` 名または animation 名ではなく、animation 制御の概念名とすべきである（例: `--stagger-delay`、`--transition-duration-short`）
 - MAY [機能的トランジションの所属層への記述]: 機能的トランジションは、対象の Block が属する層（Component または Project）に記述してよい
@@ -560,19 +560,16 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 
 ```css
 @layer animation {
-  /* 統合ガード: 2 ガード原則を一括適用 */
-  @media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
-    @keyframes fade-in {
-      from { opacity: 0; }
-    }
-    [data-animate="fade-in"] {
-      animation: fade-in 0.6s var(--ease-out-cubic) both;
-      animation-play-state: paused;
-    }
-    /* JS（IntersectionObserver 等）が data-visible を付与してアニメーション開始 */
-    [data-animate="fade-in"][data-visible] {
-      animation-play-state: running;
-    }
+  @keyframes fade-in {
+    from { opacity: 0; }
+  }
+  [data-animate="fade-in"] {
+    animation: fade-in 0.6s var(--ease-out-cubic) both;
+    animation-play-state: paused;
+  }
+  /* JS（IntersectionObserver 等）が data-visible を付与してアニメーション開始 */
+  [data-animate="fade-in"][data-visible] {
+    animation-play-state: running;
   }
 }
 ```
@@ -760,10 +757,8 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 | **外部レイアウト影響プロパティ** | Component のルート要素に指定した場合、配置先レイアウトに影響するプロパティ（`margin`, `position: absolute/fixed/sticky` 等）（§5.5） |
 | **セクションルート** | ページ内の各セクションを包む最外殻要素（初出: §5.6） |
 | **Animation Test** | Animation 層の適用可否を判定する検証問い（§5.7） |
-| **装飾的アニメーション** | 視覚演出としての動き。無効化しても機能に影響しない。Animation 層に分離し、2 ガード原則を適用する（初出: §5.7） |
-| **機能的トランジション** | インタラクションフィードバックとしての動き。ユーザー操作に対する応答であり、対象の Block が属する層（Component または Project）に記述する。`translate` / `rotate` / `scale` を含む場合は `prefers-reduced-motion` ガードを適用する（初出: §5.7） |
-| **2 ガード原則** | Animation 層で `prefers-reduced-motion` と `scripting` の 2 条件を考慮すること。推奨は `@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` による統合ガード（初出: §5.7） |
-| **統合ガード** | 2 ガード原則の推奨実装パターン。`@media (prefers-reduced-motion: no-preference) and (scripting: enabled)` で Animation 層のスタイル全体をラップし、条件を満たさない場合にブロック全体を不適用にする方式（初出: §5.7） |
+| **装飾的アニメーション** | 視覚演出としての動き。無効化しても機能に影響しない。Animation 層に分離する（初出: §5.7） |
+| **機能的トランジション** | インタラクションフィードバックとしての動き。ユーザー操作に対する応答であり、対象の Block が属する層（Component または Project）に記述する（初出: §5.7） |
 | **Utility Test** | Utility 層の適用可否を判定する検証問い（§5.8） |
 | **Block** | BEM における独立した意味のあるエンティティ。プレフィックス付きクラス名（`.c-card`, `.p-hero` 等）で表現する（初出: §6） |
 | **Element（`__element`）** | Block の一部。命名は `.{prefix}-{block}__{element}` の形式。Block なしでの使用回避等の規範的定義は §6 を参照（初出: §6） |
