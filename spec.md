@@ -193,7 +193,7 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 
 - MUST [先制宣言の実施]: CSS Cascading and Inheritance Level 5 [CSS-CASCADE-5] に定義される `@layer` による層間の優先順位宣言を起点ファイル（エントリポイント）CSS の先頭で、全ての `@import` に先行して行わなければならない。
 - MUST [外部 CSS の層取り込み]: 外部 CSS は `@import url() layer()` を使用するか、バンドラーを使用する場合は `@layer` 宣言内にバンドル結果が配置されるように構成し、いずれかの層に取り込まなければならない。
-- MUST NOT [!important の使用制限]: Reset 層および Utility 層を除く全層で `!important` を使用してはならない。
+- MUST NOT [!important の使用制限]: Utility 層を除く全層で `!important` を使用してはならない。
 
 #### 例外: Reset 層の内部実装
 
