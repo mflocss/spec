@@ -126,6 +126,15 @@ mFLOCSS は以下の層で構成される。本章以降で使用する Block・
 
 > **Example（MUST NOT [逆方向参照の禁止]）:**
 
+```css
+/* ❌ Component（c-modal）から Project（p-login-form）への逆方向参照 */
+.c-modal {
+  background: var(--p-login-form-bg);
+}
+```
+
+> **注記（Informative）**: HTML の入れ子構造は本ルールの対象外である。以下のような構造は CSS で他層のクラスを参照していないため違反にならない。Component は Component のままで任意の層の要素を内包でき、Project も同様である。
+
 ```html
 <div class="c-modal">
   <form class="p-login-form">
@@ -133,8 +142,6 @@ mFLOCSS は以下の層で構成される。本章以降で使用する Block・
   </form>
 </div>
 ```
-
-> **注記（Informative）**: HTML の入れ子構造は本ルールの対象外である。上記の例は CSS で他層のクラスを参照していないため違反にならない。Component は Component のままで任意の層の要素を内包でき、Project も同様である。
 
 ### Layer Judgment Flowchart
 
@@ -188,7 +195,7 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 - MUST [外部 CSS の層取り込み]: 外部 CSS は `@import url() layer()` を使用するか、バンドラーを使用する場合は `@layer` 宣言内にバンドル結果が配置されるように構成し、いずれかの層に取り込まなければならない。
 - MUST NOT [!important の使用制限]: Reset 層および Utility 層を除く全層で `!important` を使用してはならない。Reset 層の内部実装における `!important` の有無は本仕様の準拠対象外とする。
 
-> **注記（Informative）**: Reset 層は外部リセット CSS を取り込むためスコープ除外とする。この制約により優先度逆転の複雑性を回避する。
+> **注記（Informative）**: 本制約は Reset 層が外部リセット CSS を取り込むため、その内部実装の `!important` を本仕様のスコープ除外とする趣旨である。これにより優先度逆転の複雑性を回避する。
 
 > **Example（MUST [先制宣言の実施]）:**
 
