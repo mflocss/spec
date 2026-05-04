@@ -278,6 +278,10 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 **要求レベル:**
 
 - SHOULD [Reset 層の責任限定]: Reset 層を使用する場合、ブラウザデフォルトの初期化に限定すべきである（自作・外部を問わない）
+- SHOULD [flex / Grid item の content-based minimum size 罠の予防]: Reset 層で全要素に `min-inline-size: 0` および `min-block-size: 0` を適用すべきである。flex item および Grid item の main axis 方向では `min-*: auto` が content-based minimum size に解決される（[CSS-FLEXBOX-1] §4.5 / [CSS-GRID-1] §6.2）ため、書き忘れによる予期せぬ overflow / 折り返し破綻を構造的に予防する
+
+> **注記（Informative）**: 本規定は CSS Flexbox L1 / CSS Grid Layout L1 で確定的に発生する罠への予防策である。`<input>` / `<textarea>` / replaced element（`<img>` / `<video>` / `<iframe>` 等）が `min-width: auto` の intrinsic size に依存している箇所では個別の `min-*` 上書きで対処する。
+
 - SHOULD NOT [プロジェクト固有スタイルの Reset 記述禁止]: プロジェクト固有のスタイルを Reset 層に記述すべきでない
 - MAY [Reset 層の使用任意]: Reset 層の使用は任意である
 
@@ -840,6 +844,8 @@ css/
 
 - **[FLOCSS]** Hiloki, "FLOCSS — Foundation Layout Object CSS". https://github.com/hiloki/flocss
 - **[CSS-CASCADE-6]** Atkins Jr., T.; Rivoal, F.; Lilley, C., "CSS Cascading and Inheritance Level 6", W3C Working Draft. https://www.w3.org/TR/css-cascade-6/
+- **[CSS-FLEXBOX-1]** Atkins Jr., T.; Etemad, E. J., "CSS Flexible Box Layout Module Level 1", W3C Candidate Recommendation. https://www.w3.org/TR/css-flexbox-1/
+- **[CSS-GRID-1]** Atkins Jr., T.; Etemad, E. J.; Wachter, R., "CSS Grid Layout Module Level 1", W3C Candidate Recommendation. https://www.w3.org/TR/css-grid-1/
 
 ---
 
@@ -877,6 +883,7 @@ css/
 | §5.1 | SHOULD [Token 層の責任限定] | §5.1 要求レベル |
 | §5.1 | SHOULD [:root セレクタ限定] | §5.1 要求レベル |
 | §5.2 | SHOULD [Reset 層の責任限定] | §5.2 要求レベル |
+| §5.2 | SHOULD [flex / Grid item の content-based minimum size 罠の予防] | §5.2 要求レベル |
 | §5.2 | SHOULD NOT [プロジェクト固有スタイルの Reset 記述禁止] | §5.2 要求レベル |
 | §5.3 | SHOULD [Foundation 層の責任限定] | §5.3 要求レベル |
 | §5.3 | SHOULD NOT [Component/Project スタイルの Foundation 記述禁止] | §5.3 要求レベル |
