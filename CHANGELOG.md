@@ -17,5 +17,10 @@
   - §8 SHOULD [ディレクトリ名の層名一致] → ディレクトリ運用（agent-reference 移管候補）
   - §8 SHOULD [1 Block = 1 ファイルの維持] → ファイル管理運用（agent-reference 移管候補）
   - §8 SHOULD [層帰属の明確化] → 運用ノウハウ（agent-reference 移管候補）
+- §8 File Architecture 章を完全削除（純度棚卸し v1.0、規範規定ゼロのため章として存在意義喪失、cortex#468 観点 4 / しゅんえい A 案）
+  - 前変更で §8 SHOULD 3 件すべて削除済 → 規範規定がゼロとなり「This section is normative」を維持不能
+  - 残存内容は layer-order.css / property.css の Informative 注記 2 つのみ（注記も削除）
+  - layer-order.css 情報は §4 MUST [先制宣言の実施] で間接表現済
+  - property.css 情報は agent-reference / 書籍（ch11）が担当
 - Appendix B: Informative References から [CSS-FLEXBOX-1] / [CSS-GRID-1] を削除（dangling reference 除去）
 - Appendix D: 削除規定の Requirements Index 行を除去

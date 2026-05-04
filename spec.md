@@ -16,7 +16,7 @@ mFLOCSS は、CSS の記述を層に分類する思考フレームワークで�
 
 本文書は mFLOCSS 仕様書の v1.0 正式版である。
 
-**最終更新**: 2026-05-04  
+**最終更新**: 2026-05-05  
 **著者**: shunei
 
 ---
@@ -732,22 +732,6 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 > **注記（Informative）**: 層識別プレフィックス（§6 SHOULD [層識別プレフィックスの使用]）は、mFLOCSS が管理するクラスの層を識別するために付与される。一方、カスタムプロパティは CSS の標準機能であり、mFLOCSS のスコープ外から参照・上書きされる可能性があるため、層識別情報を含めず対象名のみで命名する方が汎用性と可読性で優れる。
 
 > **注記（Informative）**: Animation 層の公開 API Custom Properties における `{対象}` の解釈は §5.7 SHOULD [Animation 層公開 API の概念名命名] を参照。
-
----
-
-## 8. File Architecture
-
-*This section is normative.*
-
-ファイルとディレクトリの構造・命名・エントリポイントの構成を定義する。物理的なファイル配置と層構造の対応を規定する。
-
-### layer-order.css
-
-> **注記（Informative）**: `@layer` の先制宣言のみを含む。スタイル定義は置かない。層ディレクトリ（`token/` 等）と同列に配置する。
-
-### property.css
-
-> **注記（Informative）**: `@property` 宣言（[CSS-PROPERTIES-VALUES-1]）を含む。`@property` の登録スコープに関する W3C 仕様が未確定であり、ビルドツールによる非対応も報告されているため、`@layer` の外に配置する。層ディレクトリには入れない。`@property` を使用しないプロジェクトではこのファイルは不要である。
 
 ---
 
