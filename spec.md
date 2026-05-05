@@ -641,7 +641,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 
 *This section is normative.*
 
-mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下の mFLOCSS 固有の変更を定義する。Block は独立した再利用可能な単位、Element は Block に従属する構成要素であり `.{prefix}-{block}__{element}` 形式で表現する。Modifier は BEM の `--` ではなく `.-modifier` 形式を採用する。
+クラス命名規則を定義する。Block・Element・Modifier の形式、層識別プレフィックスの運用を規定する。
 
 **要求レベル:**
 
