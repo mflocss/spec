@@ -648,6 +648,7 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 - SHOULD [層識別プレフィックスの使用]: 層の識別のためにプレフィックスを使用すべきである。Token・Reset・Foundation・Animation はプレフィックスの対象外とする
 - SHOULD NOT [Element 連鎖の回避]: Element 名を連鎖させるべきではない（例: `block__elem1__elem2`）
 - SHOULD NOT [Element 併記の回避]: 同一要素に異なる層のクラスを併記する場合、Element 同士（例: `c-form__input p-contact__input`）を併記すべきでない。併記は Block 同士、または Block と他層の Element の組み合わせに限る。Element レベルでスタイルを上書きする必要がある場合は、子孫セレクタ、または当該 Block が公開するカスタムプロパティ（§7）を使用する
+- SHOULD NOT [Modifier 単独使用の回避]: Modifier class は Block または Element と併用すべきであり、単独で使用すべきでない（例: `.c-button.-primary` は OK、`.-primary` 単独は NG）
 
 > **注記（Informative）**: Token・Reset・Foundation はクラスセレクタを使用しないため、Animation は `data-*` 属性セレクタを使用するため（§5.7 セレクタを参照）、プレフィックスの対象外としている。`@scope` [CSS-CASCADE-6] 等の機能によりプレフィックスが不要になる可能性があるため、本項は MUST としない。
 
@@ -663,6 +664,18 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 <form class="c-form p-contact__form">
   <input class="c-form__input">
 </form>
+```
+
+> **注記（Informative）**: Modifier は Block / Element の状態・バリエーションを表現するため、対応する Block / Element class なしには意味を持たない。BEM 命名規則の継承規範と整合する。
+
+> **Example（SHOULD NOT [Modifier 単独使用の回避]）:**
+
+```html
+<!-- NG: Modifier 単独使用 -->
+<button class="-primary">Submit</button>
+
+<!-- OK: Block と併用 -->
+<button class="c-button -primary">Submit</button>
 ```
 
 ### クラス名
@@ -845,6 +858,7 @@ mFLOCSS は [FLOCSS] が採用する BEM 命名規則をベースとし、以下
 | §6 | SHOULD [層識別プレフィックスの使用] | §6 要求レベル |
 | §6 | SHOULD NOT [Element 連鎖の回避] | §6 要求レベル |
 | §6 | SHOULD NOT [Element 併記の回避] | §6 要求レベル |
+| §6 | SHOULD NOT [Modifier 単独使用の回避] | §6 要求レベル |
 | §7 | SHOULD [セマンティック変数経由の参照] | §7 要求レベル |
 | §7 | SHOULD [公開 API 変数の命名規則遵守] | §7 要求レベル |
 | §7 | SHOULD NOT [プリミティブ変数の直接参照禁止] | §7 要求レベル |
