@@ -16,7 +16,7 @@ mFLOCSS は、CSS の記述を層に分類する思考フレームワークで�
 
 本文書は mFLOCSS 仕様書の v1.0 正式版である。
 
-**最終更新**: 2026-05-05  
+**最終更新**: 2026-05-06  
 **著者**: shunei
 
 ---
@@ -793,14 +793,11 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 - **[RFC2119]** Bradner, S., "Key words for use in RFCs to Indicate Requirement Levels", BCP 14, RFC 2119, March 1997. https://www.rfc-editor.org/rfc/rfc2119
 - **[RFC8174]** Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words", BCP 14, RFC 8174, May 2017. https://www.rfc-editor.org/rfc/rfc8174
 - **[CSS-CASCADE-5]** Atkins Jr., T.; Rivoal, F.; Lilley, C., "CSS Cascading and Inheritance Level 5", W3C Candidate Recommendation.
-- **[CSS-PROPERTIES-VALUES-1]** Atkins-Bittner, T.; Stearns, A.; Whitworth, G., "CSS Properties and Values API Level 1", W3C Working Draft.
-- **[MEDIAQUERIES-5]** Rivoal, F.; Khan, A. A., "Media Queries Level 5", W3C Working Draft. https://www.w3.org/TR/mediaqueries-5/
 
 ### Informative References
 
 *This section is informative.*
 
-- **[FLOCSS]** Hiloki, "FLOCSS — Foundation Layout Object CSS". https://github.com/hiloki/flocss
 - **[CSS-CASCADE-6]** Atkins Jr., T.; Rivoal, F.; Lilley, C., "CSS Cascading and Inheritance Level 6", W3C Working Draft. https://www.w3.org/TR/css-cascade-6/
 
 ---
