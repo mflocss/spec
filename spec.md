@@ -143,9 +143,28 @@ mFLOCSS は以下の層で構成される。本章以降で使用する Block・
 </div>
 ```
 
+### Layer Judgment Tests
+
+> **注記（Informative）**: 本節は集合呼称の言語化であり、規範的ルールではない。各 Test の規範定義は §5.1〜§5.8 を参照。
+
+「Layer Judgment Tests」は、各層の適用可否を判定する検証問いの集合呼称である。現行 spec で定義された 8 つの Test を総称する:
+
+| # | Test | 対象層 | 規範定義 |
+|---|---|---|---|
+| 1 | **Token Test** | Token | §5.1 |
+| 2 | **Reset Test** | Reset | §5.2 |
+| 3 | **Foundation Test** | Foundation | §5.3 |
+| 4 | **Layout Test** | Layout | §5.4 |
+| 5 | **Portability Test** | Component（vs Project の主軸）| §5.5 |
+| 6 | **Responsibility Test** | Component（補助テスト、Portability Test 曖昧時）| §5.5 |
+| 7 | **Animation Test** | Animation | §5.7 |
+| 8 | **Utility Test** | Utility | §5.8 |
+
+> **注記（Informative）**: 本仕様は不変原則 #4「層構成は CSS の進化に応じて適応させる設計余地を持つ」に従い、層構成の変化に応じて Test の要素数も柔軟に変動する。集合呼称として「Layer Judgment Tests」を用い、特定の数（例: 「8 つの Test」）に固定しない。
+
 ### Layer Judgment Flowchart
 
-> **注記（Informative）**: このフローチャートは層判断の参考ガイドであり、規範的ルールではない。
+> **注記（Informative）**: このフローチャートは Layer Judgment Tests の運用ガイドであり、規範的ルールではない。
 
 スタイルをどの層に書くべきかを 7 ステップで判断する。
 
