@@ -373,7 +373,7 @@ Reset 層が外部リセット CSS を取り込む場合、その内部実装に
 
 **Layout 層の責任:**
 
-1. **構造的配置**: ページ骨格（ヘッダー / メインコンテンツ / セクション / フッター）、汎用配置パターン（グリッド・スタック等）、コンポーネント間の構造的配置を定義する
+1. **構造的配置**: ページ骨格（ヘッダー / メインコンテンツ / セクション / フッター）、コンポーネント間の構造的配置を定義する
 2. **空間の確保**: セクション間の余白（`padding-block`）、コンテンツ幅の制約（`max-inline-size`）、要素間の gap
 3. **配置制御**: `position: sticky` / `z-index` などの構造的な配置
 
@@ -393,7 +393,7 @@ Reset 層が外部リセット CSS を取り込む場合、その内部実装に
 
 > **注記（Informative）**: 中身の見た目（色・文字・装飾・影・透明度）が変わる場合は Layout ではない。
 
-> **注記（Informative）**: Layout 層は汎用配置パターンを担う。Project / Component との境界は §3 Layer Judgment Tests を参照する。
+> **注記（Informative）**: Layout 層は配置・寸法・空間の確保を担う。Project / Component との境界は §3 Layer Judgment Tests を参照する。
 
 > **Example（SHOULD [Layout 層の責任限定]）:**
 
@@ -411,16 +411,6 @@ Reset 層が外部リセット CSS を取り込む場合、その内部実装に
     --section-padding: 3.75rem;
 
     padding-block: var(--section-padding);
-  }
-
-  /* 汎用配置パターン（他サイトでも使える grid container） */
-  .l-grid {
-    --grid-columns: 3;
-    --grid-gap: var(--space-md);
-
-    display: grid;
-    grid-template-columns: repeat(var(--grid-columns), 1fr);
-    gap: var(--grid-gap);
   }
 }
 ```
@@ -531,12 +521,12 @@ Portability Test（§5.5）で No → Project
   }
 
   /* サイト固有 Block のルート（`__logo` 等の Element を従える Project Block） */
-  .p-site-header {
+  .p-header {
     position: sticky;
     inset-block-start: 0;
   }
 
-  .p-site-header__logo {
+  .p-header__logo {
     block-size: 2rem;
   }
 
