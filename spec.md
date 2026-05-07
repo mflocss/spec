@@ -393,13 +393,13 @@ Reset 層が外部リセット CSS を取り込む場合、その内部実装に
 
 > **注記（Informative）**: 中身の見た目（色・文字・装飾・影・透明度）が変わる場合は Layout ではない。
 
-> **注記（Informative）**: Layout 層は「他サイトでも使える汎用配置パターン」を担う。サイト固有のレイアウト（特定セクションの独自配置等）は §5.6 Project 層に書く。判定軸は「視覚装飾を含まないか」（§5.4 SHOULD NOT）+「他サイトでも使える汎用配置か」の 2 軸である。
+> **注記（Informative）**: Layout 層は汎用配置パターンを担う。Project / Component との境界は §3 Layer Judgment Tests を参照する。
 
 > **Example（SHOULD [Layout 層の責任限定]）:**
 
 ```css
 @layer layout {
-  /* ページ骨格（配置・重なり） */
+  /* ページ骨格の汎用配置（プロジェクト固有要素なし） */
   .l-header {
     position: sticky;
     inset-block-start: 0;
@@ -530,7 +530,7 @@ Portability Test（§5.5）で No → Project
     max-inline-size: 50rem;
   }
 
-  /* サイト共通パーツへの Project Block（セクション以外の例） */
+  /* サイト固有 Block のルート（`__logo` 等の Element を従える Project Block） */
   .p-site-header {
     position: sticky;
     inset-block-start: 0;
