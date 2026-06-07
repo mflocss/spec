@@ -212,13 +212,18 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
 
 - MUST [先制宣言の実施]: CSS Cascading and Inheritance Level 5 [CSS-CASCADE-5] に定義される `@layer` による層間の優先順位宣言を起点ファイル（エントリポイント）CSS の先頭で、全ての `@import` に先行して行わなければならない。
 - MUST [外部 CSS の層取り込み]: 外部 CSS は `@import url() layer()` を使用するか、バンドラーを使用する場合は `@layer` 宣言内にバンドル結果が配置されるように構成し、いずれかの層に取り込まなければならない。
-- MUST NOT [!important の使用制限]: Utility 層を除く全層で `!important` を使用してはならない。
+- MUST NOT [!important の使用制限]: Utility 層を除く全層で `!important` を使用してはならない。ただし「例外: `!important` の許容範囲」に定める場合を除く。
+- MAY [プラットフォーム不変条件の保護]: HTML 仕様が定める表示上の不変条件を、後続層の宣言による意図しない上書きから保護する目的に限り、自作の宣言に `!important` を付与してよい。許容される対象は `[hidden]` 属性（`until-found` 値を除く）に対する `display: none` に限る。本仕様が列挙しない対象への拡張は MUST NOT [!important の使用制限] に従う。
 
-#### 例外: Reset 層の内部実装
+#### 例外: `!important` の許容範囲
 
-Reset 層が外部リセット CSS を取り込む場合、その内部実装における `!important` の有無は §4 MUST NOT [!important の使用制限] の対象外とする。
+`!important` はカスケード（`@layer` の層順序および詳細度）の予測可能性を損なうため、MUST NOT [!important の使用制限] によって原則禁止される。本制限はカスケードの勝敗を覆す目的での使用を禁ずるものであり、外せない保証・保護を目的とする以下の三類型には適用されない。
 
-> **注記（Informative）**: 本例外は優先度逆転の複雑性を回避するため設けられている。
+1. **最終上書きの意図的保証**: Utility 層は §5.8 MUST [!important の付与] により各宣言への `!important` 付与が義務付けられる。
+2. **制御外コードの非改変**: MUST [外部 CSS の層取り込み] により外部 CSS を任意の層へ取り込む場合、その外部 CSS の内部実装における `!important` の有無は本制限の対象外とする。
+3. **プラットフォーム不変条件の保護**: MAY [プラットフォーム不変条件の保護] に基づき、本仕様が列挙する対象に限り自作の `!important` を許容する。
+
+> **注記（Informative）**: 三類型に共通する判定軸は「カスケードの勝敗を覆すためか、外せない保証・保護のためか」である。前者は禁止され、後者のみ許容される。類型 3 は将来 `@scope` 等のカスケード制御機能の普及により不要となる可能性がある。
 
 > **Example（MUST [先制宣言の実施]）:**
 
@@ -329,6 +334,10 @@ Reset 層が外部リセット CSS を取り込む場合、その内部実装に
     padding-inline-start: unset;
     list-style-type: '';
   }
+
+  :where(button, input, select, textarea) {
+    font: inherit;
+  }
 }
 ```
 
@@ -362,12 +371,10 @@ Reset 層が外部リセット CSS を取り込む場合、その内部実装に
     background-color: var(--color-surface);
     line-height: 1.5;
   }
-
-  :where(input, select, textarea, button) {
-    font: inherit;
-  }
 }
 ```
+
+> **注記（Informative）**: フォーム要素（button / input / select / textarea 等）のフォント継承の正規化（`font: inherit`）は、ブラウザがフォーム要素に与える既定フォントの差異を吸収する初期化に該当するため、Foundation ではなく Reset 層（§5.2）に配置する。
 
 ### 5.4 Layout
 
@@ -869,6 +876,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 
 | § | 一言サマリ | 全文参照 |
 |---|---|---|
+| §4 | MAY [プラットフォーム不変条件の保護] | §4 要求レベル |
 | §5.1 | MAY [テーマ切替の Token 完結] | §5.1 要求レベル |
 | §5.2 | MAY [Reset 層の使用任意] | §5.2 要求レベル |
 | §5.7 | MAY [機能的トランジションの所属層への記述] | §5.7 要求レベル |
