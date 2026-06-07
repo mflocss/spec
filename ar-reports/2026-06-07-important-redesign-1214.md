@@ -60,3 +60,24 @@
 5 評価軸すべてで PASS。修正提案なし。
 
 cortex#1214 が指摘した 3 課題（Gap A / Gap B / Gap C）は本 PR で構造的に解消され、`!important` の許容範囲が「抽象原則 + 閉列挙された 3 類型」として体系化された。starter / mflocss.dev 実装の既存事実（`[hidden]!important` + form `font:inherit`(Reset)）が spec で sanction され、spec ↔ 実装の整合が回復する。
+
+## Codex クロスレビュー対応
+
+PR #106 作成後の codex review で 2 件の P2 指摘を受領。判定は以下:
+
+- **P2-1（Informative 注記の純度 — 抽象原則の Normative 化 / @scope 将来注記の Normative 化）= 却下**
+  理由: cortex#1214 が「抽象原則（純粋な追加スタイル）+ カテゴリ列挙（プラットフォーム不変条件 / Reset 完全な reset）の二段構造」と「@scope 移行で将来不要になる可能性も Informative として残す」ことを明示的に **設計要件** として要求している。抽象原則の Informative 配置は本再設計の中核成果物（「閉列挙だけでは将来 case に追従不能 → 抽象原則を判断基準として与える」という Issue 設計意図）であり、Normative 純度ガイドラインより Issue の設計意図が支配。@scope 注記も将来の MAY 削除可能性を示す informative 注記として spec 純度的にも妥当。
+- **P2-2（Gap B Example 裏付け — §5.2 Reset Example に form `font:inherit` を追加）= 採用**
+  理由: 「Reset が canonical」を本文・注記で確定する以上、§5.2 Reset Example にもその実例が示されているべき。注記のみの裏付けでは「§5.2 を読んで Reset 層の代表的構成を把握する」読者が form 規則の所属を判定できない（spec 整合性ギャップ）。starter reference 実装 `~/Git/mflocss-starter/src/assets/css/reset/reset.css` L86-92 とも一致する方向の追加。§5.3 Foundation Example から form 規則を削除した本 PR の改訂と対をなす。
+
+**反映内容**: §5.2 Reset Example 内（`@layer reset { ... }` ブロック末尾）に以下を追加。
+
+```css
+:where(button, input, select, textarea) {
+  font: inherit;
+}
+```
+
+§5.3 の Informative 注記（「フォーム要素のフォント継承は Reset 層に配置」）は境界説明として有用なので維持。§5.3 Example は変更なし。
+
+**codex 集計**: P1=0 / P2=2（1 採用 / 1 却下）/ P3=0。本対応により Example と注記が一致し、§5.2 単独でも Reset canonical の事実が読み取れる構造になる。

@@ -334,6 +334,10 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
     padding-inline-start: unset;
     list-style-type: '';
   }
+
+  :where(button, input, select, textarea) {
+    font: inherit;
+  }
 }
 ```
 
