@@ -309,7 +309,7 @@ CSS `@layer` の構造的整合性を維持するために必要な宣言ルー�
     /* セマンティック */
     color-scheme: light dark;
     --color-main: light-dark(var(--_slate-900), var(--_slate-100));
-    --font-family: "Noto Sans JP", sans-serif;
+    --font-family: system-ui, sans-serif;
 
     /* グローバルトークン */
     --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
