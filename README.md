@@ -1,26 +1,15 @@
 # mFLOCSS Specification
 
-mFLOCSS（Modified FLOCSS）は、CSS の設計判断を体系化する思考フレームワークです。[FLOCSS](https://github.com/hiloki/flocss) の層設計を継承しつつ、`@layer` による構造的制御と明文化された判断基準を加えた 8 層フラットアーキテクチャを提供します。
+![mFLOCSS — CSS の設計判断を体系化する思考フレームワーク](.github/ogp.png)
+
+mFLOCSS は、CSS の記述を層に分類する思考フレームワークです。「このスタイルをどの層に書くか」という判断を体系化し、設計の一貫性と長期的な保守性を実現します。本仕様はその判断基準・命名規則・ファイル構成を厳密に定義します。
 
 このリポジトリは mFLOCSS の公式仕様書です。
 
 ## 仕様書
 
-- [spec.md](spec.md) — mFLOCSS Specification v1.2
+- [spec.md](spec.md) — mFLOCSS Specification
 - [CHANGELOG.md](CHANGELOG.md) — 変更履歴
-
-## 仕様の読み方
-
-本仕様のキーワード MUST / MUST NOT / SHOULD / SHOULD NOT / MAY は [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119) に基づく。
-
-仕様書内の要素は以下のように区別される:
-
-| 要素 | 説明 |
-|---|---|
-| **Normative** | MUST / MUST NOT / SHOULD / SHOULD NOT / MAY を含むルール。準拠判定の対象 |
-| **Informative** | 判断基準の解説、設計意図の説明。ルールの理解を助けるが準拠判定の対象外 |
-| **Example** | コード例。ルールの具体的な適用方法を示す |
-| **Changes** | バージョン間の変更履歴 |
 
 ## 関連リソース
 
@@ -35,7 +24,7 @@ mFLOCSS（Modified FLOCSS）は、CSS の設計判断を体系化する思考フ
 
 CSS の進化に応じて、以下の変更を検討する。
 
-- **`@scope`**: 構造的スコープが普及した段階で、プレフィックス（`c-`, `p-`）の代替手段として仕様に組み込む可能性がある。現時点では `@scope` とプレフィックスの併用を推奨する
+- **`@scope`**: 構造的スコープが普及した段階で、プレフィックス（`c-`, `p-`）の代替手段として仕様に組み込む可能性がある。現時点ではプレフィックスを使用する（§6 SHOULD [層識別プレフィックスの使用]）
 - **Animation 層の統合**: Scroll-driven Animations 等の進化により、Animation 層のスタイルが各層に統合される可能性がある
 
 ## ブランドガイドライン
