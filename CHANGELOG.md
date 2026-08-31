@@ -4,9 +4,12 @@
 
 ## [v1.0.2] - Unreleased
 
-- §3 層間の依存方向 注記: 「Utility を最後に宣言することで最高優先度が保証される」を修正。`!important` 宣言では `@layer` の層順序が逆転する（先に宣言した層が優先される）ため、Utility の最終上書きを成立させているのは宣言順ではなく §5.8 MUST [!important の付与] と §4 MUST NOT [!important の使用制限] の組であることを明記
-- §7 注記: 「インラインスタイルは全ての layered CSS より優先される」を「その通常宣言は全ての layered CSS の通常宣言より優先される」に修正。layered の `!important` 宣言には優先されないため。あわせてカスケードでは層への割り当てより先に評価されることを明記
-- Appendix A Glossary「unlayered CSS」: 「全ての layered CSS より優先される」を修正。通常宣言同士での優先に限定し、`!important` では層順序が逆転するため layered の `!important` 宣言に優先されないことを明記
+- §3 層間の依存方向 注記: `!important` 宣言では `@layer` の層順序が逆転することを明記し、Utility の最終上書きの成立根拠を宣言順から §5.8・§4 の組に修正
+- §4 外部 CSS の層配置判断 注記（原則・例外）: 層順序による上書きの説明を通常宣言に限定
+- §5.8 Utility 層の責任 3: 「全層に対する優先」を「全層の通常宣言に対する優先」に修正
+- §7 注記: インラインスタイルの優先順位を、通常宣言と `!important` 宣言に分けて記述
+- Appendix A Glossary: 「unlayered CSS」の優先順位の記述を修正し、「通常宣言」の定義を追加
+- CONTRIBUTING: リリース手順に「Status of This Document」の更新を追加
 
 ## [v1.0.1] - 2026-08-10
 
