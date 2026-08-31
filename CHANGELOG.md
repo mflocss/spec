@@ -2,6 +2,12 @@
 
 本書は mFLOCSS 仕様書の変更履歴を記録する。
 
+## [v1.0.2] - Unreleased
+
+- §3 層間の依存方向 注記: 「Utility を最後に宣言することで最高優先度が保証される」を修正。`!important` 宣言では `@layer` の層順序が逆転する（先に宣言した層が優先される）ため、Utility の最終上書きを成立させているのは宣言順ではなく §5.8 MUST [!important の付与] と §4 MUST NOT [!important の使用制限] の組であることを明記
+- §7 注記: 「インラインスタイルは全ての layered CSS より優先される」を「その通常宣言は全ての layered CSS の通常宣言より優先される」に修正。layered の `!important` 宣言には優先されないため。あわせてカスケードでは層への割り当てより先に評価されることを明記
+- Appendix A Glossary「unlayered CSS」: 「全ての layered CSS より優先される」を修正。通常宣言同士での優先に限定し、`!important` では層順序が逆転するため layered の `!important` 宣言に優先されないことを明記
+
 ## [v1.0.1] - 2026-08-10
 
 - Abstract: 効果の宣伝文（「設計の一貫性と長期的な保守性を実現する」）を削除し、仕様が定義する対象の記述に整理
