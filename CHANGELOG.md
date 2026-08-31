@@ -4,7 +4,9 @@
 
 ## [v1.0.3] - Unreleased
 
-- §5.8 Utility 層の責任 3: `!important` が保証する優先の範囲に、層の外（unlayered CSS・インラインスタイル）の通常宣言を明示。従来の「全層の通常宣言に対する優先」は Utility が最上位層であることから層順序のみで成立しており、MUST [!important の付与] の根拠を説明していなかった
+- §5.8 Utility 層の責任 3: 「全層の通常宣言に対する優先」を「層の外（unlayered CSS・インラインスタイル）を含むすべての通常宣言に対する優先」に修正
+- §7 注記: インラインスタイルを unlayered CSS の一種とする分類を、層への割り当てより先に評価される独立した判定軸（Element-Attached Styles）に修正
+- Appendix A Glossary: 「unlayered CSS」からインラインスタイルを除外し、両者の適用順の差を分類として記述
 
 ## [v1.0.2] - 2026-08-31
 
