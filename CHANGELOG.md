@@ -4,9 +4,11 @@
 
 ## [v1.0.5] - Unreleased
 
-- §5.8 Utility Example: `u-visually-hidden` のセレクタから `:not(:focus, :active, :focus-within)` を削除。当該セレクタは Example が例示する MUST [!important の付与] と SHOULD NOT [Block 帰属スタイルの Utility 記述禁止] のいずれも例示しておらず、フォーカス時の可視化規則を伴わないため
-- Appendix A Glossary「通常宣言」: 定義に author origin の限定を追加（[CSS-CASCADE-5] は Animation Origin・Transition Origin を author origin とは別の origin として定義しており、限定しない場合 §5.8 責任 3 の射程にそれらが入る）
-- CONTRIBUTING: リリース手順に GitHub Release の作成を追加
+- §5.8 Utility Example: `u-visually-hidden` のセレクタから `:not(:focus, :active, :focus-within)` を削除
+- §7 注記: インラインスタイルが author origin に属することの出典を追加
+- Appendix A Glossary「通常宣言」: 定義に author origin の限定を追加し、[CSS-CASCADE-5] の参照を同仕様 §6.1 の表記に合わせた
+- Appendix B: [CSS-CASCADE-5] / [CSS-CASCADE-6] の編集者名・版表記を修正して URL を補い、[CSS-STYLE-ATTR] を Normative References に追加
+- CONTRIBUTING: リリース手順に、変更のコミットとマージ、タグの push、GitHub Release の作成を追加
 
 ## [v1.0.4] - 2026-09-07
 
