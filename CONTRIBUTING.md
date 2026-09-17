@@ -19,7 +19,8 @@ mFLOCSS 仕様書（[spec.md](spec.md)）への提案・修正を歓迎します
 1. spec.md の「Status of This Document」を更新（版の表記と「最終更新」の日付）
 2. リリースするバージョンの `## [vX.Y.Z] - Unreleased` 見出しを `## [vX.Y.Z] - YYYY-MM-DD` に置換（リリース実日付を記入）
 3. `git tag vX.Y.Z` でリリースタグを切る
-4. 次バージョンの変更を記録し始める際に、新しい `## [vX.Y.Z] - Unreleased` セクションを CHANGELOG 上部に追加
+4. GitHub Release を作成する（本文は当該バージョンの CHANGELOG から起こす）
+5. 次バージョンの変更を記録し始める際に、新しい `## [vX.Y.Z] - Unreleased` セクションを CHANGELOG 上部に追加
 
 ## ライセンス・ブランド
 

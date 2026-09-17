@@ -2,6 +2,12 @@
 
 本書は mFLOCSS 仕様書の変更履歴を記録する。
 
+## [v1.0.5] - Unreleased
+
+- §5.8 Utility Example: `u-visually-hidden` のセレクタから `:not(:focus, :active, :focus-within)` を削除。当該セレクタは Example が例示する MUST [!important の付与] と SHOULD NOT [Block 帰属スタイルの Utility 記述禁止] のいずれも例示しておらず、フォーカス時の可視化規則を伴わないため
+- Appendix A Glossary「通常宣言」: 定義に author origin の限定を追加（[CSS-CASCADE-5] は Animation Origin・Transition Origin を author origin とは別の origin として定義しており、限定しない場合 §5.8 責任 3 の射程にそれらが入る）
+- CONTRIBUTING: リリース手順に GitHub Release の作成を追加
+
 ## [v1.0.4] - 2026-09-07
 
 - §2 適用範囲 注記（新設）: §4 MUST NOT [!important の使用制限] の「Utility 層を除く全層」が project の宣言する追加層（`vendor` 等）を含むこと、「例外: `!important` の許容範囲」類型 2 の対象外が取り込んだ外部 CSS の内部実装に限られること、および外部生成クラスの免除が宣言内容に及ばないことを明示
