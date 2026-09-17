@@ -7,8 +7,8 @@
 - §5.8 Utility Example: `u-visually-hidden` のセレクタから `:not(:focus, :active, :focus-within)` を削除
 - §7 注記: インラインスタイルが author origin に属することの出典を追加
 - Appendix A Glossary「通常宣言」: 定義に author origin の限定を追加
-- Appendix A Glossary「通常宣言」: [CSS-CASCADE-5] の参照を同仕様 §6.1 の表記に合わせた
-- Appendix B Normative References: [CSS-CASCADE-5] の編集者名を修正し、版表記に日付を、書誌に URL を追加
+- Appendix A Glossary「通常宣言」: [CSS-CASCADE-5] の参照を同仕様 §6.1 の表記へ修正
+- Appendix B Normative References: [CSS-CASCADE-5] の編集者名と版表記 (Candidate Recommendation Snapshot, 13 January 2022) を修正し、書誌に URL を追加
 - Appendix B Informative References: [CSS-CASCADE-6] の編集者名を修正し、版表記に日付を追加
 - Appendix B Informative References: [CSS-STYLE-ATTR] を追加
 - CONTRIBUTING: リリース手順に、変更のコミットとマージ、タグの push、GitHub Release の作成を追加
