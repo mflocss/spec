@@ -670,7 +670,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 
 ```css
 @layer utility {
-  .u-visually-hidden:not(:focus, :active, :focus-within) {
+  .u-visually-hidden {
     position: absolute !important;
     inline-size: 1px !important;
     block-size: 1px !important;
@@ -681,7 +681,6 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
     border: 0 !important;
     clip-path: inset(50%) !important;
   }
-
 }
 ```
 
@@ -772,7 +771,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 - MAY [グローバルトークンの直接参照]: グローバルトークンおよび計算ヘルパー（`--px` 等）は Foundation 以降の層から直接参照してよい（§5.1 トークン分類を参照）
 - MAY [プライベートカスタムプロパティの定義]: Layout 以降の層でプライベートカスタムプロパティ（`--_xxx`）を定義してよい
 
-> **注記（Informative）**: インラインスタイル（要素の `style` 属性に記述された宣言）は、カスケードにおいて層への割り当て（Layers）より先に評価される独立した判定軸（Element-Attached Styles [CSS-CASCADE-5]）に属し、`@layer` ブロック外に記述されたスタイル（unlayered CSS）とは別のカテゴリである。その通常宣言は全ての layered CSS の通常宣言より優先され、`!important` を伴う場合は layered の `!important` 宣言にも優先されるため、層構造による優先順位制御を破壊する。
+> **注記（Informative）**: インラインスタイル（要素の `style` 属性に記述された宣言。author origin に属する [CSS-STYLE-ATTR]）は、カスケードにおいて層への割り当て（Layers）より先に評価される独立した判定軸（Element-Attached Styles [CSS-CASCADE-5]）に属し、`@layer` ブロック外に記述されたスタイル（unlayered CSS）とは別のカテゴリである。その通常宣言は全ての layered CSS の通常宣言より優先され、`!important` を伴う場合は layered の `!important` 宣言にも優先されるため、層構造による優先順位制御を破壊する。
 
 > **注記（Informative）**: 層識別プレフィックス（§6 SHOULD [層識別プレフィックスの使用]）は、mFLOCSS が管理するクラスの層を識別するために付与される。一方、カスタムプロパティは CSS の標準機能であり、mFLOCSS のスコープ外から参照・上書きされる可能性があるため、層識別情報を含めず対象名のみで命名する方が汎用性と可読性で優れる。
 
@@ -789,7 +788,7 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 | **外部生成クラス** | CMS・フレームワーク・外部ライブラリ・外部サービス等が生成するクラスで、mFLOCSS 命名規則に従わないもの。当該クラスへのクラスセレクタ使用、および当該クラスとの組み合わせは本仕様の要求レベル・命名規則の制約を受けない。project が記述する宣言の内容は本免除の対象外（射程は §2 適用範囲の注記を参照）（初出: §2） |
 | **上位層** | §3 層テーブルの順序番号が大きい層。@layer 優先度が高い。例: Utility（8）が最上位（初出: §3） |
 | **下位層** | §3 層テーブルの順序番号が小さい層。@layer 優先度が低い。例: Token（1）が最下位（初出: §3） |
-| **通常宣言** | `!important` を伴わない宣言（normal declaration [CSS-CASCADE-5]）。`@layer` の層順序は、通常宣言と `!important` 宣言で適用方向が逆になる（初出: §3） |
+| **通常宣言** | `!important` を伴わない author origin の宣言（Normal author declarations [CSS-CASCADE-5] §6.1）。`@layer` の層順序は、通常宣言と `!important` 宣言で適用方向が逆になる（初出: §3） |
 | **デザイントークン** | Token 層で管理するすべての変数の総称。プリミティブ変数・セマンティック変数・グローバルトークンを含む（計算ヘルパーは含まない）（初出: §3） |
 | **先制宣言** | `layer-order.css` における `@layer` による層間の優先順位宣言。全スタイル定義に先行して記述される（初出: §4） |
 | **Token Test** | Token 層の適用可否を判定する検証問い（§5.1） |
@@ -828,14 +827,15 @@ Animation 層に分離すべき動きと、Component/Project に残してよい�
 
 - **[RFC2119]** Bradner, S., "Key words for use in RFCs to Indicate Requirement Levels", BCP 14, RFC 2119, March 1997. https://www.rfc-editor.org/rfc/rfc2119
 - **[RFC8174]** Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words", BCP 14, RFC 8174, May 2017. https://www.rfc-editor.org/rfc/rfc8174
-- **[CSS-CASCADE-5]** Atkins Jr., T.; Rivoal, F.; Lilley, C., "CSS Cascading and Inheritance Level 5", W3C Candidate Recommendation.
+- **[CSS-CASCADE-5]** Etemad, E. J.; Suzanne, M. E.; Atkins Jr., T., "CSS Cascading and Inheritance Level 5", W3C Candidate Recommendation Snapshot, 13 January 2022. https://www.w3.org/TR/css-cascade-5/
 - **[HTML]** WHATWG, "HTML Standard", Living Standard. https://html.spec.whatwg.org/multipage/rendering.html
 
 ### Informative References
 
 *This section is informative.*
 
-- **[CSS-CASCADE-6]** Atkins Jr., T.; Rivoal, F.; Lilley, C., "CSS Cascading and Inheritance Level 6", W3C Working Draft. https://www.w3.org/TR/css-cascade-6/
+- **[CSS-CASCADE-6]** Etemad, E. J.; Suzanne, M. E.; Atkins Jr., T., "CSS Cascading and Inheritance Level 6", W3C Working Draft, 6 September 2024. https://www.w3.org/TR/css-cascade-6/
+- **[CSS-STYLE-ATTR]** Çelik, T.; Etemad, E. J., "CSS Style Attributes", W3C Recommendation, 7 November 2013. https://www.w3.org/TR/css-style-attr/
 
 ---
 
