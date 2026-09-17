@@ -14,9 +14,9 @@ mFLOCSS は、CSS の記述を層に分類する思考フレームワークで�
 
 *This section is informative.*
 
-本文書は mFLOCSS 仕様書の v1.0.4 である。
+本文書は mFLOCSS 仕様書の v1.0.5 である。
 
-**最終更新**: 2026-09-07  
+**最終更新**: 2026-09-17  
 **著者**: shunei
 
 ---

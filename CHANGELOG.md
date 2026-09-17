@@ -2,7 +2,7 @@
 
 本書は mFLOCSS 仕様書の変更履歴を記録する。
 
-## [v1.0.5] - Unreleased
+## [v1.0.5] - 2026-09-17
 
 - §5.8 Utility Example: `u-visually-hidden` のセレクタから `:not(:focus, :active, :focus-within)` を削除
 - §7 注記: インラインスタイルが author origin に属することの出典を追加
